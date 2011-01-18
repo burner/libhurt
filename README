@@ -1,7 +1,6 @@
 libhurt
 
-My own library because I don't like certain things about phobos as well
-as tango. I'm plan to add functions to the lib every time something is missing
-in dc.
+My own D library. I'm plan to add functions to the lib every time something is
+missing in dc or in my jflex port.
 
 The license is GPL.
