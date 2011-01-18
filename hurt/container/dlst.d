@@ -1,4 +1,4 @@
-module container.dlst;
+module hurt.container.dlst;
 
 import std.stdio;
 
@@ -77,7 +77,6 @@ public class DLinkedList(T) {
 			this.size--;
 			return tmp.getStore();
 		} else if(this.size == 0) {
-			StackTrace.printTrace();
 			assert(0);
 		} else {
 			Elem!(T) tmp = this.tail;
@@ -95,7 +94,6 @@ public class DLinkedList(T) {
 			this.size--;
 			return tmp.getStore();
 		} else if(this.size == 0) {
-			StackTrace.printTrace();
 			assert(0);
 		} else {
 			Elem!(T) tmp = this.tail;

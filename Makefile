@@ -9,9 +9,11 @@ MATH_OBJS=hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o
 
-UTIL_OBJS=hurt.util.stacktrace.d
+UTIL_OBJS=hurt.util.stacktrace.o
 
-all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
+CONV_OBJS=hurt.conv.conv.o
+
+all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS)
 	ar -r libhurt.a *.o
 
 clean:
@@ -45,3 +47,6 @@ hurt.string.stringbuffer.o: hurt/string/stringbuffer.d hurt/util/stacktrace.d Ma
 
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
+
+hurt.conv.conv.o: hurt/conv/conv.d Makefile
+	$(DC) $(CFLAGS) hurt/conv/conv.d -ofhurt.conv.conv.o
