@@ -1,6 +1,8 @@
 module hurt.conv.chartonumeric;
 
-byte chartobase10(in char ch) {
+import hurt.util.stacktrace;
+
+public pure byte chartobase10(in char ch) {
 	switch(ch) {
 		case '0':
 			return 0;

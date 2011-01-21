@@ -1,6 +1,6 @@
 module hurt.conv.convutil;
 
-public final bool getSign(in char ch) {
+public final pure bool getSign(in char ch) {
 	switch(ch) {
 		case '0': .. case '9':
 			return true;
@@ -13,7 +13,7 @@ public final bool getSign(in char ch) {
 	}
 }
 
-public bool isDigit(in char ch) {
+public pure bool isDigit(in char ch) {
 	switch(ch) {
 		case '0': .. case '9':
 			return true;

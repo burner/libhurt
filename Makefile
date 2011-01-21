@@ -12,7 +12,7 @@ STRING_OBJS=hurt.string.stringbuffer.o
 UTIL_OBJS=hurt.util.stacktrace.o
 
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.conv.o hurt.conv.convutil.o \
-hurt.conv.tointeger.o
+hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
 all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS)
 	ar -r libhurt.a *.o
@@ -60,3 +60,9 @@ hurt.conv.convutil.o: hurt/conv/convutil.d Makefile
 
 hurt.conv.tointeger.o: hurt/conv/tointeger.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/tointeger.d -ofhurt.conv.tointeger.o
+
+hurt.conv.tostring.o: hurt/conv/tostring.d Makefile
+	$(DC) $(CFLAGS) hurt/conv/tostring.d -ofhurt.conv.tostring.o
+
+hurt.conv.numerictochar.o: hurt/conv/numerictochar.d Makefile
+	$(DC) $(CFLAGS) hurt/conv/numerictochar.d -ofhurt.conv.numerictochar.o
