@@ -8,7 +8,7 @@ int stringToInt(in string str) {
 	int mul = 1;	
 	int tmp;
 		
-	foreach(it; str) {
+	foreach_reverse(it; str) {
 		if(!isDigit(it)) {
 			assert(0, "is not digit");
 		}
