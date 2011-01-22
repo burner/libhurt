@@ -49,6 +49,13 @@ final class Stack(T) {
 		return this.stack.length;
 	}
 
+	T elementAt(in uint idx) {
+		if(idx >= this.stptr) {
+			assert(0, "Index to big");
+		}
+		return this.stack[idx];
+	}
+
 	Stack!(T) setCapazity(in uint nSize) {
 		if(this.stack.length >= nSize) {
 			return this;
@@ -56,5 +63,9 @@ final class Stack(T) {
 			this.stack.length = nSize;
 			return this;
 		}
+	}
+
+	void clear() {
+		this.stptr = 0;	
 	}
 }

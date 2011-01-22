@@ -32,6 +32,18 @@ public template StringBuffer(T) {
 			this.buffer = new T[this.initSize];
 		}
 
+		public this(immutable(T)[] str) {
+			this.initSize = str.length*2;
+			this.bufferPointer = 0;
+			this.holdsNumber = false;
+			this.holdsOp = false;
+			this.firstCharIsNumber = false;
+			this.buffer = new T[this.initSize];
+			foreach(it; str) {
+				this.buffer[this.bufferPointer++] = it;
+			}
+		}
+
 		public void clear() {
 			this.bufferPointer = 0;
 			this.holdsNumber = false;
@@ -65,6 +77,16 @@ public template StringBuffer(T) {
 				this.initSize *= 2u;
 			}
 			this.buffer[this.bufferPointer++] = toAdd;
+		}
+
+		public void pushBack(immutable(T)[] toAdd) {
+			if(this.bufferPointer + toAdd.length >= this.initSize) {
+				this.buffer.length += toAdd.length * 2u;
+				this.initSize += toAdd.length * 2u;
+			}
+			foreach(it; toAdd) {
+				this.buffer[this.bufferPointer++] = it;
+			}
 		}
 
 		public void pushBackOp(in T toAdd) {

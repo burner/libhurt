@@ -15,6 +15,10 @@ S conv(T, S)(T t) {
 		static if( is(S == string) ) {
 			return intToString(t);
 		}
+	} else static if( is(T == short) ) {
+		static if( is(S == string) ) {
+			return shortToString(t);	
+		}
 	} else {
 		return null;
 	}
