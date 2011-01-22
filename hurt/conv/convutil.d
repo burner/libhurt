@@ -13,7 +13,7 @@ public final pure bool getSign(in char ch) {
 	}
 }
 
-public pure bool isDigit(in char ch) {
+public final pure bool isDigit(in char ch) {
 	switch(ch) {
 		case '0': .. case '9':
 			return true;

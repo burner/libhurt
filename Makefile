@@ -49,7 +49,7 @@ hurt.string.stringbuffer.o: hurt/string/stringbuffer.d hurt/util/stacktrace.d Ma
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
 
-hurt.conv.conv.o: hurt/conv/conv.d Makefile
+hurt.conv.conv.o: hurt/conv/conv.d hurt/conv/tointeger.d hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/conv.d -ofhurt.conv.conv.o
 
 hurt.conv.chartonumeric.o: hurt/conv/chartonumeric.d Makefile
@@ -58,10 +58,10 @@ hurt.conv.chartonumeric.o: hurt/conv/chartonumeric.d Makefile
 hurt.conv.convutil.o: hurt/conv/convutil.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/convutil.d -ofhurt.conv.convutil.o
 
-hurt.conv.tointeger.o: hurt/conv/tointeger.d Makefile
+hurt.conv.tointeger.o: hurt/conv/tointeger.d hurt/conv/convutil.d hurt/conv/chartonumeric.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/tointeger.d -ofhurt.conv.tointeger.o
 
-hurt.conv.tostring.o: hurt/conv/tostring.d Makefile
+hurt.conv.tostring.o: hurt/conv/tostring.d hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/tostring.d -ofhurt.conv.tostring.o
 
 hurt.conv.numerictochar.o: hurt/conv/numerictochar.d Makefile

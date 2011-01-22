@@ -1,7 +1,5 @@
 module hurt.conv.chartonumeric;
 
-import hurt.util.stacktrace;
-
 public pure byte chartobase10(in char ch) {
 	switch(ch) {
 		case '0':

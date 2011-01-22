@@ -2,7 +2,6 @@ module hurt.conv.tointeger;
 
 import hurt.conv.convutil;
 import hurt.conv.chartonumeric;
-import hurt.util.stacktrace;
 
 public pure int stringToInt(in string str) {
 	int ret = 0;
