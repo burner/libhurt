@@ -134,6 +134,13 @@ public template StringBuffer(T) {
 		public immutable(T)[] getString() const {
 			return this.buffer[0 .. this.bufferPointer].idup;
 		}
+
+		public T charAt(uint idx) {
+			if(idx > this.bufferPointer) {
+				assert(0, "Index out of bound");
+			}
+			return this.buffer[idx];
+		}
 	}
 }
 
