@@ -7,7 +7,7 @@ CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vecto
 
 MATH_OBJS=hurt.math.bigintbase10.o
 
-STRING_OBJS=hurt.string.stringbuffer.o
+STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
 
 UTIL_OBJS=hurt.util.stacktrace.o
 
@@ -45,6 +45,9 @@ hurt.math.bigintbase10.o: hurt/math/bigintbase10.d Makefile
 
 hurt.string.stringbuffer.o: hurt/string/stringbuffer.d hurt/util/stacktrace.d Makefile
 	$(DC) $(CFLAGS) hurt/string/stringbuffer.d -ofhurt.string.stringbuffer.o
+
+hurt.string.stringutil.o: hurt/string/stringutil.d hurt/util/stacktrace.d Makefile
+	$(DC) $(CFLAGS) hurt/string/stringutil.d -ofhurt.string.stringutil.o
 
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
