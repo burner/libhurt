@@ -1,0 +1,1 @@
+module hurt.stdio.output;
