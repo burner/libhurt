@@ -12,3 +12,13 @@ public final immutable(T)[] trim(T)(immutable(T)[] str) {
 
 	return str[low..high+1].idup;	
 }
+
+public int hashCode(T)(immutable(T)[] str) {
+	int h = 0;
+	int off = 0;
+
+	for (int i = 0; i < str.length; i++) {
+		h = 31 * h + str[ off++ ];
+	}
+	return h;
+}
