@@ -5,6 +5,8 @@ ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vector.o
 
+EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o
+
 MATH_OBJS=hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
@@ -14,7 +16,8 @@ UTIL_OBJS=hurt.util.stacktrace.o
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
-all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS)
+
+all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(MATH_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS)
 	ar -r libhurt.a *.o
 
 clean:
@@ -69,3 +72,6 @@ hurt.conv.tostring.o: hurt/conv/tostring.d hurt/conv/tostring.d Makefile
 
 hurt.conv.numerictochar.o: hurt/conv/numerictochar.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/numerictochar.d -ofhurt.conv.numerictochar.o
+
+hurt.exception.illegalargumentexception.o: hurt/exception/illegalargumentexception.d
+	$(DC) $(CFLAGS) hurt/exception/illegalargumentexception.d -ofhurt.exception.illegalargumentexception.o
