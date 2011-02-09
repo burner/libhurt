@@ -2,7 +2,8 @@ module hurt.conv.tostring;
 
 import hurt.conv.numerictochar;
 
-public pure immutable(T)[] intToString(T)(int src) {
+public pure immutable(T)[] intToString(T)(int src)
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	T[16] tmp;
 	uint tmpptr = 0;
 	bool sign = false;
@@ -22,7 +23,13 @@ public pure immutable(T)[] intToString(T)(int src) {
 	byte toConv;
 	while(src) {
 		toConv = cast(byte)(src % 10);	
-		tmp[tmpptr++] = byteToCharBase10!(char)(toConv);
+		static if(is(T == char)) {
+			tmp[tmpptr++] = byteToCharBase10!(char)(toConv);
+		} else static if(is(T == wchar)) {
+			tmp[tmpptr++] = byteToCharBase10!(wchar)(toConv);
+		} else static if(is(T == dchar)) {
+			tmp[tmpptr++] = byteToCharBase10!(dchar)(toConv);
+		}
 		src /= 10;
 	}
 	if(sign) {
