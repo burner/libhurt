@@ -1,5 +1,6 @@
 module hurt.conv.conv;
 
+import hurt.conv.charconv;
 import hurt.conv.tointeger;
 import hurt.conv.tostring;
 
@@ -18,6 +19,10 @@ S conv(T, S)(T t) {
 	} else static if( is(T == short) ) {
 		static if( is(S == string) ) {
 			return shortToString(t);	
+		}
+	} else static if( is(T == dchar) ) {
+		static if( is(S == char) ) {
+			return dcharToChar(t);
 		}
 	} else {
 		return null;
