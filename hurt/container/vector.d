@@ -64,7 +64,11 @@ class Vector(T) {
 	}
 
 	private static void incrsArrySz(ref T[][] arr, uint growSize = 1) {
-		assert(growSize > 0);	
+		assert(growSize > 0 && arr.length > growSize, "Invalid growSize");	
 		arr.length = arr.length+growSize;
+	}
+
+	public uint getSize() const {
+		return this.curPos-1;
 	}
 }

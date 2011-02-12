@@ -2,20 +2,23 @@ module hurt.conv.tostring;
 
 import hurt.conv.numerictochar;
 
-public pure immutable(T)[] intToString(T)(int src)
-		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+public pure immutable(T)[] intToString(T,S)(S src)
+		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
+			(is(S == int) || is(S == uint)) ) {
 	T[16] tmp;
 	uint tmpptr = 0;
 	bool sign = false;
-	if(src < 0) {
-		src = -src;
-		sign = true;
-		static if(is(T == char)) {
-			tmp[tmpptr++] = '-';
-		} else static if(is(T == wchar)) {
-			tmp[tmpptr++] = '\u002D'; // yes 002D means -
-		} else static if(is(T == dchar)) {
-			tmp[tmpptr++] = '\U0000002D'; // yes 0000002D means -
+	static if(is(S == int)) {
+		if(src < 0) {
+			src = -src;
+			sign = true;
+			static if(is(T == char)) {
+				tmp[tmpptr++] = '-';
+			} else static if(is(T == wchar)) {
+				tmp[tmpptr++] = '\u002D'; // yes 002D means -
+			} else static if(is(T == dchar)) {
+				tmp[tmpptr++] = '\U0000002D'; // yes 0000002D means -
+			}
 		}
 	}
 	byte toConv;
