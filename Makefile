@@ -27,6 +27,9 @@ clean:
 cleanAll: clean
 	make -C tests clean	
 
+count:
+	wc -l `find hurt -name \*.d`
+
 test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 	make
 	make -C tests
