@@ -1,7 +1,7 @@
 DC=dmd
 CFLAGS=-w -I../ -L../libhurt.a
 
-TESTS=convtest stacktest stringutiltest
+TESTS=convtest stacktest stringutiltest vectortest
 
 all:tests
 
@@ -18,6 +18,10 @@ stacktest: stacktest.d Makefile
 stringutiltest: stringutiltest.d Makefile
 	$(DC) $(CFLAGS) stringutiltest.d
 	exec ./stringutiltest
+
+vectortest: vectortest.d Makefile
+	$(DC) $(CFLAGS) vectortest.d
+	exec ./vectortest
 
 clean:
 	rm -rf *.o

@@ -22,8 +22,8 @@ class Vector(T) {
 	public T append(T toAdd) {
 		if(curPos == this.data[this.data.length-1].length) {
 			Vector.incrsArrySz(this.data);
-			this.curPos = 0;
 			this.data[this.data.length-1] = new T[this.partSize];
+			this.curPos = 0;
 		}
 		this.data[this.data.length-1][curPos] = toAdd;
 		curPos++;
@@ -37,6 +37,26 @@ class Vector(T) {
 	public T get(uint index) {
 		assert(this.partSize * (this.data.length-1) + (curPos) > index);
 		return this.data[index / this.partSize][index % this.partSize];
+	}
+
+	public T insert(in uint idx, T toAdd) {
+		assert(idx > (this.partSize * (this.data.length-1) + curPos), "use append to
+			insert a Element at the end");
+		if( (curPos+1) == this.data[this.data.length-1].length) {
+			Vector.incrsArrySz(this.data);
+			this.data[this.data.length-1] = new T[this.partSize];
+		}	
+		uint upIdx = this.partSize * (this.data.length-1) + curPos;
+		uint lowIdx = this.partSize * (this.data.length-1) + curPos - 1;
+		do {
+			this.data[upIdx / this.partSize][upIdx % this.partSize] =
+				this.data[lowIdx / this.partSize][lowIdx % this.partSize];
+			upIdx--;
+			lowIdx--;
+		} while(lowIdx != idx);
+		
+		this.data[lowIdx / this.partSize][lowIdx % this.partSize] = toAdd;
+		return toAdd;
 	}
 
 	public T opIndex(uint index) {
