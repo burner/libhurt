@@ -66,6 +66,14 @@ class Vector(T) {
 		return toAdd;
 	}
 
+	public T remove(in uint idx) {
+		assert(idx < (this.partSize * (this.data.length-1) + curPos), 
+			"the given index is out of bound idx = " 
+			~ conv!(uint,string)(idx) ~ " curPos = "
+			~ conv!(uint,string)(this.partSize * (this.data.length-1) + curPos));
+		
+	}
+
 	public T opIndex(uint index) {
 		return this.get(index);
 	}
