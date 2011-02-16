@@ -7,6 +7,8 @@ all:tests
 
 tests: $(TESTS)
 
+new: clean tests
+
 convtest: convtest.d Makefile
 	$(DC) $(CFLAGS) convtest.d
 	exec ./convtest

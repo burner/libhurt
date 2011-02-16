@@ -1,5 +1,7 @@
 module vector;
-//import tango.io.Stdout;
+
+import hurt.conv.conv;
+
 import std.stdio;
 
 class Vector(T) {
@@ -15,13 +17,13 @@ class Vector(T) {
 		assert(partSize > 0);
 		this.partSize = partSize;
 		this.curPos = 0;
-		Vector.incrsArrySz(this.data);
+		this.incrsArrySz();
 		this.data[this.data.length-1] = new T[this.partSize];
 	}
 
 	public T append(T toAdd) {
 		if(curPos == this.data[this.data.length-1].length) {
-			Vector.incrsArrySz(this.data);
+			this.incrsArrySz();
 			this.data[this.data.length-1] = new T[this.partSize];
 			this.curPos = 0;
 		}
@@ -40,22 +42,27 @@ class Vector(T) {
 	}
 
 	public T insert(in uint idx, T toAdd) {
-		assert(idx > (this.partSize * (this.data.length-1) + curPos), "use append to
-			insert a Element at the end");
-		if( (curPos+1) == this.data[this.data.length-1].length) {
-			Vector.incrsArrySz(this.data);
-			this.data[this.data.length-1] = new T[this.partSize];
+		assert(idx < (this.partSize * (this.data.length-1) + curPos), 
+			"use append to insert a Element at the end idx = " 
+			~ conv!(uint,string)(idx) ~ " curPos = "
+			~ conv!(uint,string)(this.partSize * (this.data.length-1) + curPos));
+		if( (curPos) == this.data[this.data.length-1].length) {
+			this.incrsArrySz();
+			curPos = 0;
 		}	
-		uint upIdx = this.partSize * (this.data.length-1) + curPos;
+		uint upIdx = this.partSize * (this.data.length-1) + curPos - 0;
 		uint lowIdx = this.partSize * (this.data.length-1) + curPos - 1;
 		do {
 			this.data[upIdx / this.partSize][upIdx % this.partSize] =
 				this.data[lowIdx / this.partSize][lowIdx % this.partSize];
 			upIdx--;
 			lowIdx--;
-		} while(lowIdx != idx);
+		} while(lowIdx > idx);
+		this.data[upIdx / this.partSize][upIdx % this.partSize] =
+			this.data[lowIdx / this.partSize][lowIdx % this.partSize];
 		
 		this.data[lowIdx / this.partSize][lowIdx % this.partSize] = toAdd;
+		curPos++;
 		return toAdd;
 	}
 
@@ -77,18 +84,19 @@ class Vector(T) {
 
 	int opApply(int delegate(ref T value) dg) {
 		int result;
-		for(int i = (this.data.length-1) * this.partSize + this.curPos-1; i-- && result is 0;) {
+		uint up = (this.data.length-1) * this.partSize + this.curPos;
+		for(uint i = 0; i < up && result is 0; i++) {
 			result = dg(this.data[i / this.partSize][i % this.partSize]);
 		}
 		return result;
 	}
 
-	private static void incrsArrySz(ref T[][] arr, uint growSize = 1) {
-		assert(growSize > 0 && arr.length > growSize, "Invalid growSize");	
-		arr.length = arr.length+growSize;
+	private void incrsArrySz() {
+		this.data.length = this.data.length+1;
+		this.data[$-1] = new T[this.partSize];
 	}
 
 	public uint getSize() const {
-		return this.curPos-1;
+		return (this.data.length-1) * this.partSize + this.curPos;
 	}
 }
