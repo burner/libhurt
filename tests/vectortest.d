@@ -13,14 +13,14 @@ void main() {
 	foreach(it;vec) {
 		writeln(it);
 	}
+	vec.popBack();
 	writeln("size = ", vec.getSize(), "\n");
 	vec.insert(2,8);
 	foreach(it;vec) {
 		writeln(it);
 	}
 	writeln("size = ", vec.getSize(), "\n");
-	vec.append(6);
-	vec.append(7);
+	vec.remove(3);
 	foreach(it;vec) {
 		writeln(it);
 	}

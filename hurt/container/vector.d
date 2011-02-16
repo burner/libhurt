@@ -24,33 +24,38 @@ class Vector(T) {
 	}
 
 	public T append(T toAdd) {
-		if(this.index == this.data[$].length -1) {
+		if(this.index % this.partSize == 0) {
 			this.incrsArrySz();
 			this.data[this.data.length-1] = new T[this.partSize];
 			this.curPos = 0;
 		}
 		this.data[this.index/this.partSize][this.index % this.partSize] = toAdd;
-		curPos++;
 		index++;
 		return toAdd;
 	}
 
-	public T get(uint index) {
-		assert(this.partSize * (this.data.length-1) + (curPos) > index);
-		return this.data[index / this.partSize][index % this.partSize];
+	public T popBack() {
+		if(this.index == 0) {
+			assert(0, "can't remove a item from an empty stack");
+		} else {
+			return this.data[(this.index-1) / this.partSize][(this.index-1) % this.partSize];
+		}
 	}
 
-	public T insert(in uint idx, T toAdd) {
+	public T get(uint idx) {
+		assert(this.partSize * (this.data.length-1) + (curPos) > idx);
+		return this.data[idx / this.partSize][idx % this.partSize];
+	}
+
+	public Vector!(T) insert(in uint idx, T toAdd) {
 	//	assert(idx < (this.partSize * (this.data.length-1) + curPos), 
 		assert(idx < this.index, "use append to insert a Element at the end idx = " 
 			~ conv!(uint,string)(idx) ~ " curPos = "
-			~ conv!(uint,string)(this.partSize * (this.data.length-1) + curPos));
-		if( (curPos) == this.data[this.data.length-1].length) {
+			~ conv!(uint,string)(this.index));
+		if(this.index % this.partSize == 0) {
 			this.incrsArrySz();
-			curPos = 0;
 		}	
-		//uint upIdx = this.partSize * (this.data.length-1) + curPos - 0;
-		//uint lowIdx = this.partSize * (this.data.length-1) + curPos - 1;
+
 		uint upIdx = this.index;
 		uint lowIdx = this.index-1;
 		do {
@@ -63,9 +68,8 @@ class Vector(T) {
 			this.data[lowIdx / this.partSize][lowIdx % this.partSize];
 		
 		this.data[lowIdx / this.partSize][lowIdx % this.partSize] = toAdd;
-		curPos++;
 		this.index++;
-		return toAdd;
+		return this;
 	}
 
 	public T remove(in uint idx) {
@@ -73,22 +77,18 @@ class Vector(T) {
 			"the given index is out of bound idx = " 
 			~ conv!(uint,string)(idx) ~ " curPos = "
 			~ conv!(uint,string)(this.partSize * (this.data.length-1) + curPos));
-		T ret = this.get(idx);
-		uint upIdx = this.partSize * (this.data.length-1) + curPos - 0;
-		uint lowIdx = this.partSize * (this.data.length-1) + curPos - 1;
-		do {
-			this.data[lowIdx / this.partSize][lowIdx % this.partSize] = 
+		T tmp;
+		uint upIdx = idx + 1;
+		uint lowIdx = idx;
+		T ret = this.data[lowIdx / this.partSize][lowIdx % this.partSize];
+		while(lowIdx != this.index) {
+			this.data[lowIdx / this.partSize][lowIdx % this.partSize] =
 				this.data[upIdx / this.partSize][upIdx % this.partSize];
-			upIdx--;
-			lowIdx--;
-		} while(lowIdx > idx);
-		this.data[lowIdx / this.partSize][lowIdx % this.partSize] = 
-			this.data[upIdx / this.partSize][upIdx % this.partSize];
-
-		if(this.curPos == 0) {
-			this.curPos = this.partSize;
+			upIdx++;
+			lowIdx++;
 		}
-		return ret;		
+		this.index--;
+		return tmp;		
 	}
 
 	public T opIndex(uint idx) {
