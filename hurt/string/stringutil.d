@@ -23,11 +23,13 @@ public int hashCode(T)(immutable(T)[] str) {
 	return h;
 }
 
-public T toLowerCase(T)(T ch) {
+public T toLowerCase(T)(T ch) 
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return ch + 32;
 }
 
-public T toUpperCase(T)(T ch) {
+public T toUpperCase(T)(T ch) 
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return ch - 32;
 }
 
@@ -44,4 +46,23 @@ public bool isTitleCase(wchar ch) {
 		return last >= 8 && last <= 0xf;
 	}
 	return false;
+}
+
+/** Converts a [w,d]char to Title Case.	TODO check is
+ *  
+ * @author Robert "BuRnEr" Schadek
+ *  
+ * @param = the character
+ * @template = T must be char,wchar or dchar
+ *  
+ * @return the TitleCase representation of the given character.
+ */
+public T toTitleCase(T)(T ch)
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+	if(ch > 64 && ch < 91)
+		return ch;
+	else if(ch > 96 && ch < 173)
+		return ch - 32;
+	
+	assert(0, "not a printable character");
 }
