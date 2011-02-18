@@ -7,7 +7,7 @@ CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vecto
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o
 
-MATH_OBJS=hurt.math.bigintbase10.o
+MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
 
@@ -45,6 +45,9 @@ hurt.container.stack.o: hurt/container/stack.d Makefile
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/container/dlst.d -ofhurt.container.dlst.o
+
+hurt.math.mathutil.o: hurt/math/mathutil.d Makefile
+	$(DC) $(CFLAGS) hurt/math/mathutil.d -ofhurt.math.mathutil.o
 
 hurt.math.bigintbase10.o: hurt/math/bigintbase10.d Makefile
 	$(DC) $(CFLAGS) hurt/math/bigintbase10.d -ofhurt.math.bigintbase10.o
