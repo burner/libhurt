@@ -5,29 +5,39 @@ import hurt.conv.charconv;
 import hurt.conv.tointeger;
 import hurt.conv.tostring;
 
-S conv(T, S)(T t) {
+public pure S conv(T, S)(T t) {
 	// from string to S
 	static if( is(T == string) ) {
 		// string to int
 		static if( is(S == int) ) {
 			return stringToInt(t);	
+		// string to dstring
 		} static if( is(S == dstring) ) {
 
 		}
+
+	// form long to S
+	} else static if( is(T == long) ) {
+		static if( is(S == uint) ) {
+			return longToUint(t);
+		} else static if( is(S == string) ) {
+			return integerToString!(char,long)(t);
+		}
+
 	// from int to S
 	} else static if( is(T == int) ) {
 		static if( is(S == char) ) {
 			return byteToCharBase10!(char)(t);
 		} else static if( is(S == string) ) {
-			return intToString!(char,int)(t);
+			return integerToString!(char,int)(t);
 		}
 	} else static if( is(T == uint) ) {
 		static if( is(S == string) ) {
-			return intToString!(char,int)(t);
+			return integerToString!(char,int)(t);
 		}
 	} else static if( is(T == short) ) {
 		static if( is(S == string) ) {
-			return shortToString(t);	
+			return integerToString!(char,short)(t);	
 		}
 	} else static if( is(T == dchar) ) {
 		static if( is(S == char) ) {

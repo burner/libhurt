@@ -1,7 +1,9 @@
 module hurt.conv.tointeger;
 
 import hurt.conv.convutil;
+import hurt.conv.conv;
 import hurt.conv.chartonumeric;
+import hurt.exception.valuerangeexception;
 
 public pure int stringToInt(in string str) {
 	int ret = 0;
@@ -23,4 +25,16 @@ public pure int stringToInt(in string str) {
 		mul *= 10;
 	}
 	return ret;
+}
+
+public pure uint longToUint(long from) {
+	if(from < 0) {
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
+			" doesn't fit into uint");
+	} else if(from > uint.max) {
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
+			" doesn't fit into uint");
+	} else {
+		return cast(uint)from;
+	}
 }
