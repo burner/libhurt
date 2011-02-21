@@ -47,6 +47,11 @@ class Vector(T) {
 		return this.data[idx / this.partSize][idx % this.partSize];
 	}
 
+	public T get(uint idx) const {
+		assert(this.partSize * (this.data.length-1) + (curPos) > idx);
+		return this.data[idx / this.partSize][idx % this.partSize];
+	}
+
 	public Vector!(T) insert(in uint idx, T toAdd) {
 	//	assert(idx < (this.partSize * (this.data.length-1) + curPos), 
 		assert(idx < this.index, "use append to insert a Element at the end idx = " 
@@ -124,5 +129,13 @@ class Vector(T) {
 
 	public uint getSize() const {
 		return this.index;
+	}
+
+	public T[] elements() const {
+		T[] ret = new T[this.index-1];
+		for(uint i = 0; i < this.index; i++) {
+			ret[i] = this.get(i);
+		}
+		return ret;
 	}
 }

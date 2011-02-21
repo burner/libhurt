@@ -79,3 +79,31 @@ public pure T byteToCharBase10(T)(byte src)
 		}
 	}
 }
+
+public pure immutable(S)[] integerToBase8(T, S)(T tb) 
+		if( (is(S == char) || is(S == wchar) || is(S == dchar)) &&
+			(is(T == byte) || is(T == ubyte) || is(T == short) || is(T == ushort) ||
+			 is(T == int) || is(T == uint) || is(T == long) || is(T == ulong)) ) {
+	S[128] ret;
+	uint ptr = 0;
+	bool sign = false;
+	if(tb < 0) {
+		sign = true;
+		ret[ptr++] = '-';
+		tb = -tb;
+	}
+	
+	byte tmp = 0;	
+	while(tb != 0) {
+ 		//dmd needs this case even though mod 8 allways fits in one byte.
+		tmp = cast(byte)(tb % 8); 
+		ret[ptr++] = byteToCharBase10!(S)(tmp);
+		tb /= 8;
+	}
+	if(sign) {
+		ret[1..ptr].reverse;
+		return ret[0..ptr].idup;
+	} else {
+		return ret[0..ptr].reverse.idup;
+	}
+}

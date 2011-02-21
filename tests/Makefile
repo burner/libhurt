@@ -1,5 +1,5 @@
 DC=dmd
-CFLAGS=-w -I../ -L../libhurt.a
+CFLAGS=-w -gc -I../ -L../libhurt.a
 
 TESTS=convtest stacktest stringutiltest vectortest
 
