@@ -2,6 +2,7 @@ module hurt.util.array;
 
 import hurt.conv.conv;
 import hurt.exception.outofrangeexception;
+import hurt.exception.nullexception;
 
 void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset, 
 		in uint number) {
@@ -23,7 +24,7 @@ void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset,
 			~ conv!(uint,string)(drain.length));
 	}
 	
-	for(uint idx = 0; idx < number; i++) {
+	for(uint idx = 0; idx < number; idx++) {
 		drain[dOffset + idx] = src[sOffset + idx];
 	}
 }
