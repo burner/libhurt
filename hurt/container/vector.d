@@ -23,6 +23,17 @@ class Vector(T) {
 		this.data[this.data.length-1] = new T[this.partSize];
 	}
 
+	public this(Vector!(T) old) {
+		this(old.getPartSize());
+		for(uint i = 0; i < old.getSize(); i++) {
+			this.append(old.get(i));
+		}
+	}
+
+	public uint getPartSize() const {
+		return this.partSize;
+	}
+
 	public T append(T toAdd) {
 		if(this.index % this.partSize == 0) {
 			this.incrsArrySz();
@@ -107,6 +118,24 @@ class Vector(T) {
 		return ret;
 	}
 
+	public uint indexOf(in T value, uint offset = 0) {
+		while(offset < this.index) {
+			if(value == this.data[offset / this.partSize][offset % this.partSize]) {
+				return true;
+			}
+			offset++;
+		}
+		return false;
+	}
+
+	public bool contains(T toFind) {
+		for(uint idx = 0; idx < this.index; idx++) {
+			if(this.get(idx) == toFind)
+				return true;
+		}
+		return false;		
+	}
+
 	int opApply(int delegate(ref T value) dg) {
 		int result;
 		//uint up = (this.data.length-1) * this.partSize + this.curPos;
@@ -124,6 +153,20 @@ class Vector(T) {
 
 	public uint getSize() const {
 		return this.index;
+	}
+
+	public void setSize(uint newSize) {
+		if(newSize <= this.index) {
+			this.index = newSize;	
+		} else {
+			while(newSize <= (this.partSize * this.data.length)) {
+				this.incrsArrySz();
+			}
+		}
+	}
+
+	public Vector!(T) clone() {
+		return new Vector!(T)(this);
 	}
 
 	public T[] elements() {

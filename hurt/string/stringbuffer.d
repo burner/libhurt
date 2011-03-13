@@ -19,7 +19,7 @@ public template StringBuffer(T) {
 		private bool holdsOp;
 		private bool firstCharIsNumber;
 
-		public this(in uint initSize) {
+		public this(in uint initSize = 16) {
 			debug scope StackTrace st = new StackTrace(__FILE__, __LINE__,
 				"StringBuffer.this");
 			debug st.putArgs("uint", "initSize", initSize);

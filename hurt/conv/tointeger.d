@@ -38,3 +38,15 @@ public pure uint longToUint(long from) {
 		return cast(uint)from;
 	}
 }
+
+public pure int longToInt(long from) {
+	if(from < int.min) {
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
+			" doesn't fit into uint");
+	} else if(from > int.max) {
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
+			" doesn't fit into uint");
+	} else {
+		return cast(int)from;
+	}
+}

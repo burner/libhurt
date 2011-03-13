@@ -22,6 +22,8 @@ public pure S conv(T, S)(T t) {
 			return longToUint(t);
 		} else static if( is(S == string) ) {
 			return integerToString!(char,long)(t);
+		} else static if( is(S == int) ) {
+			return longToInt(t);
 		}
 
 	// from int to S
@@ -42,6 +44,10 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == dchar) ) {
 		static if( is(S == char) ) {
 			return dcharToChar(t);
+		}
+	} else static if( is(T == char) ) {
+		static if( is(S == int) ) {
+			return cast(int)t;
 		}
 	} else {
 		return null;

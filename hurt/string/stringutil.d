@@ -25,12 +25,23 @@ public int hashCode(T)(immutable(T)[] str) {
 
 public T toLowerCase(T)(T ch) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
-	return ch + 32;
+	return cast(T)(ch + 32);
 }
 
 public T toUpperCase(T)(T ch) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
-	return ch - 32;
+	return cast(T)(ch - 32);
+}
+
+public bool isLetter(T)(T ch) 
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+	static if(is(T == char)) {
+		if( (ch > 64 && ch < 91) || (ch > 96 && ch < 123) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 public bool isTitleCase(wchar ch) {
@@ -62,7 +73,7 @@ public T toTitleCase(T)(T ch)
 	if(ch > 64 && ch < 91)
 		return ch;
 	else if(ch > 96 && ch < 173)
-		return ch - 32;
+		return cast(T)(ch - 32);
 	
 	assert(0, "not a printable character");
 }

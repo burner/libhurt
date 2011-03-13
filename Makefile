@@ -5,8 +5,7 @@ ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vector.o
 
-EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o
-
+EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception;
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
@@ -90,3 +89,6 @@ hurt.exception.illegalargumentexception.o: hurt/exception/illegalargumentexcepti
 
 hurt.exception.valuerangeexception.o: hurt/exception/valuerangeexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/valuerangeexception.d -ofhurt.exception.valuerangeexception.o
+
+hurt.exception.nullexception.o: hurt/exception/nullexception.d Makefile
+	$(DC) $(CFLAGS) hurt/exception/nullexception.d -ofhurt.exception.nullexception.o
