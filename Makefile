@@ -5,7 +5,9 @@ ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vector.o
 
-EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception;
+EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
+hurt.exception.outofrangeexception.o
+
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
@@ -15,8 +17,7 @@ UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
-
-all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(MATH_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS)
+all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(MATH_OBJS)
 	ar -r libhurt.a *.o
 
 clean:
@@ -89,6 +90,9 @@ hurt.exception.illegalargumentexception.o: hurt/exception/illegalargumentexcepti
 
 hurt.exception.valuerangeexception.o: hurt/exception/valuerangeexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/valuerangeexception.d -ofhurt.exception.valuerangeexception.o
+
+hurt.exception.outofrangeexception.o: hurt/exception/outofrangeexception.d Makefile
+	$(DC) $(CFLAGS) hurt/exception/outofrangeexception.d -ofhurt.exception.outofrangeexception.o
 
 hurt.exception.nullexception.o: hurt/exception/nullexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/nullexception.d -ofhurt.exception.nullexception.o

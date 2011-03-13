@@ -1,6 +1,6 @@
 module hurt.exception.nullexception;
 
-class NullException : Throwable {
+class NullException : Exception {
 	this(string msg) {
 		super(msg);
 	}
