@@ -50,3 +50,12 @@ public pure int longToInt(long from) {
 		return cast(int)from;
 	}
 }
+
+public pure int ulongToUint(ulong from) {
+	if(from > uint.max) {
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
+			" doesn't fit into uint");
+	} else {
+		return cast(uint)from;
+	}
+}

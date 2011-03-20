@@ -17,6 +17,10 @@ public pure S conv(T, S)(T t) {
 		}
 
 	// form long to S
+	} else static if( is(T == ulong) ) {
+		static if( is(S == uint) ) {
+			return ulongToUint(t);
+		}
 	} else static if( is(T == long) ) {
 		static if( is(S == uint) ) {
 			return longToUint(t);

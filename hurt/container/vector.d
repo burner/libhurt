@@ -1,4 +1,4 @@
-module vector;
+module hurt.container.vector;
 
 import hurt.conv.conv;
 

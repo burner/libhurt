@@ -1,4 +1,4 @@
-module container.stack;
+module hurt.container.stack;
 
 final class Stack(T) {
 	private T[] stack;
