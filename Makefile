@@ -3,7 +3,7 @@ CFLAGS=-c -w
 
 ALGO_OBJS=hurt.algo.sorting.o
 
-CONTAINER_OBJS=hurt.container.dlst.o hurt.container.stack.o hurt.container.vector.o
+CONTAINER_OBJS=hurt.container.dlst.o hurt.container.pairlist.o hurt.container.stack.o hurt.container.vector.o
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
 hurt.exception.outofrangeexception.o
@@ -39,6 +39,9 @@ hurt.algo.sorting.o: hurt/algo/sorting.d Makefile
 
 hurt.container.vector.o: hurt/container/vector.d Makefile
 	$(DC) $(CFLAGS) hurt/container/vector.d -ofhurt.container.vector.o
+
+hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
+	$(DC) $(CFLAGS) hurt/container/pairlist.d -ofhurt.container.pairlist.o
 
 hurt.container.stack.o: hurt/container/stack.d Makefile
 	$(DC) $(CFLAGS) hurt/container/stack.d -ofhurt.container.stack.o

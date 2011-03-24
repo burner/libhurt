@@ -70,7 +70,7 @@ public final class StackTrace {
 
 	public void print() {
 		for(uint i = 0; i < this.localDepth; i++) {
-			write("\t");
+			write("  ");
 		}
 		writefln("%s:%d %s(%s)", this.file, this.line, this.funcName, this.args);
 	}

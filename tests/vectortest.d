@@ -25,13 +25,13 @@ void main() {
 		writeln(it);
 	}
 	writeln("size = ", vec.getSize(), "\n");
-	vec.insert(5,9);
+	vec.insert(0,-1);
 	foreach(it;vec) {
 		writeln(it);
 	}
 	writeln("size = ", vec.getSize(), "\n");
 
-	Vector!(int) vec2 = new Vector!(int)(3);
+	Vector!(int) vec2 = new Vector!(int)(10);
 	vec2.append(0);
 	vec2.append(1);
 	vec2.append(2);
@@ -52,10 +52,14 @@ void main() {
 	foreach(it;vec2) {
 		writeln(it);
 	}
-	writeln("size = ", vec2.getSize(), "\n");
 	vec2.insert(5,9);
+	writeln("\nsize = ", vec2.getSize());
 	foreach(it;vec2) {
 		writeln(it);
 	}
-	writeln("size = ", vec2.getSize(), "\n");
+	vec2.insert(0, vec2[5]);
+	writeln("\nsize = ", vec2.getSize());
+	foreach(it;vec2) {
+		writeln(it);
+	}
 }

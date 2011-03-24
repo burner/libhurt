@@ -10,6 +10,8 @@ public pure immutable(T)[] integerToString(T,S)(S src)
 	T[32] tmp;
 	uint tmpptr = 0;
 	bool sign = false;
+	if(src == 0) 
+		return "0";
 	if(src < 0) {
 		src = -src;
 		sign = true;

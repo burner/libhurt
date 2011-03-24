@@ -1,7 +1,7 @@
 DC=dmd
-CFLAGS=-w -gc -I../ -L../libhurt.a
+CFLAGS=-w -gc -I../ -L../libphobos2.a -L../libhurt.a
 
-TESTS=convtest stacktest stringutiltest vectortest
+TESTS=convtest stacktest stringutiltest vectortest pairlisttest
 
 all:tests
 
@@ -23,7 +23,11 @@ stringutiltest: stringutiltest.d Makefile
 
 vectortest: vectortest.d Makefile
 	$(DC) $(CFLAGS) vectortest.d
-	exec ./vectortest
+	#exec ./vectortest
+
+pairlisttest: pairlisttest.d Makefile
+	$(DC) $(CFLAGS) pairlisttest.d
+	exec ./pairlisttest
 
 clean:
 	rm -rf *.o

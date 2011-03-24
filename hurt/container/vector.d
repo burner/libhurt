@@ -5,101 +5,77 @@ import hurt.conv.conv;
 import std.stdio;
 
 class Vector(T) {
-	private T data[][];
-	private uint partSize;
-	private uint curPos;
+	private T[] data;
 	private uint index;
 
 	public this() {
 		this(10);
 	}
 
-	public this(uint partSize) {
-		assert(partSize > 0);
-		this.partSize = partSize;
-		this.curPos = 0;
+	public this(uint size) {
+		this.data = new T[size];
 		this.index = 0;
-		this.incrsArrySz();
-		this.data[this.data.length-1] = new T[this.partSize];
 	}
 
 	public this(Vector!(T) old) {
-		this(old.getPartSize());
+		this.data = new T[old.getSize()];
 		for(uint i = 0; i < old.getSize(); i++) {
 			this.append(old.get(i));
 		}
 	}
 
-	public uint getPartSize() const {
-		return this.partSize;
-	}
-
-	public T append(T toAdd) {
-		if(this.index % this.partSize == 0) {
-			this.incrsArrySz();
-			this.data[this.data.length-1] = new T[this.partSize];
-			this.curPos = 0;
+	public Vector!(T) append(T toAdd) {
+		if(this.data.length <= this.index) {
+			this.data.length = this.data.length * 2;
 		}
-		this.data[this.index/this.partSize][this.index % this.partSize] = toAdd;
-		index++;
-		return toAdd;
+		this.data[this.index++] = toAdd;
+		return this;
 	}
 
 	public T popBack() {
-		if(this.index == 0) {
-			assert(0, "can't remove a item from an empty stack");
-		} else {
-			return this.data[(this.index-1) / this.partSize][(this.index-1) % this.partSize];
-		}
+		T ret = this.data[--this.index];
+		return ret;
 	}
 
 	public T get(uint idx) {
-		assert(this.partSize * (this.data.length-1) + (curPos) > idx);
-		return this.data[idx / this.partSize][idx % this.partSize];
+		assert(idx <= this.index, "given index is out of bound");	
+		return this.data[idx];
 	}
 
 	public Vector!(T) insert(in uint idx, T toAdd) {
-	//	assert(idx < (this.partSize * (this.data.length-1) + curPos), 
 		assert(idx < this.index, "use append to insert a Element at the end idx = " 
 			~ conv!(uint,string)(idx) ~ " curPos = "
 			~ conv!(uint,string)(this.index));
-		if(this.index % this.partSize == 0) {
-			this.incrsArrySz();
-		}	
-
-		uint upIdx = this.index;
-		uint lowIdx = this.index-1;
-		do {
-			this.data[upIdx / this.partSize][upIdx % this.partSize] =
-				this.data[lowIdx / this.partSize][lowIdx % this.partSize];
+		this.index++;	
+		if(this.data.length <= this.index) {
+			this.data.length = this.data.length * 2;
+		}
+		long upIdx = this.index;
+		long lowIdx = this.index-1;
+		while(lowIdx >= idx) {
+			this.data[conv!(long,uint)(upIdx)] = this.data[conv!(long,uint)(lowIdx)];
 			upIdx--;
 			lowIdx--;
-		} while(lowIdx > idx);
-		this.data[upIdx / this.partSize][upIdx % this.partSize] =
-			this.data[lowIdx / this.partSize][lowIdx % this.partSize];
-		
-		this.data[lowIdx / this.partSize][lowIdx % this.partSize] = toAdd;
-		this.index++;
+		}
+		this.data[idx] = toAdd;
 		return this;
 	}
 
 	public T remove(in uint idx) {
-		assert(idx < (this.partSize * (this.data.length-1) + curPos), 
+		assert(idx < this.index, 
 			"the given index is out of bound idx = " 
 			~ conv!(uint,string)(idx) ~ " curPos = "
-			~ conv!(uint,string)(this.partSize * (this.data.length-1) + curPos));
-		T tmp;
+			~ conv!(uint,string)(this.index));
+		T ret = this.data[idx];
 		uint upIdx = idx + 1;
 		uint lowIdx = idx;
-		T ret = this.data[lowIdx / this.partSize][lowIdx % this.partSize];
 		while(lowIdx != this.index) {
-			this.data[lowIdx / this.partSize][lowIdx % this.partSize] =
-				this.data[upIdx / this.partSize][upIdx % this.partSize];
+			this.data[lowIdx] = this.data[upIdx];
 			upIdx++;
 			lowIdx++;
 		}
 		this.index--;
-		return tmp;		
+		return ret;		
 	}
 
 	public T opIndex(uint idx) {
@@ -120,7 +96,7 @@ class Vector(T) {
 
 	public uint indexOf(in T value, uint offset = 0) {
 		while(offset < this.index) {
-			if(value == this.data[offset / this.partSize][offset % this.partSize]) {
+			if(value == this.data[offset]) {
 				return true;
 			}
 			offset++;
@@ -141,14 +117,9 @@ class Vector(T) {
 		//uint up = (this.data.length-1) * this.partSize + this.curPos;
 		uint up = this.index;
 		for(uint i = 0; i < up && result is 0; i++) {
-			result = dg(this.data[i / this.partSize][i % this.partSize]);
+			result = dg(this.data[i]);
 		}
 		return result;
-	}
-
-	private void incrsArrySz() {
-		this.data.length = this.data.length+1;
-		this.data[$-1] = new T[this.partSize];
 	}
 
 	public uint getSize() const {
@@ -156,12 +127,10 @@ class Vector(T) {
 	}
 
 	public void setSize(uint newSize) {
-		if(newSize <= this.index) {
+		if(newSize < this.index) {
 			this.index = newSize;	
 		} else {
-			while(newSize <= (this.partSize * this.data.length)) {
-				this.incrsArrySz();
-			}
+			this.data.length = newSize;
 		}
 	}
 
@@ -170,7 +139,7 @@ class Vector(T) {
 	}
 
 	public T[] elements() {
-		T[] ret = new T[this.index-1];
+		T[] ret = new T[this.index];
 		for(uint i = 0; i < this.index; i++) {
 			ret[i] = this.get(i);
 		}
