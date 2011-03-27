@@ -1,5 +1,5 @@
 DC=dmd
-CFLAGS=-c -w -gc -debug
+CFLAGS=-c -w -gc -debug -m32
 
 ALGO_OBJS=hurt.algo.sorting.o
 
