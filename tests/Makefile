@@ -1,5 +1,5 @@
 DC=dmd
-CFLAGS=-w -gc -I../ -L../libphobos2.a -L../libhurt.a
+CFLAGS=-w -gc -I../ -L../libphobos2.a -L../libhurt.a -debug
 
 TESTS=convtest stacktest stringutiltest vectortest pairlisttest
 

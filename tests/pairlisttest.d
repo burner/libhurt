@@ -62,5 +62,10 @@ void main() {
 	assert(f8 !is null, "the list is broken");
 	
 	assert(3 == pl.getSize(), "wrong size");
-	
+	assert(null is pl.find!(int)(666), "this should be null");
+
+	foreach(it; pl) {
+		write(it.get!(int)(), " ");
+	}
+	writeln();	
 }

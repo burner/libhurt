@@ -13,6 +13,13 @@ class PairList(T,S) {
 		this.size = 0;
 	}
 
+	public PairList!(T,S) clear() {
+		if(this.root !is null) {
+			this.root.release();
+		}	
+		return this;
+	}
+
 	Pair!(T,S) find(K)(K search) if(is(K == T) || is(K == S)) {
 		Pair!(T,S) tmp = root;
 		while(tmp !is null) {
@@ -62,6 +69,19 @@ class PairList(T,S) {
 	public uint getSize() const {
 		return this.size;
 	}
+
+	int opApply(int delegate(ref Pair!(T,S)) dg) {
+		int result = 0;
+		Pair!(T,S) it = root;
+		while(it !is null) {
+			result = dg(it);
+			if(result)
+				break;
+
+			it = it.getNext();
+		}
+		return result;
+	}
 }
 
 class Pair(T,S) {
@@ -98,5 +118,12 @@ class Pair(T,S) {
 		} else {
 			return this.second;
 		}	
+	}
+
+	public void release() {
+		if(this.next !is null) {	
+			this.next.release();
+			this.next = null;
+		}
 	}
 }
