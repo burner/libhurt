@@ -63,6 +63,8 @@ class PairList(T,S) {
 		toIn.setNext(this.root);
 		this.root = toIn;
 		this.size++;
+		assert(this.find!(T)(toIn.get!(T)), "insert fail");
+		assert(this.find!(S)(toIn.get!(S)), "insert fail");
 		return this;
 	}
 
