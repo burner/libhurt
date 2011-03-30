@@ -62,4 +62,19 @@ void main() {
 	foreach(it;vec2) {
 		writeln(it);
 	}
+	vec2.remove(2);
+	writeln("\nsize = ", vec2.getSize());
+	foreach(it;vec2) {
+		writeln(it);
+	}
+	vec2.remove(0);
+	writeln("\nsize = ", vec2.getSize());
+	foreach(it;vec2) {
+		writeln(it);
+	}
+	vec2.remove(8);
+	writeln("\nsize = ", vec2.getSize());
+	foreach(it;vec2) {
+		writeln(it);
+	}
 }

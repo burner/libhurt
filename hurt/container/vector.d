@@ -69,7 +69,7 @@ class Vector(T) {
 		T ret = this.data[idx];
 		uint upIdx = idx + 1;
 		uint lowIdx = idx;
-		while(lowIdx != this.index) {
+		while(lowIdx < this.index-1) {
 			this.data[lowIdx] = this.data[upIdx];
 			upIdx++;
 			lowIdx++;

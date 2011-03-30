@@ -28,3 +28,14 @@ void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset,
 		drain[dOffset + idx] = src[sOffset + idx];
 	}
 }
+
+T[] append(T)(ref T[] arr, T toAppend) {
+	if(arr is null) {
+		arr = new T[1];
+		arr[0] = toAppend;
+		return arr;
+	}
+	arr.length = arr.length + 1;
+	arr[$-1] = toAppend;
+	return arr;
+}
