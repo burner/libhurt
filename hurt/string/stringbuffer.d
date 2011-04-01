@@ -1,6 +1,5 @@
-module string.stringbuffer;
+module hurt.string.stringbuffer;
 
-import hurt.util.stacktrace;
 /** Authors: Robert "BuRnEr" Schadek, rburners.gmail.com
  * Data: 25.10.2010
  * Examples: See unittest
@@ -20,10 +19,6 @@ public template StringBuffer(T) {
 		private bool firstCharIsNumber;
 
 		public this(in uint initSize = 16) {
-			debug scope StackTrace st = new StackTrace(__FILE__, __LINE__,
-				"StringBuffer.this");
-			debug st.putArgs("uint", "initSize", initSize);
-				
 			this.initSize = initSize;
 			this.bufferPointer = 0;
 			this.holdsNumber = false;
