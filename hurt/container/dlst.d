@@ -130,16 +130,19 @@ public class DLinkedList(T) {
 	}
 
 	public T remove(ulong idx) {
-		if(idx > this.size) {
+		if(idx > this.size-1) {
 			assert(0, "index out of bound");
 		}
 
 		if(idx == 0L) {
+			writeln("popFront");
 			return this.popFront();
-		} else if(idx == this.size) {
+		} else if(idx == this.size-1) {
+			writeln("popBack");
 			return this.popBack();
 		} else {
 			if(this.size - idx < idx) {
+				writeln("other one");
 				Elem!(T) tmp = this.tail;
 				ulong it = this.size - 1u;
 				while(it > idx) {
@@ -154,13 +157,18 @@ public class DLinkedList(T) {
 				return tmp.getStore();
 			} else {
 				Elem!(T) tmp = this.head;
+				writeln("other two ", tmp is null);
 				ulong it = 0u;
 				while(it < idx) {
 					tmp = tmp.getNext();
-					it--;
+					assert(tmp !is null);
+					it++;
 				}
+				writeln("other two it ", it);
 				Elem!(T) prev = tmp.getPrev();
 				Elem!(T) next = tmp.getNext();
+				assert(prev !is null);
+				assert(next !is null);
 				prev.setNext(next);
 				next.setNext(prev);
 				this.size--;
