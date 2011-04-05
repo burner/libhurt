@@ -12,8 +12,8 @@ import std.stdio;
  * 		sort!(int)(a, &cmp, 2, 7);
  * 		sort!(int)(a, function(in int l, in int r) { return l < r; });
  */
-void sort(T)(T[] a, bool function(in T a, in T b) cmp, uint leftb = 0,
-		 uint rightb= 0) {
+void sort(T)(T[] a, bool function(in T a, in T b) cmp, ulong leftb = 0,
+		 ulong rightb= 0) {
 	debug assert(rightb <= a.length-1, "right index out of bound");
 	debug assert(leftb <= rightb, "left index to big");
 
@@ -25,11 +25,11 @@ void sort(T)(T[] a, bool function(in T a, in T b) cmp, uint leftb = 0,
 	}
 
 	//partition function
-	int partition(uint left, uint right) {
-		uint idx = (left+right+1)/2;
+	long partition(ulong left, ulong right) {
+		ulong idx = (left+right+1)/2;
 		const T pivot = a[idx];
 		swap(a[idx], a[right]);
-		for(uint i = idx = left; i < right; i++) {
+		for(ulong i = idx = left; i < right; i++) {
 			if(cmp(a[i], pivot)) {
 				swap(a[idx++], a[i]);
 			}
@@ -39,8 +39,8 @@ void sort(T)(T[] a, bool function(in T a, in T b) cmp, uint leftb = 0,
 	}
 
 	//the actual quicksort begins here
-	int[128] stack;
-	int stackTop = 0;
+	long[128] stack;
+	long stackTop = 0;
 	stack[stackTop++] = leftb;
 	if(rightb != 0) {
 		stack[stackTop++] = rightb;
@@ -48,10 +48,10 @@ void sort(T)(T[] a, bool function(in T a, in T b) cmp, uint leftb = 0,
 		stack[stackTop++] = a.length-1;
 	}
 	while (stackTop > 0) {
-		int right = stack[--stackTop];
-		int left = stack[--stackTop];
+		long right = stack[--stackTop];
+		long left = stack[--stackTop];
 		while (right > left) {
-			int i = partition(left, right);
+			long i = partition(left, right);
 			if (i-1 > left) {
 				stack[stackTop++] = left;
 				stack[stackTop++] = i-1;
@@ -71,6 +71,6 @@ unittest {
 		writeln();
 	}
 	print();
-	sort!(int)(a, function(in int l, in int r) { return l < r; }, 2, 3);
+	sort!(int)(a, function(in int l, in int r) { return l < r; }, 2L, 3L);
 	print();
 }

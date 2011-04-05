@@ -6,7 +6,12 @@ public final immutable(T)[] trim(T)(immutable(T)[] str) {
 	while(str[low] == ' ' || str[low] == '\t')
 		low++;
 
-	uint high = str.length-1;
+	version(X86) {
+		uint high = str.length-1;
+	}
+	version(X86_64) {
+		ulong high = str.length-1;
+	}
 	while(str[high] == ' ' || str[high] == '\t')
 		high--;
 
