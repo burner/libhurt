@@ -32,6 +32,10 @@ class Foo {
 	}
 }
 
+void fun(int a) {
+	return;
+}
+
 void main() {
 	PairList!(int, Foo) pl = new PairList!(int,Foo)();
 	assert(null !is pl, "cound't create a pairlist");
@@ -65,7 +69,7 @@ void main() {
 	assert(null is pl.find!(int)(666), "this should be null");
 
 	foreach(it; pl) {
-		write(it.get!(int)(), " ");
+		fun(it.get!(int)());
 	}
 	writeln();	
 }

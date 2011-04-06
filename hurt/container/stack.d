@@ -2,7 +2,7 @@ module hurt.container.stack;
 
 final class Stack(T) {
 	private T[] stack;
-	private int stptr;
+	private long stptr;
 	private uint growthrate;
 
 	this(uint size = 128, uint growthrate = 2) {
@@ -41,11 +41,11 @@ final class Stack(T) {
 		return this.stack[this.stptr];
 	}
 
-	uint getSize() const {
+	ulong getSize() const {
 		return this.stptr+1;
 	}
 
-	uint getCapazity() const {
+	ulong getCapazity() const {
 		return this.stack.length;
 	}
 

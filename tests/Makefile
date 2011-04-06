@@ -1,7 +1,9 @@
 DC=dmd
-CFLAGS=-w -gc -I../ -L../libphobos2.a -L../libhurt.a -debug
+CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64
+#CFLAGS=-w -gc -I../ -debug -m64
 
-TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest
+TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest
+#TESTS=stacktest stringutiltest vectortest pairlisttest utiltest 
 
 all:tests
 
@@ -24,6 +26,10 @@ stringutiltest: stringutiltest.d Makefile
 vectortest: vectortest.d Makefile
 	$(DC) $(CFLAGS) vectortest.d
 	#exec ./vectortest
+
+dlsttest: dlsttest.d Makefile
+	$(DC) $(CFLAGS) dlsttest.d
+	exec ./dlsttest
 
 pairlisttest: pairlisttest.d Makefile
 	$(DC) $(CFLAGS) pairlisttest.d
