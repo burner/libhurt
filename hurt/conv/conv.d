@@ -20,6 +20,8 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == ulong) ) {
 		static if( is(S == uint) ) {
 			return ulongToUint(t);
+		} else static if( is(S == string) ) {
+			return integerToString!(char,ulong)(t);
 		}
 	} else static if( is(T == long) ) {
 		static if( is(S == uint) ) {

@@ -1,5 +1,5 @@
-DC=ldc2
-CFLAGS=-w -gc -I../ -L../libhurt.a -d-debug -m64
+DC=dmd
+CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64
 #CFLAGS=-w -gc -I../ -debug -m64
 
 TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest
@@ -25,7 +25,7 @@ stringutiltest: stringutiltest.d Makefile
 
 vectortest: vectortest.d Makefile
 	$(DC) $(CFLAGS) vectortest.d
-	#exec ./vectortest
+	exec ./vectortest
 
 dlsttest: dlsttest.d Makefile
 	$(DC) $(CFLAGS) dlsttest.d

@@ -1,5 +1,7 @@
 module hurt.container.dlst;
 
+import hurt.conv.conv;
+
 import std.stdio;
 
 public class DLinkedList(T) {
@@ -95,12 +97,16 @@ public class DLinkedList(T) {
 			return tmp.getStore();
 		} else if(this.size == 0) {
 			assert(0);
-		} else {
-			Elem!(T) tmp = this.tail;
-			this.head = this.tail = null;
+		} else if(this.size == 1) {
+			assert(this.head is this.tail, "head and tail should be the same");
+			assert(this.head !is null);
+			T tmp = this.head.getStore();
+			this.head = null;
+			this.tail = null;
 			this.size--;
-			return tmp.getStore();
+			return tmp;
 		}	
+		assert(0);
 	}
 
 	public int opApply(scope int delegate(ref T) dg) {
@@ -129,51 +135,29 @@ public class DLinkedList(T) {
 		return false;	
 	}
 
-	public T remove(ulong idx) {
+	public T remove(size_t idx) {
 		if(idx > this.size-1) {
 			assert(0, "index out of bound");
 		}
 
 		if(idx == 0L) {
-			writeln("popFront");
 			return this.popFront();
 		} else if(idx == this.size-1) {
-			writeln("popBack");
 			return this.popBack();
 		} else {
-			if(this.size - idx < idx) {
-				writeln("other one");
-				Elem!(T) tmp = this.tail;
-				ulong it = this.size - 1u;
-				while(it > idx) {
-					tmp = tmp.getPrev();
-					it--;
-				}
-				Elem!(T) prev = tmp.getPrev();
-				Elem!(T) next = tmp.getNext();
-				prev.setNext(next);
-				next.setNext(prev);
-				this.size--;
-				return tmp.getStore();
-			} else {
-				Elem!(T) tmp = this.head;
-				writeln("other two ", tmp is null);
-				ulong it = 0u;
-				while(it < idx) {
-					tmp = tmp.getNext();
-					assert(tmp !is null);
-					it++;
-				}
-				writeln("other two it ", it);
-				Elem!(T) prev = tmp.getPrev();
-				Elem!(T) next = tmp.getNext();
-				assert(prev !is null);
-				assert(next !is null);
-				prev.setNext(next);
-				next.setNext(prev);
-				this.size--;
-				return tmp.getStore();
+			Elem!(T) tmp = this.head;
+			size_t it = 0;
+			while(it < idx) {
+				tmp = tmp.getNext();
+				assert(tmp !is null, "tmp should not be null here. it = " ~ conv!(size_t,string)(it));
+				it++;
 			}
+			Elem!(T) prev = tmp.getPrev();
+			Elem!(T) next = tmp.getNext();
+			prev.setNext(next);
+			next.setPrev(prev);
+			this.size--;
+			return tmp.getStore();
 		}
 	}
 
@@ -199,5 +183,29 @@ public class DLinkedList(T) {
 			}
 			return tmp.getStore();
 		}
+	}
+
+	public bool validate() {
+		size_t itIdx = 0;
+		Elem!(T) tmp = this.head;
+		if(this.size == 0) {
+			return true;
+		}
+		if(tmp.getNext() is null) {
+			assert(this.tail is tmp, "head and tail should be the same");
+		}
+		while(tmp !is null) {
+			Elem!(T) tmpNext = tmp.getNext();
+			if(tmpNext !is null) {
+				assert(tmpNext.getPrev() is tmp, "prev pointer is wrong for index " ~ conv!(size_t,string)(itIdx+1));	
+			}
+			if(tmpNext is null) {
+				assert(tmp is this.tail, "the tail pointer is not set correctly"); 
+			}
+			itIdx++;
+			tmp = tmpNext;
+		}
+		assert(itIdx == this.size, "size is not stored correctly");
+		return true;
 	}
 }
