@@ -12,13 +12,17 @@ module hurt.string.stringbuffer;
 public template StringBuffer(T) {
 	class StringBuffer {
 		private T buffer[];
-		private uint initSize;
-		private int bufferPointer;
+		private size_t initSize;
+		version(X86_64) {
+			private long bufferPointer;
+		} else {
+			private int bufferPointer;
+		}
 		private bool holdsNumber;
 		private bool holdsOp;
 		private bool firstCharIsNumber;
 
-		public this(in uint initSize = 16) {
+		public this(in size_t initSize = 16) {
 			this.initSize = initSize;
 			this.bufferPointer = 0;
 			this.holdsNumber = false;
@@ -66,15 +70,16 @@ public template StringBuffer(T) {
 			return this.holdsOp;
 		}
 
-		public void pushBack(in T toAdd) {
+		public StringBuffer!(T) pushBack(in T toAdd) {
 			if(this.bufferPointer == initSize) {
 				this.buffer.length = initSize * 2u;
 				this.initSize *= 2u;
 			}
 			this.buffer[this.bufferPointer++] = toAdd;
+			return this;
 		}
 
-		public void pushBack(immutable(T)[] toAdd) {
+		public StringBuffer!(T) pushBack(immutable(T)[] toAdd) {
 			if(this.bufferPointer + toAdd.length >= this.initSize) {
 				this.buffer.length += toAdd.length * 2u;
 				this.initSize += toAdd.length * 2u;
@@ -82,6 +87,7 @@ public template StringBuffer(T) {
 			foreach(it; toAdd) {
 				this.buffer[this.bufferPointer++] = it;
 			}
+			return this;
 		}
 
 		public void pushBackOp(in T toAdd) {
@@ -114,7 +120,7 @@ public template StringBuffer(T) {
 				return this.buffer[this.bufferPointer-1];
 			}
 
-		public int getSize() const {
+		public typeof(bufferPointer) getSize() const {
 			return this.bufferPointer;
 		}
 
@@ -130,7 +136,7 @@ public template StringBuffer(T) {
 			return this.buffer[0 .. this.bufferPointer].idup;
 		}
 
-		public T charAt(uint idx) {
+		public T charAt(size_t idx) {
 			if(idx > this.bufferPointer) {
 				assert(0, "Index out of bound");
 			}
