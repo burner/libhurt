@@ -2,15 +2,11 @@ module hurt.container.stack;
 
 final class Stack(T) {
 	private T[] stack;
-<<<<<<< HEAD
-	private size_t stptr;
-=======
 	version(X86) {
 		private int stptr;
 	} else {
 		private long stptr;
 	}
->>>>>>> b0edc65797c1e1e2566043cfba8b77092c9cb7b4
 	private size_t growthrate;
 
 	this(size_t size = 128, size_t growthrate = 2) {
