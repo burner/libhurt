@@ -2,10 +2,14 @@ module hurt.container.stack;
 
 final class Stack(T) {
 	private T[] stack;
-	private long stptr;
-	private uint growthrate;
+	version(X86) {
+		private int stptr;
+	} else {
+		private long stptr;
+	}
+	private size_t growthrate;
 
-	this(uint size = 128, uint growthrate = 2) {
+	this(size_t size = 128, size_t growthrate = 2) {
 		if(growthrate < 2) {
 			this.growthrate = 2;
 		} else {
@@ -41,22 +45,22 @@ final class Stack(T) {
 		return this.stack[this.stptr];
 	}
 
-	ulong getSize() const {
+	size_t getSize() const {
 		return this.stptr+1;
 	}
 
-	ulong getCapazity() const {
+	size_t getCapazity() const {
 		return this.stack.length;
 	}
 
-	T elementAt(in uint idx) {
+	T elementAt(in size_t idx) {
 		if(idx >= this.stptr) {
 			assert(0, "Index to big");
 		}
 		return this.stack[idx];
 	}
 
-	Stack!(T) setCapazity(in uint nSize) {
+	Stack!(T) setCapazity(in size_t nSize) {
 		if(this.stack.length >= nSize) {
 			return this;
 		} else {
