@@ -45,6 +45,10 @@ final class Stack(T) {
 		return this.stack[this.stptr];
 	}
 
+	T[] values() {
+		return this.stack[0..this.stptr+1];
+	}
+
 	size_t getSize() const {
 		return this.stptr+1;
 	}

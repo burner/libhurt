@@ -46,6 +46,15 @@ public class DLinkedList(T) {
 		this.size = 0L;
 	}
 
+	public this(DLinkedList!(T) toCopy) {
+		this.head = null;
+		this.tail = null;
+		this.size = 0L;
+		foreach(it; toCopy) {
+			this.pushBack(it);
+		}
+	}
+
 	public void pushBack(T store) {
 		if(this.size == 0L) {
 			this.head = new DLinkedList.Elem!(T)(store, null);

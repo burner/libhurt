@@ -3,7 +3,7 @@ CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64
 #CFLAGS=-w -gc -I../ -debug -m64
 
 TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest
-#TESTS=stacktest stringutiltest vectortest pairlisttest utiltest 
+#TESTS=vectortest
 
 all:tests
 
