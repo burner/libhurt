@@ -4,7 +4,7 @@ import hurt.conv.conv;
 import hurt.exception.outofrangeexception;
 import hurt.exception.nullexception;
 
-void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset, 
+pure void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset, 
 		in uint number) {
 	if(src is null)
 		throw new NullException("Source is null");
@@ -29,7 +29,7 @@ void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset,
 	}
 }
 
-T[] append(T)(ref T[] arr, T toAppend) {
+pure T[] append(T)(ref T[] arr, T toAppend) {
 	if(arr is null) {
 		arr = new T[1];
 		arr[0] = toAppend;
@@ -38,4 +38,34 @@ T[] append(T)(ref T[] arr, T toAppend) {
 	arr.length = arr.length + 1;
 	arr[$-1] = toAppend;
 	return arr;
+}
+
+/* returns the index of the searched element 
+ * if the element is not part of the array the length
+ * array is returned. */
+pure size_t find(T)(in T[] arr, in T toSearch) {
+	foreach(idx, it; arr) {
+		if(it == toSearch) {
+			return idx;
+		}
+	}
+	return arr.length;
+}
+
+pure T[] remove(T)(T[] arr, in size_t idx) {
+	if(idx >= arr.length) {
+		throw new OutOfRangeException("idx = " ~ conv!(size_t,string)(idx) 
+			~ " this not in range for array with length " 
+			~ conv!(size_t,string)(arr.length));
+	}
+
+	T[] ret = new T[arr.length-1];
+	for(size_t itOld = 0, itNew = 0; itOld < arr.length;) {
+		if(itOld != idx) {
+			ret[itNew++] = arr[itOld++];
+		} else {
+			itOld++;
+		}
+	}
+	return ret;
 }
