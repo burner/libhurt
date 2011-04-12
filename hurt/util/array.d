@@ -40,6 +40,40 @@ pure T[] append(T)(ref T[] arr, T toAppend) {
 	return arr;
 }
 
+pure size_t appendWithIdx(T)(ref T[] arr, size_t idx, T[] toAppend, size_t gRate = 2) {
+	if(arr is null) {
+		arr = new T[1];
+		arr[0] = toAppend;
+		return arr;
+	}
+	foreach(it; toAppend) {
+		if(idx >= arr.length) {
+			if(gRate < 2) {
+				gRate = 2;
+			}
+			arr.length =  arr.length * gRate;
+		}
+		arr[idx++] = it;
+	}
+	return idx;
+}
+
+pure T[] appendWithIdx(T)(ref T[] arr, size_t idx, T toAppend, size_t gRate = 2) {
+	if(arr is null) {
+		arr = new T[1];
+		arr[0] = toAppend;
+		return arr;
+	}
+	if(idx >= arr.length) {
+		if(gRate < 2) {
+			gRate = 2;
+		}
+		arr.length =  arr.length * gRate;
+	}
+	arr[idx] = toAppend;
+	return arr;
+}
+
 /* returns the index of the searched element 
  * if the element is not part of the array the length
  * array is returned. */
