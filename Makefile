@@ -4,7 +4,8 @@ CFLAGS=-c -w -gc -debug -m64
 
 ALGO_OBJS=hurt.algo.sorting.o
 
-CONTAINER_OBJS=hurt.container.dlst.o hurt.container.pairlist.o hurt.container.stack.o hurt.container.vector.o
+CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o \
+hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o 
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
 hurt.exception.outofrangeexception.o
@@ -49,6 +50,18 @@ hurt.container.stack.o: hurt/container/stack.d Makefile
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/container/dlst.d -ofhurt.container.dlst.o
+
+hurt.container.list.o: hurt/container/list.d Makefile
+	$(DC) $(CFLAGS) hurt/container/list.d -ofhurt.container.list.o
+
+hurt.container.set.o: hurt/container/set.d Makefile
+	$(DC) $(CFLAGS) hurt/container/set.d -ofhurt.container.set.o
+
+hurt.container.multimap.o: hurt/container/multimap.d Makefile
+	$(DC) $(CFLAGS) hurt/container/multimap.d -ofhurt.container.multimap.o
+
+hurt.container.bitmap.o: hurt/container/bitmap.d Makefile
+	$(DC) $(CFLAGS) hurt/container/bitmap.d -ofhurt.container.bitmap.o
 
 hurt.math.mathutil.o: hurt/math/mathutil.d Makefile
 	$(DC) $(CFLAGS) hurt/math/mathutil.d -ofhurt.math.mathutil.o
