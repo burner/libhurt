@@ -42,9 +42,8 @@ pure T[] append(T)(ref T[] arr, T toAppend) {
 
 pure size_t appendWithIdx(T)(ref T[] arr, size_t idx, T[] toAppend, size_t gRate = 2) {
 	if(arr is null) {
-		arr = new T[1];
-		arr[0] = toAppend;
-		return arr;
+		arr = toAppend.dup;
+		return toAppend.length;
 	}
 	foreach(it; toAppend) {
 		if(idx >= arr.length) {
