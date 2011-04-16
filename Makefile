@@ -12,7 +12,7 @@ hurt.exception.outofrangeexception.o
 
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
-STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o
+STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o
 
 UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o
 
@@ -74,6 +74,9 @@ hurt.string.stringbuffer.o: hurt/string/stringbuffer.d hurt/util/stacktrace.d Ma
 
 hurt.string.stringutil.o: hurt/string/stringutil.d hurt/util/stacktrace.d Makefile
 	$(DC) $(CFLAGS) hurt/string/stringutil.d -ofhurt.string.stringutil.o
+
+hurt.string.formatter.o: hurt/string/formatter.d Makefile
+	$(DC) $(CFLAGS) hurt/string/formatter.d -ofhurt.string.formatter.o
 
 hurt.util.array.o: hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/util/array.d -ofhurt.util.array.o
