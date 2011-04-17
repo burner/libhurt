@@ -2,7 +2,7 @@ module hurt.string.formatter;
 
 import hurt.string.stringutil;
 
-public pure immutable(T)[] format(T,S)(immutable(S)[] format, ...) 
+public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 	size_t ptr = 0;
@@ -16,10 +16,10 @@ public pure immutable(T)[] format(T,S)(immutable(S)[] format, ...)
 				|| (idx == 0 && format[idx] == '%')) {
 			bool padding0 = false;
 			int padding = 0;
+			int precision = 0;
 			bool altForm = false;
 			bool alwaysSign = false;
 			bool leftAlign = false;
-			int precision = 0;
 			bool intToSChar = false;
 			bool intToUChar = false;
 			bool intToSInt = false;
@@ -28,10 +28,10 @@ public pure immutable(T)[] format(T,S)(immutable(S)[] format, ...)
 			int width = 0;
 			while(idx < format.length && format[idx] != ' ') {
 				switch(format[idx]) {
-					case '0':
+					case '0': // pad with 0 instead of blanks
 						padding0 = true;		
 						break;
-					case '1': .. case '9': {
+					case '1': .. case '9': { // size of padding
 						size_t lowIdx = idx;
 						while(idx < format.length 
 								&& isDigit!(T)(format[idx])) {
@@ -40,13 +40,13 @@ public pure immutable(T)[] format(T,S)(immutable(S)[] format, ...)
 						leftPad = conv!(immutable(T)[],size_t)(format[lowIdx..idx]);
 						break;
 					}
-					case '+':
+					case '+': // allways place sign of number
 						alwaysSign = true;	
 						break;
-					case '-':
+					case '-': // left align the output
 						leftAlign = true;	
 						break;
-					case '#':
+					case '#': // alternative coding
 						altForm = true;
 						break;
 					case '*': {
@@ -55,13 +55,6 @@ public pure immutable(T)[] format(T,S)(immutable(S)[] format, ...)
 							//TODO pop next arguemnt as precision
 							break;
 						}
-						size_t lowIdx = idx;
-						while(idx < format.length 
-								&& isDigit!(T)(format[idx])) {
-							idx++;
-						}
-						width = conv!(immutable(T)[],size_t)(format[lowIdx..idx]);
-						break;
 					}
 					case '.': {
 						idx++;
