@@ -82,3 +82,8 @@ public T toTitleCase(T)(T ch)
 	
 	assert(0, "not a printable character");
 }
+
+public T isDigit(T)(T ch)
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+	return ch >= '0' && ch <= '9';
+}

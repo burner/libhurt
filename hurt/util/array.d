@@ -1,8 +1,8 @@
 module hurt.util.array;
 
 import hurt.conv.conv;
-import hurt.exception.outofrangeexception;
 import hurt.exception.nullexception;
+import hurt.exception.outofrangeexception;
 
 pure void arrayCopy(T)(T[] src, in uint sOffset, T[] drain, in uint dOffset, 
 		in uint number) {
