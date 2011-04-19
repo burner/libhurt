@@ -1,6 +1,6 @@
 module hurt.conv.numerictochar;
 
-public pure T byteToCharBase10(T)(byte src) 
+public pure T byteToChar(T)(byte src, bool title = false) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	static if(is(T == char)) {
 		switch(src) {
@@ -24,6 +24,18 @@ public pure T byteToCharBase10(T)(byte src)
 				return '8';
 			case 9:
 				return '9';
+			case 10:
+				return title ? 'A' : 'a';
+			case 11:
+				return title ? 'B' : 'b';
+			case 12:
+				return title ? 'C' : 'c';
+			case 13:
+				return title ? 'D' : 'd';
+			case 14:
+				return title ? 'E' : 'e';
+			case 15:
+				return title ? 'F' : 'f';
 			default:
 				assert(0, "Invalid input");
 		}
@@ -49,6 +61,18 @@ public pure T byteToCharBase10(T)(byte src)
 				return '\u0038';
 			case 9:
 				return '\u0039';
+			case 10:
+				return title ? '\u0041' : '\u0061';
+			case 11:
+				return title ? '\u0042' : '\u0062';
+			case 12:
+				return title ? '\u0043' : '\u0063';
+			case 13:
+				return title ? '\u0044' : '\u0064';
+			case 14:
+				return title ? '\u0045' : '\u0065';
+			case 15:
+				return title ? '\u0046' : '\u0066';
 			default:
 				assert(0, "Invalid input");
 		}
@@ -74,36 +98,20 @@ public pure T byteToCharBase10(T)(byte src)
 				return '\U00000038';
 			case 9:
 				return '\U00000039';
+			case 10:
+				return title ? '\U00000041' : '\U00000061';
+			case 11:
+				return title ? '\U00000042' : '\U00000062';
+			case 12:
+				return title ? '\U00000043' : '\U00000063';
+			case 13:
+				return title ? '\U00000044' : '\U00000064';
+			case 14:
+				return title ? '\U00000045' : '\U00000065';
+			case 15:
+				return title ? '\U00000046' : '\U00000066';
 			default:
 				assert(0, "Invalid input");
 		}
-	}
-}
-
-public pure immutable(S)[] integerToBase8(T, S)(T tb) 
-		if( (is(S == char) || is(S == wchar) || is(S == dchar)) &&
-			(is(T == byte) || is(T == ubyte) || is(T == short) || is(T == ushort) ||
-			 is(T == int) || is(T == uint) || is(T == long) || is(T == ulong)) ) {
-	S[128] ret;
-	uint ptr = 0;
-	bool sign = false;
-	if(tb < 0) {
-		sign = true;
-		ret[ptr++] = '-';
-		tb = -tb;
-	}
-	
-	byte tmp = 0;	
-	while(tb != 0) {
- 		//dmd needs this case even though mod 8 allways fits in one byte.
-		tmp = cast(byte)(tb % 8); 
-		ret[ptr++] = byteToCharBase10!(S)(tmp);
-		tb /= 8;
-	}
-	if(sign) {
-		ret[1..ptr].reverse;
-		return ret[0..ptr].idup;
-	} else {
-		return ret[0..ptr].reverse.idup;
 	}
 }

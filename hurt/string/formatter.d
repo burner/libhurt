@@ -1,8 +1,10 @@
 module hurt.string.formatter;
 
 import hurt.conv.conv;
+import hurt.conv.tostring;
 import hurt.util.array;
 import hurt.string.stringutil;
+import hurt.exception.formaterror;
 
 import core.vararg;
 
@@ -24,9 +26,11 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 				|| (idx == 0 && form[idx] == '%')) {
 			bool padding0 = false;
 			int padding = 0;
+			int base = 10;
 			int precision = 0;
 			int leftPad = 0;
 			bool ptrToUInt = false;
+			bool title = false;
 			bool altForm = false;
 			bool alwaysSign = false;
 			bool leftAlign = false;
@@ -131,25 +135,68 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						break;
 					case '\'': // thousand interleaf
 						kInterleaf = true;
+					case 'x': // unsigned integer as hex 
+						goto case 'd';
+					case 'X': // unsigned integer as hex 
+						title = true;
+						goto case 'd';
+					case 'o': // unsigned integer as octal
+						base = 8;
+					case 'u': // unsigned integer as decimal
+					case 'i': // unsigned integer
 					case 'd': {// signed integer
-						if(is(_arguments[argPtr] : int)) {
-							auto value = va_arg!(int)(_argptr);
-							immutable(T)[] tmp = conv!(int,string)(value);
-							foreach(jt; tmp) 
-								appendWithIdx!(T)(ret, ptr++, jt);
+						debug writeln(__FILE__,__LINE__,": integer");
+						immutable(T)[] tmp;
+						if(_arguments[argPtr] == typeid(int)) {
+							int value = va_arg!(int)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,int)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(uint)) {
+							uint value = va_arg!(uint)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,uint)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(ubyte)) {
+							ubyte value = va_arg!(ubyte)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,ubyte)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(byte)) {
+							byte value = va_arg!(byte)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,byte)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(ushort)) {
+							ushort value = va_arg!(ushort)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,ushort)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(short)) {
+							short value = va_arg!(short)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,short)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(ulong)) {
+							ulong value = va_arg!(ulong)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,ulong)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(long)) {
+							long value = va_arg!(long)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(char,long)(value, base, alwaysSign, title);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else {
+							throw new FormatError("an int was expected but value was a " 
+								~ (_arguments[argPtr].toString()));
 						}
+
+						foreach(jt; tmp) 
+							appendWithIdx!(T)(ret, ptr++, jt);
+						
 						break;
 					}
-					case 'i': // unsigned integer
-						break;
-					case 'o': // unsigned integer as octal
-						break;
-					case 'u': // unsigned integer as decimal
-						break;
-					case 'x': // unsigned integer as hex 
-						break;
-					case 'X': // unsigned integer as hex 
-						break;
 					case 's': // string
 						break;
 					case 'e': // double as exponent 1.4e44
@@ -181,6 +228,12 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 
 unittest {
 	assert("hello" == format!(char,char)("hello"));
-	assert("hello5" == format!(char,char)("hello%d", 5));
+	assert("hello5" == format!(char,char)("hello%d", 5), format!(char,char)("hello%d", 5));
+	assert("hello+5" == format!(char,char)("hello%+d", 5), format!(char,char)("hello%+d", 5));
+	assert("hello+5" == format!(char,char)("hello%+o", 5), format!(char,char)("hello%+o", 5));
+	assert("hello10" == format!(char,char)("hello%o", 8), format!(char,char)("hello%o", 8));
+	assert("hello 10" == format!(char,char)("hello %o", 8), format!(char,char)("hello %o", 8));
 	writeln(format!(char,char)("hello%d", 5));
+	writeln(format!(char,char)("hello%+d", 5));
+	writeln(format!(char,char)("hello %o", 8));
 }
