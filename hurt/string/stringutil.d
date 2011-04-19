@@ -1,7 +1,7 @@
 module hurt.string.stringutil;
 
 /** Trim blanks and tabs from the beginning and end of a str. */
-public final immutable(T)[] trim(T)(immutable(T)[] str) {
+public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	uint low = 0;
 	while(str[low] == ' ' || str[low] == '\t')
 		low++;
@@ -18,7 +18,7 @@ public final immutable(T)[] trim(T)(immutable(T)[] str) {
 	return str[low..high+1].idup;	
 }
 
-public int hashCode(T)(immutable(T)[] str) {
+public pure int hashCode(T)(immutable(T)[] str) {
 	int h = 0;
 	int off = 0;
 
@@ -28,17 +28,17 @@ public int hashCode(T)(immutable(T)[] str) {
 	return h;
 }
 
-public T toLowerCase(T)(T ch) 
+public pure T toLowerCase(T)(T ch) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return cast(T)(ch + 32);
 }
 
-public T toUpperCase(T)(T ch) 
+public pure T toUpperCase(T)(T ch) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return cast(T)(ch - 32);
 }
 
-public bool isLetter(T)(T ch) 
+public pure bool isLetter(T)(T ch) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	static if(is(T == char)) {
 		if( (ch > 64 && ch < 91) || (ch > 96 && ch < 123) ) {
@@ -49,7 +49,7 @@ public bool isLetter(T)(T ch)
 	}
 }
 
-public bool isTitleCase(wchar ch) {
+public pure bool isTitleCase(wchar ch) {
 	if(ch == '\u01c5' || ch == '\u01c8' || ch == '\u01cb' || ch == '\u01f2') {
 		return true;
 	}
@@ -73,7 +73,7 @@ public bool isTitleCase(wchar ch) {
  *  
  * @return the TitleCase representation of the given character.
  */
-public T toTitleCase(T)(T ch)
+public pure T toTitleCase(T)(T ch)
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	if(ch > 64 && ch < 91)
 		return ch;
@@ -83,7 +83,7 @@ public T toTitleCase(T)(T ch)
 	assert(0, "not a printable character");
 }
 
-public T isDigit(T)(T ch)
+public pure T isDigit(T)(T ch)
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return ch >= '0' && ch <= '9';
 }

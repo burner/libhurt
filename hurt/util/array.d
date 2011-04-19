@@ -57,7 +57,7 @@ pure size_t appendWithIdx(T)(ref T[] arr, size_t idx, T[] toAppend, size_t gRate
 	return idx;
 }
 
-pure T[] appendWithIdx(T)(ref T[] arr, size_t idx, T toAppend, size_t gRate = 2) {
+pure T[] appendWithIdx(T)(ref T[] arr, size_t idx, immutable(T) toAppend, size_t gRate = 2) {
 	if(arr is null) {
 		arr = new T[1];
 		arr[0] = toAppend;

@@ -10,8 +10,10 @@ public pure S conv(T, S)(T t) {
 	static if( is(T == string) ) {
 		// string to int
 		static if( is(S == int) ) {
-			return stringToInt(t);	
+			return stringToInt!(int)(t);	
 		// string to dstring
+		} else static if( is(S == ulong) ) {
+			return stringToInt!(ulong)(t);
 		} static if( is(S == dstring) ) {
 
 		}

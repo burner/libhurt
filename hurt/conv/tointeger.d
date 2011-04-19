@@ -5,10 +5,10 @@ import hurt.conv.conv;
 import hurt.conv.chartonumeric;
 import hurt.exception.valuerangeexception;
 
-public pure int stringToInt(in string str) {
-	int ret = 0;
-	int mul = 1;	
-	int tmp;
+public pure T stringToInt(T)(in string str) {
+	T ret = 0;
+	T mul = 1;	
+	T tmp;
 		
 	foreach_reverse(it; str) {
 		// ignore underscores

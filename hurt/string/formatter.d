@@ -1,8 +1,14 @@
 module hurt.string.formatter;
 
+import hurt.conv.conv;
+import hurt.util.array;
+import hurt.string.stringutil;
+
+import core.vararg;
+
 import std.stdio;
 
-public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
+public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 	size_t argPtr = 0;
@@ -11,14 +17,16 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 	T[] ret = new T[32];
 	for(size_t idx; idx < form.length; idx++) {
 		// no special treatment till you find a % character
-		if(format[idx] != '%') {
-			appendWithIdx(ret, ptr++, form[idx]);
+		if(form[idx] != '%') {
+			appendWithIdx!(T)(ret, ptr++, form[idx]);
 			continue;
 		} else if((idx > 0 && form[idx] == '%') 
 				|| (idx == 0 && form[idx] == '%')) {
 			bool padding0 = false;
 			int padding = 0;
 			int precision = 0;
+			int leftPad = 0;
+			bool ptrToUInt = false;
 			bool altForm = false;
 			bool alwaysSign = false;
 			bool leftAlign = false;
@@ -39,7 +47,7 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 								&& isDigit!(T)(form[idx])) {
 							idx++;
 						}
-						leftPad = conv!(immutable(T)[],size_t)(form[lowIdx..idx]);
+						leftPad = conv!(immutable(T)[],int)(form[lowIdx..idx]);
 						break;
 					}
 					case '+': // allways place sign of number
@@ -69,7 +77,7 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 								&& isDigit!(T)(form[idx])) {
 							idx++;
 						}
-						precision = conv!(immutable(T)[],size_t)(form[lowIdx..idx]);
+						precision = conv!(immutable(T)[],int)(form[lowIdx..idx]);
 						break;
 					}
 					case 'h': // integer to char, uchar, short or ushort
@@ -88,30 +96,30 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 							idx++;
 						}
 					case 'l': // to cent
-						if(idx+1 < form.lenght && form[idx+1] == 'n') {
+						if(idx+1 < form.length && form[idx+1] == 'n') {
 							assert(0, "long to cent not yet implemented");
-						} else if(idx+2 < form.lenght && form[idx+1] == 's') {
+						} else if(idx+2 < form.length && form[idx+1] == 's') {
 							assert(0, "long to ucent not yet implemented");
 
 						}
 					case 'L': // to long double aka real
-						if(idx+1 < form.lenght && form[idx+1] == 'a') {
+						if(idx+1 < form.length && form[idx+1] == 'a') {
 							idx++;
-						} else if(idx+1 < form.lenght && form[idx+1] == 'A') {
-							idx++;
-
-						} else if(idx+1 < form.lenght && form[idx+1] == 'e') {
-							idx++;
-						} else if(idx+1 < form.lenght && form[idx+1] == 'E') {
-							idx++;
-						} else if(idx+1 < form.lenght && form[idx+1] == 'f') {
-							idx++;
-						} else if(idx+1 < form.lenght && form[idx+1] == 'F') {
+						} else if(idx+1 < form.length && form[idx+1] == 'A') {
 							idx++;
 
-						} else if(idx+1 < form.lenght && form[idx+1] == 'g') {
+						} else if(idx+1 < form.length && form[idx+1] == 'e') {
 							idx++;
-						} else if(idx+1 < form.lenght && form[idx+1] == 'G') {
+						} else if(idx+1 < form.length && form[idx+1] == 'E') {
+							idx++;
+						} else if(idx+1 < form.length && form[idx+1] == 'f') {
+							idx++;
+						} else if(idx+1 < form.length && form[idx+1] == 'F') {
+							idx++;
+
+						} else if(idx+1 < form.length && form[idx+1] == 'g') {
+							idx++;
+						} else if(idx+1 < form.length && form[idx+1] == 'G') {
 							idx++;
 						}
 					case 'j': // int to int.max or uint.max
@@ -123,8 +131,11 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 					case '\'': // thousand interleaf
 						kInterleaf = true;
 					case 'd': {// signed integer
-						immutable(T)[] tmp = integerToString!(T)(v[argPtr++]);
-						ptr = appendWithIdx(ret, ptr, tmp);
+						if(is(_arguments[argPtr] : int)) {
+							auto value = va_arg!(int)(_argptr);
+							immutable(T)[] tmp = conv!(int,string)(value);
+							ptr = appendWithIdx!(T)(ret, ptr, tmp);
+						}
 						break;
 					}
 					case 'i': // unsigned integer
@@ -162,4 +173,8 @@ public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 
 	}
 	return ret[0..ptr].idup;
+}
+
+unittest {
+	assert("hello" == format!(char,char)("hello"));
 }
