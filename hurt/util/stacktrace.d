@@ -4,7 +4,8 @@ import core.sync.mutex;
 import std.stdio;
 import std.date;
 import std.conv;
-import std.stdarg;
+//import std.stdarg;
+import core.vararg;
 
 import hurt.container.dlst;
 import hurt.algo.sorting;
