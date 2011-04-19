@@ -2,7 +2,7 @@ DC=dmd
 CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64
 #CFLAGS=-w -gc -I../ -debug -m64
 
-TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest
+TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest unit
 #TESTS=vectortest
 
 all:tests
@@ -14,6 +14,10 @@ new: clean tests
 convtest: convtest.d Makefile
 	$(DC) $(CFLAGS) convtest.d
 	exec ./convtest
+
+unit: unit.d Makefile
+	$(DC) $(CFLAGS) unit.d
+	exec ./unit
 
 stacktest: stacktest.d Makefile
 	$(DC) $(CFLAGS) stacktest.d

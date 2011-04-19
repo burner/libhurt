@@ -1,19 +1,21 @@
 module hurt.string.formatter;
 
-import hurt.string.stringutil;
+import std.stdio;
 
-public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
+public pure immutable(S)[] format(T,S,V...)(immutable(T)[] form, V v)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
+	size_t argPtr = 0;
 	size_t ptr = 0;
 	size_t vaTypePtr = 0;
 	T[] ret = new T[32];
-	for(size_t idx; idx < format.length; idx++) {
+	for(size_t idx; idx < form.length; idx++) {
 		// no special treatment till you find a % character
 		if(format[idx] != '%') {
-			appendWithIdx(ret, ptr++, format[idx]);
-		} else if((idx > 0 && format[idx] == '%') 
-				|| (idx == 0 && format[idx] == '%')) {
+			appendWithIdx(ret, ptr++, form[idx]);
+			continue;
+		} else if((idx > 0 && form[idx] == '%') 
+				|| (idx == 0 && form[idx] == '%')) {
 			bool padding0 = false;
 			int padding = 0;
 			int precision = 0;
@@ -26,18 +28,18 @@ public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 			bool intToUInt = false;
 			bool kInterleaf = false;
 			int width = 0;
-			while(idx < format.length && format[idx] != ' ') {
-				switch(format[idx]) {
+			while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' && form[idx] != '\n') {
+				switch(form[idx]) {
 					case '0': // pad with 0 instead of blanks
 						padding0 = true;		
 						break;
 					case '1': .. case '9': { // size of padding
 						size_t lowIdx = idx;
-						while(idx < format.length 
-								&& isDigit!(T)(format[idx])) {
+						while(idx < form.length 
+								&& isDigit!(T)(form[idx])) {
 							idx++;
 						}
-						leftPad = conv!(immutable(T)[],size_t)(format[lowIdx..idx]);
+						leftPad = conv!(immutable(T)[],size_t)(form[lowIdx..idx]);
 						break;
 					}
 					case '+': // allways place sign of number
@@ -51,34 +53,34 @@ public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 						break;
 					case '*': {
 						idx++;
-						if(idx < format.length && format[idx] == '*') {
+						if(idx < form.length && form[idx] == '*') {
 							//TODO pop next arguemnt as precision
 							break;
 						}
 					}
 					case '.': {
 						idx++;
-						if(idx < format.length && format[idx] == '*') {
+						if(idx < form.length && form[idx] == '*') {
 							//TODO pop next arguemnt as precision
 							break;
 						}
 						size_t lowIdx = idx;
-						while(idx < format.length 
-								&& isDigit!(T)(format[idx])) {
+						while(idx < form.length 
+								&& isDigit!(T)(form[idx])) {
 							idx++;
 						}
-						precision = conv!(immutable(T)[],size_t)(format[lowIdx..idx]);
+						precision = conv!(immutable(T)[],size_t)(form[lowIdx..idx]);
 						break;
 					}
 					case 'h': // integer to char, uchar, short or ushort
-						if(idx+2 < format.length && format[idx+1] == 'h' 
-								&& format[idx+2] == 'n') {
+						if(idx+2 < form.length && form[idx+1] == 'h' 
+								&& form[idx+2] == 'n') {
 							intToSChar = true;
 							idx+=2;
-						} if(idx+1 < format.length && format[idx+1] == 'h') {
+						} if(idx+1 < form.length && form[idx+1] == 'h') {
 							intToUChar = true;
 							idx++;
-						} if(idx+1 < format.length && format[idx+1] == 'n') {
+						} if(idx+1 < form.length && form[idx+1] == 'n') {
 							ptrToUInt = true;
 							idx++;
 						} else {
@@ -86,30 +88,30 @@ public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 							idx++;
 						}
 					case 'l': // to cent
-						if(idx+1 < format.lenght && format[idx+1] == 'n') {
+						if(idx+1 < form.lenght && form[idx+1] == 'n') {
 							assert(0, "long to cent not yet implemented");
-						} else if(idx+2 < format.lenght && format[idx+1] == 's') {
+						} else if(idx+2 < form.lenght && form[idx+1] == 's') {
 							assert(0, "long to ucent not yet implemented");
 
 						}
 					case 'L': // to long double aka real
-						if(idx+1 < format.lenght && format[idx+1] == 'a') {
+						if(idx+1 < form.lenght && form[idx+1] == 'a') {
 							idx++;
-						} else if(idx+1 < format.lenght && format[idx+1] == 'A') {
-							idx++;
-
-						} else if(idx+1 < format.lenght && format[idx+1] == 'e') {
-							idx++;
-						} else if(idx+1 < format.lenght && format[idx+1] == 'E') {
-							idx++;
-						} else if(idx+1 < format.lenght && format[idx+1] == 'f') {
-							idx++;
-						} else if(idx+1 < format.lenght && format[idx+1] == 'F') {
+						} else if(idx+1 < form.lenght && form[idx+1] == 'A') {
 							idx++;
 
-						} else if(idx+1 < format.lenght && format[idx+1] == 'g') {
+						} else if(idx+1 < form.lenght && form[idx+1] == 'e') {
 							idx++;
-						} else if(idx+1 < format.lenght && format[idx+1] == 'G') {
+						} else if(idx+1 < form.lenght && form[idx+1] == 'E') {
+							idx++;
+						} else if(idx+1 < form.lenght && form[idx+1] == 'f') {
+							idx++;
+						} else if(idx+1 < form.lenght && form[idx+1] == 'F') {
+							idx++;
+
+						} else if(idx+1 < form.lenght && form[idx+1] == 'g') {
+							idx++;
+						} else if(idx+1 < form.lenght && form[idx+1] == 'G') {
 							idx++;
 						}
 					case 'j': // int to int.max or uint.max
@@ -120,8 +122,11 @@ public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 						break;
 					case '\'': // thousand interleaf
 						kInterleaf = true;
-					case 'd': // signed integer
+					case 'd': {// signed integer
+						immutable(T)[] tmp = integerToString!(T)(v[argPtr++]);
+						ptr = appendWithIdx(ret, ptr, tmp);
 						break;
+					}
 					case 'i': // unsigned integer
 						break;
 					case 'o': // unsigned integer as octal
@@ -152,11 +157,9 @@ public pure immutable(T)[] format(T,S,V...)(immutable(S)[] format, v)
 						break;
 				}
 				i++;
-			}	
-			
+			}
 		}
 
 	}
 	return ret[0..ptr].idup;
-
 }

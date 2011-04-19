@@ -62,8 +62,8 @@ void sort(T)(T[] a, bool function(in T a, in T b) cmp, ulong leftb = 0,
 }
 
 unittest {
-	int[] a = new int[10];
-	for(int i = 0; i < a.length; i++) {
+	size_t[] a = new size_t[10];
+	for(size_t i = 0; i < a.length; i++) {
 		a[i] = a.length-i;
 	}
 	void print() {
@@ -71,6 +71,6 @@ unittest {
 		writeln();
 	}
 	print();
-	sort!(int)(a, function(in int l, in int r) { return l < r; }, 2L, 3L);
+	sort!(size_t)(a, function(in size_t l, in size_t r) { return l < r; }, 2L, 3L);
 	print();
 }
