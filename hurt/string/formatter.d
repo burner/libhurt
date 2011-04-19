@@ -36,7 +36,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 			bool intToUInt = false;
 			bool kInterleaf = false;
 			int width = 0;
-			while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' && form[idx] != '\n') {
+			while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
+					&& form[idx] != '\n') {
 				switch(form[idx]) {
 					case '0': // pad with 0 instead of blanks
 						padding0 = true;		
@@ -134,7 +135,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						if(is(_arguments[argPtr] : int)) {
 							auto value = va_arg!(int)(_argptr);
 							immutable(T)[] tmp = conv!(int,string)(value);
-							ptr = appendWithIdx!(T)(ret, ptr, tmp);
+							foreach(jt; tmp) 
+								appendWithIdx!(T)(ret, ptr++, jt);
 						}
 						break;
 					}
@@ -166,8 +168,10 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						break;
 					case 'A': // double to hexadecimal capital letter
 						break;
+					default:
+						break;
 				}
-				i++;
+				idx++;
 			}
 		}
 
@@ -177,4 +181,6 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 
 unittest {
 	assert("hello" == format!(char,char)("hello"));
+	assert("hello5" == format!(char,char)("hello%d", 5));
+	writeln(format!(char,char)("hello%d", 5));
 }
