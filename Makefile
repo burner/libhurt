@@ -29,6 +29,9 @@ clean:
 cleanAll: clean
 	make -C tests clean	
 
+new: clean all
+	
+
 count:
 	wc -l `find hurt -name \*.d`
 

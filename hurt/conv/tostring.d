@@ -49,3 +49,54 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10, bool sign 
 		return tmp[0..tmpptr].reverse.idup;
 	}
 }
+
+public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false)
+		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
+			(is(S == float) || is(S == double) || is(S == real))) {
+	writeln(__FILE__,__LINE__,": round = ",round);
+	long intp;
+	long fractp;
+	long power = 1;
+	int i;
+	round++;
+
+	for(i = 0; i < round; i++)
+		power *= 10;
+
+	intp = cast(long)src;
+	fractp = cast(long)((src - cast(S) intp) * power);
+	fractp = fractp < 0 ? -fractp : fractp;
+	long toR = fractp % 10;
+	fractp += toR;
+	fractp /= 10;
+
+	immutable(T)[] dec = integerToString!(T,long)(intp, 10, sign, true);
+	immutable(T)[] frac = integerToString!(T,long)(fractp, 10, false, true);
+	writeln(__FILE__,__LINE__,": ",frac," ", round);
+	round--;
+	while(frac.length < round) {
+		frac = frac ~ "0";
+	}
+	writeln(__FILE__,__LINE__,": ",frac);
+	return dec ~ "." ~ frac;
+}
+
+unittest {
+	assert("10.00" == floatToString!(char,double)(10.0, 2), floatToString!(char,double)(10.0, 2));
+	assert("1.20" == floatToString!(char,double)(1.2, 2), floatToString!(char,double)(1.2, 2));
+	assert("100.2" == floatToString!(char,double)(100.222123, 1), floatToString!(char,double)(100.222123, 1));
+	assert("1.200000000" == floatToString!(char,real)(1.2, 9), floatToString!(char,real)(1.2, 9));
+	assert("100.2221230" == floatToString!(char,real)(100.222123, 7), floatToString!(char,real)(100.222123, 7));
+	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7), floatToString!(char,real)(-100.222123, 7));
+	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6), floatToString!(char,real)(-100.222121, 6));
+	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6), floatToString!(char,real)(-100.222129, 6));
+	assert("100.222130" == floatToString!(char,float)(100.222129, 6), floatToString!(char,float)(100.222129, 6));
+	assert("+1.20" == floatToString!(char,double)(1.2, 2, true), floatToString!(char,double)(1.2, 2, true));
+	assert("+100.2" == floatToString!(char,double)(100.222123, 1, true), floatToString!(char,double)(100.222123, 1, true));
+	assert("+1.200000000" == floatToString!(char,real)(1.2, 9, true), floatToString!(char,real)(1.2, 9, true));
+	assert("+100.2221230" == floatToString!(char,real)(100.222123, 7, true), floatToString!(char,real)(100.222123, 7, true));
+	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7, true), floatToString!(char,real)(-100.222123, 7, true));
+	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6, true), floatToString!(char,real)(-100.222121, 6, true));
+	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6, true), floatToString!(char,real)(-100.222129, 6, true));
+	assert("+100.222130" == floatToString!(char,float)(100.222129, 6, true), floatToString!(char,float)(100.222129, 6, true));
+}

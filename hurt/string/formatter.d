@@ -27,7 +27,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 			bool padding0 = false;
 			int padding = 0;
 			int base = 10;
-			int precision = 0;
+			int precision = 6;
 			int leftPad = 0;
 			bool ptrToUInt = false;
 			bool title = false;
@@ -40,7 +40,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 			bool intToUInt = false;
 			bool kInterleaf = false;
 			int width = 0;
-			while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
+			parse: while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
 					&& form[idx] != '\n') {
 				switch(form[idx]) {
 					case '0': // pad with 0 instead of blanks
@@ -52,8 +52,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 								&& isDigit!(T)(form[idx])) {
 							idx++;
 						}
-						leftPad = conv!(immutable(T)[],int)(form[lowIdx..idx]);
-						break;
+						padding = conv!(immutable(T)[],int)(form[lowIdx..idx]);
+						continue;
 					}
 					case '+': // allways place sign of number
 						alwaysSign = true;	
@@ -83,7 +83,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 							idx++;
 						}
 						precision = conv!(immutable(T)[],int)(form[lowIdx..idx]);
-						break;
+						debug writeln(__FILE__,__LINE__,": precision ", precision, " ", form[idx]);
+						continue;
 					}
 					case 'h': // integer to char, uchar, short or ushort
 						if(idx+2 < form.length && form[idx+1] == 'h' 
@@ -136,9 +137,11 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 					case '\'': // thousand interleaf
 						kInterleaf = true;
 					case 'x': // unsigned integer as hex 
+						base = 16;
 						goto case 'd';
 					case 'X': // unsigned integer as hex 
 						title = true;
+						base = 16;
 						goto case 'd';
 					case 'o': // unsigned integer as octal
 						base = 8;
@@ -150,52 +153,89 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						if(_arguments[argPtr] == typeid(int)) {
 							int value = va_arg!(int)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,int)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,int)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(uint)) {
 							uint value = va_arg!(uint)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,uint)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,uint)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(ubyte)) {
 							ubyte value = va_arg!(ubyte)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,ubyte)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,ubyte)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(byte)) {
 							byte value = va_arg!(byte)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,byte)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,byte)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(ushort)) {
 							ushort value = va_arg!(ushort)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,ushort)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,ushort)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(short)) {
 							short value = va_arg!(short)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,short)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,short)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(ulong)) {
 							ulong value = va_arg!(ulong)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,ulong)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,ulong)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(_arguments[argPtr] == typeid(long)) {
 							long value = va_arg!(long)(_argptr);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
-							tmp = integerToString!(char,long)(value, base, alwaysSign, title);
+							tmp = integerToString!(T,long)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
 							throw new FormatError("an int was expected but value was a " 
 								~ (_arguments[argPtr].toString()));
 						}
 
+						immutable(T) paddingChar = padding0 ? '0' : ' ';
+						debug writeln(__FILE__,__LINE__,": ", padding);
+						if(tmp.length < padding && !leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						bool noSign = false;
+						if(altForm && form[idx] == 'x') {
+							if(tmp[0] == '-' || tmp[0] == '+') {
+								appendWithIdx!(T)(ret, ptr++, tmp[0]);
+								noSign = true;
+							}
+							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable)'x');
+						} else if(altForm && form[idx] == 'X') {
+							if(tmp[0] == '-' || tmp[0] == '+') {
+								appendWithIdx!(T)(ret, ptr++, tmp[0]);
+								noSign = true;
+							}
+							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable)'X');
+						} else if(altForm && form[idx] == 'o') {
+							if(tmp[0] == '-' || tmp[0] == '+') {
+								appendWithIdx!(T)(ret, ptr++, tmp[0]);
+								noSign = true;
+							}
+							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
+						}
+						if(noSign) {
+							tmp = tmp[1..$];
+						}
 						foreach(jt; tmp) 
 							appendWithIdx!(T)(ret, ptr++, jt);
 						
-						break;
+						if(tmp.length < padding && leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						break parse;
 					}
 					case 's': // string
 						break;
@@ -204,9 +244,43 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 					case 'E': // double as exponent 1.4E44
 						break;
 					case 'f': // double as decimal
-						break;
-					case 'F': // double as decimal
-						break;
+						debug writeln(__FILE__,__LINE__,": float");
+						immutable(T)[] tmp;
+						if(_arguments[argPtr] == typeid(float)) {
+							float value = va_arg!(float)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp = floatToString!(T,float)(value, precision, alwaysSign);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(double)) {
+							double value = va_arg!(double)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp = floatToString!(T,double)(value, precision, alwaysSign);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(_arguments[argPtr] == typeid(real)) {
+							real value = va_arg!(real)(_argptr);
+							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp = floatToString!(T,real)(value, precision, alwaysSign);
+							debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else {
+							throw new FormatError("an float was expected but value was a " 
+								~ (_arguments[argPtr].toString()));
+						}
+						immutable(T) paddingChar = padding0 ? '0' : ' ';
+						debug writeln(__FILE__,__LINE__,": ", padding);
+						if(tmp.length < padding && !leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						foreach(jt; tmp) 
+							appendWithIdx!(T)(ret, ptr++, jt);
+
+						if(tmp.length < padding && leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						break parse;
 					case 'P': // print pointer adress as hex
 						break;
 					case 'c': // print int as c. %c, 'a' prints a
@@ -231,9 +305,18 @@ unittest {
 	assert("hello5" == format!(char,char)("hello%d", 5), format!(char,char)("hello%d", 5));
 	assert("hello+5" == format!(char,char)("hello%+d", 5), format!(char,char)("hello%+d", 5));
 	assert("hello+5" == format!(char,char)("hello%+o", 5), format!(char,char)("hello%+o", 5));
+	assert("hello+05" == format!(char,char)("hello%#+o", 5), format!(char,char)("hello%#+o", 5));
+	assert("hello+5" == format!(char,char)("hello%+X", 5), format!(char,char)("hello%+X", 5));
+	assert("hello+5" == format!(char,char)("hello%+x", 5), format!(char,char)("hello%+x", 5));
+	assert("hello+A" == format!(char,char)("hello%+X", 10), format!(char,char)("hello%+X", 10));
+	assert("hello+a" == format!(char,char)("hello%+x", 10), format!(char,char)("hello%+x", 10));
+	assert("hello+0XA" == format!(char,char)("hello%#+X", 10), format!(char,char)("hello%#+X", 10));
+	assert("hello+0xa" == format!(char,char)("hello%#+x", 10), format!(char,char)("hello%#+x", 10));
 	assert("hello10" == format!(char,char)("hello%o", 8), format!(char,char)("hello%o", 8));
 	assert("hello 10" == format!(char,char)("hello %o", 8), format!(char,char)("hello %o", 8));
-	writeln(format!(char,char)("hello%d", 5));
-	writeln(format!(char,char)("hello%+d", 5));
-	writeln(format!(char,char)("hello %o", 8));
+	assert("hello10.0" == format!(char,char)("hello%.1f", 10.0), format!(char,char)("hello%.1f", 10.0));
+	assert("hello 10.00" == format!(char,char)("hello %.2f", 10.0), format!(char,char)("hello %.2f", 10.0));
+	assert("hello   10.00" == format!(char,char)("hello %7.2f", 10.0), format!(char,char)("hello %7.2f", 10.0));
+	assert("hello 0010.00" == format!(char,char)("hello %07.2f", 10.0), format!(char,char)("hello %07.2f", 10.0));
+	assert("hello 10.00  " == format!(char,char)("hello %-7.2f", 10.0), format!(char,char)("hello %-7.2f", 10.0));
 }
