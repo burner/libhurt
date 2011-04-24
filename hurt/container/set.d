@@ -26,6 +26,14 @@ public class Set(T) {
 		}
 	}
 
+	T get(T value) {
+		if(value in this.array) {
+			assert(0);
+		} else {
+			return this.array[value];
+		}
+	}
+
 	bool remove(T value) {
 		if(value in this.array) {
 			this.array.remove(value);

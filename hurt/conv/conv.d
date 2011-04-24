@@ -37,7 +37,7 @@ public pure S conv(T, S)(T t) {
 	// from int to S
 	} else static if( is(T == int) ) {
 		static if( is(S == char) ) {
-			return byteToCharBase10!(char)(t);
+			return byteToChar!(char)(t);
 		} else static if( is(S == string) ) {
 			return integerToString!(char,int)(t);
 		}
