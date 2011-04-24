@@ -4,4 +4,7 @@ public class IllegalArgumentException : Exception {
 	this() {
 		super("IllegalArgument");
 	}
+	this(string str) {
+		super("IllegalArgument: " ~ str);
+	}
 }

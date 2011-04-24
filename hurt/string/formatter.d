@@ -5,6 +5,7 @@ import hurt.conv.tostring;
 import hurt.util.array;
 import hurt.string.stringutil;
 import hurt.exception.formaterror;
+import hurt.exception.illegalargumentexception;
 
 import core.vararg;
 
@@ -13,6 +14,7 @@ import std.stdio;
 public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
+	writeln(_arguments);
 	size_t argPtr = 0;
 	size_t ptr = 0;
 	size_t vaTypePtr = 0;
@@ -65,16 +67,29 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						altForm = true;
 						break;
 					case '*': {
-						idx++;
 						if(idx < form.length && form[idx] == '*') {
-							//TODO pop next arguemnt as precision
-							break;
+							if(_arguments[argPtr] == typeid(int)) {
+								padding = va_arg!(int)(_argptr);
+								argPtr++;
+								debug writeln(__FILE__,__LINE__,": ", padding, " " , _argptr);
+							} else {
+								throw new IllegalArgumentException("Expected an int not an " 
+									~ _arguments[argPtr].toString());
+							}
 						}
+						break;
 					}
 					case '.': {
 						idx++;
 						if(idx < form.length && form[idx] == '*') {
-							//TODO pop next arguemnt as precision
+							if(_arguments[argPtr] == typeid(int)) {
+								precision = va_arg!(int)(_argptr);
+								argPtr++;
+								debug writeln(__FILE__,__LINE__,": ", precision, " ", _argptr);
+							} else {
+								throw new IllegalArgumentException("Expected an int not an " 
+									~ _arguments[argPtr].toString());
+							}
 							break;
 						}
 						size_t lowIdx = idx;
@@ -86,7 +101,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						debug writeln(__FILE__,__LINE__,": precision ", precision, " ", form[idx]);
 						continue;
 					}
-					case 'h': // integer to char, uchar, short or ushort
+					case 'h': // integer to char, short or ushort
 						if(idx+2 < form.length && form[idx+1] == 'h' 
 								&& form[idx+2] == 'n') {
 							intToSChar = true;
@@ -194,6 +209,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 							throw new FormatError("an int was expected but value was a " 
 								~ (_arguments[argPtr].toString()));
 						}
+						argPtr++;
 
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						debug writeln(__FILE__,__LINE__,": ", padding);
@@ -244,7 +260,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 					case 'E': // double as exponent 1.4E44
 						break;
 					case 'f': // double as decimal
-						debug writeln(__FILE__,__LINE__,": float");
+						debug writeln(__FILE__,__LINE__,": float ", precision, " ", padding, " ",
+							_arguments[argPtr].toString(), _argptr);
 						immutable(T)[] tmp;
 						if(_arguments[argPtr] == typeid(float)) {
 							float value = va_arg!(float)(_argptr);
@@ -264,7 +281,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						} else {
 							throw new FormatError("an float was expected but value was a " 
 								~ (_arguments[argPtr].toString()));
-						}
+						}	
+						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						debug writeln(__FILE__,__LINE__,": ", padding);
 						if(tmp.length < padding && !leftAlign) {
@@ -303,6 +321,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 unittest {
 	assert("hello" == format!(char,char)("hello"));
 	assert("hello5" == format!(char,char)("hello%d", 5), format!(char,char)("hello%d", 5));
+	assert("hello  5" == format!(char,char)("hello%*d", 3, 5), format!(char,char)("hello%*d", 3, 5));
 	assert("hello+5" == format!(char,char)("hello%+d", 5), format!(char,char)("hello%+d", 5));
 	assert("hello+5" == format!(char,char)("hello%+o", 5), format!(char,char)("hello%+o", 5));
 	assert("hello+05" == format!(char,char)("hello%#+o", 5), format!(char,char)("hello%#+o", 5));
@@ -319,4 +338,5 @@ unittest {
 	assert("hello   10.00" == format!(char,char)("hello %7.2f", 10.0), format!(char,char)("hello %7.2f", 10.0));
 	assert("hello 0010.00" == format!(char,char)("hello %07.2f", 10.0), format!(char,char)("hello %07.2f", 10.0));
 	assert("hello 10.00  " == format!(char,char)("hello %-7.2f", 10.0), format!(char,char)("hello %-7.2f", 10.0));
+	assert("hello 5.000" == format!(char,char)("hello%*.*f", 6, 3, 5.0), format!(char,char)("hello%*.*f", 6, 3, 5.0));
 }
