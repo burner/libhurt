@@ -17,7 +17,7 @@ public class Set(T) {
 	
 	}
 
-	size_t getSize() {
+	size_t getSize() const {
 		return this.array.length;
 	}
 	
@@ -57,6 +57,11 @@ public class Set(T) {
 
 	T[] values() {
 		return this.array.values();
+	}
+
+	const(T[]) constValues() const {
+		const T[] tmp = this.array.values();
+		return tmp;
 	}
 
 	Set!(T) dup() {
