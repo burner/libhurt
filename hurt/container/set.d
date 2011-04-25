@@ -16,6 +16,10 @@ public class Set(T) {
 	this() {
 	
 	}
+
+	size_t getSize() {
+		return this.array.length;
+	}
 	
 	bool insert(T value) {
 		if(value in this.array) {

@@ -35,6 +35,7 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 			bool title = false;
 			bool altForm = false;
 			bool alwaysSign = false;
+			bool noSignBlank = false;
 			bool leftAlign = false;
 			bool intToSChar = false;
 			bool intToUChar = false;
@@ -42,8 +43,9 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 			bool intToUInt = false;
 			bool kInterleaf = false;
 			int width = 0;
-			parse: while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
-					&& form[idx] != '\n') {
+			//parse: while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
+					//&& form[idx] != '\n') {
+			parse: while(idx < form.length) {
 				switch(form[idx]) {
 					case '0': // pad with 0 instead of blanks
 						padding0 = true;		
@@ -57,6 +59,9 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						padding = conv!(immutable(T)[],int)(form[lowIdx..idx]);
 						continue;
 					}
+					case ' ':
+						noSignBlank = true;
+						break;
 					case '+': // allways place sign of number
 						alwaysSign = true;	
 						break;
@@ -339,4 +344,5 @@ unittest {
 	assert("hello 0010.00" == format!(char,char)("hello %07.2f", 10.0), format!(char,char)("hello %07.2f", 10.0));
 	assert("hello 10.00  " == format!(char,char)("hello %-7.2f", 10.0), format!(char,char)("hello %-7.2f", 10.0));
 	assert("hello 5.000" == format!(char,char)("hello%*.*f", 6, 3, 5.0), format!(char,char)("hello%*.*f", 6, 3, 5.0));
+	assert("hello   5.000" == format!(char,char)("hello%*.*f", 8, 3, 5.0), format!(char,char)("hello%*.*f", 8, 3, 5.0));
 }
