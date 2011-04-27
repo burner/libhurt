@@ -1,5 +1,7 @@
 import hurt.container.dlst;
 
+import hurt.conv.conv;
+
 import std.random;
 import std.stdio;
 
@@ -21,8 +23,39 @@ void main() {
 		962, 455, 418, 977, 2002, 1499, 1500, 992, 2018, 487, 1000, 2471, 2541, 
 		1009, 498, 500, 1016];
 	DLinkedList!(int) l1 = new DLinkedList!(int)();
+	DLinkedList!(int).Iterator!(int) lit = l1.begin();
+	DLinkedList!(int).Iterator!(int) kit = l1.end();
+	assert(!lit.isValid(), "should be valid");
+	assert(!kit.isValid(), "should be valid");
 	foreach(idx,it;t) {
 		l1.pushBack(it);
+		lit = l1.begin();
+		assert(lit.isValid(), "should be valid");
+		size_t jt = 0;
+		while(lit.isValid()) {
+			assert(lit.getValue() == t[jt++]);
+			lit++;	
+		}
+		assert(l1.getSize() == idx+1);
+
+		kit = l1.end();
+		assert(kit.isValid(), "should be valid");
+		jt = idx;
+		while(kit.isValid()) {
+			assert(kit.getValue() == t[jt], conv!(int,string)(kit.getValue()) ~ " " 
+				~ conv!(int,string)(t[jt]) ~ " "
+				~ conv!(size_t,string)(jt));
+			kit--;	
+			jt--;
+		}
+		jt = idx;
+		while(kit.isValid()) {
+			assert(*kit == t[jt], conv!(int,string)(*kit) ~ " " 
+				~ conv!(int,string)(t[jt]) ~ " "
+				~ conv!(size_t,string)(jt));
+			kit--;	
+			jt--;
+		}
 		assert(l1.get(idx) == it);
 		assert(l1.contains(it));
 		assert(l1.validate());
