@@ -8,7 +8,7 @@ CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.lis
 hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o 
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
-hurt.exception.outofrangeexception.o hurt.exception.formaterror.o
+hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o
 
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
@@ -122,3 +122,6 @@ hurt.exception.nullexception.o: hurt/exception/nullexception.d Makefile
 
 hurt.exception.formaterror.o: hurt/exception/formaterror.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/formaterror.d -ofhurt.exception.formaterror.o
+
+hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexception.d Makefile
+	$(DC) $(CFLAGS) hurt/exception/invaliditeratorexception.d -ofhurt.exception.invaliditeratorexception.o

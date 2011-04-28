@@ -67,4 +67,71 @@ void main() {
 		int tmp = l1.remove(idx);
 		assert(l1.validate());
 	}
+
+	DLinkedList!(int) l2 = new DLinkedList!(int)();
+	foreach(it;t[0..10]) {
+		l2.pushBack(it);
+	}
+	assert(l2.getSize() == 10);
+	DLinkedList!(int).Iterator!(int) rit = l2.end();
+	assert(rit.isValid());
+	l2.remove(rit);
+	assert(rit.isValid());
+	assert(l2.getSize() == 9);
+	foreach_reverse(it;t[0..9]) {
+		assert(*rit == it);
+		rit--;
+		assert(l2.validate());
+	}
+
+	rit = l2.begin();
+	assert(rit.isValid());
+	l2.remove(rit);
+	assert(rit.isValid());
+	assert(l2.getSize() == 8);
+	foreach(it;t[1..9]) {
+		assert(*rit == it);
+		rit++;
+		assert(l2.validate());
+	}
+	rit = l2.begin();
+	rit++;
+	rit++;
+	rit++;
+	rit++;
+	rit++;
+	while(!l2.isEnd(rit)) {
+		l2.remove(rit);	
+		assert(l2.validate());
+	}
+	rit--;
+	rit--;
+	while(!l2.isBegin(rit)) {
+		l2.remove(rit);	
+		assert(l2.validate());
+	}
+	assert(l2.getSize() == 1);
+
+	DLinkedList!(int) l3 = new DLinkedList!(int)();
+	l3.pushBack(1);
+	assert(l3.getSize() == 1);
+	DLinkedList!(int).Iterator!(int) iit = l3.end();
+	assert(l3.isEnd(iit));
+	assert(l3.isBegin(iit));
+	iit = l3.insert(iit, 2, true);
+	assert(l3.getSize() == 2);
+	assert(l3.isBegin(iit));
+	assert(!l3.isEnd(iit));
+	iit = l3.insert(iit, 3, false);
+	assert(l3.getSize() == 3);
+	iit++;
+	assert(l3.isEnd(iit));
+	iit--;
+	iit--;
+	assert(l3.isBegin(iit));
+	iit++;
+	iit = l3.begin();
+	iit = l3.insert(iit, 4, false);
+	iit--;
+	assert(l3.isBegin(iit));
 }

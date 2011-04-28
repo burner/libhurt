@@ -2,6 +2,7 @@ module hurt.container.dlst;
 
 import hurt.conv.conv;
 import hurt.exception.nullexception;
+import hurt.exception.invaliditeratorexception;
 
 import std.stdio;
 
@@ -10,7 +11,8 @@ public class DLinkedList(T) {
 	public class Iterator(T) {
 		Elem!(T) elem;
 	
-		public this() {
+		public this(Elem!(T) elem) {
+			this.elem = elem;
 		}
 	
 		public T getValue() {
@@ -50,9 +52,13 @@ public class DLinkedList(T) {
 		private T store;
 		private Elem!(T) prev;
 		private Elem!(T) next;
+
+		public this(T store) {
+			this.store = store;
+		}
 	
 		public this(T store, Elem!(T) prev) {
-			this.store = store;
+			this(store);
 			this.prev = prev;
 		}
 	
@@ -74,6 +80,13 @@ public class DLinkedList(T) {
 	
 		public T getStore() {
 			return this.store;
+		}
+
+		public override bool opEquals(Object o) const {
+			Elem!(T) t = cast(Elem!(T))o;
+			return t.getStore() == this.store &&
+				t.getPrev() is this.prev &&
+				t.getNext() is this.next;
 		}
 	}
 
@@ -97,7 +110,7 @@ public class DLinkedList(T) {
 	}
 
 	public void pushBack(T store) {
-		if(this.size == 0L) {
+		if(this.size == 0) {
 			this.head = new Elem!(T)(store, null);
 			this.tail = head;
 		} else {
@@ -159,6 +172,14 @@ public class DLinkedList(T) {
 		assert(0);
 	}
 
+	public bool isEnd(Iterator!(T) tt) const {
+		return tt.getElem() == this.tail;
+	}
+
+	public bool isBegin(Iterator!(T) tt) const {
+		return tt.getElem() == this.head;
+	}
+
 	public int opApply(scope int delegate(ref T) dg) {
 		for(Elem!(T) e = this.head; e; e = e.getNext()) {
 			T s = e.getStore();
@@ -218,18 +239,19 @@ public class DLinkedList(T) {
 	}
 
 	public Iterator!(T) begin() {
-		Iterator!(T) tmp = new Iterator!(T)();
-		tmp.setElem(this.head);
+		Iterator!(T) tmp = new Iterator!(T)(this.head);
 		return tmp;
 	}
 
 	public Iterator!(T) end() {
-		Iterator!(T) tmp = new Iterator!(T)();
-		tmp.setElem(this.tail);
+		Iterator!(T) tmp = new Iterator!(T)(this.tail);
 		return tmp;
 	}
 
 	public T remove( Iterator!(T) it) {
+		if(!it.isValid()) {
+			throw new InvalidIteratorException(__FILE__ ~ conv!(int,string)(__LINE__) ~ ": Iterator not valid");
+		}
 		if(it.getElem().getPrev() is null) {
 			T tmp = this.popFront();
 			it.setElem(this.head);	
@@ -241,6 +263,7 @@ public class DLinkedList(T) {
 		} else {
 			Elem!(T) prev = it.getElem().getPrev();
 			Elem!(T) next = it.getElem().getNext();
+			it.setElem(next);
 			prev.setNext(next);
 			next.setPrev(prev);
 			this.size--;
@@ -269,6 +292,42 @@ public class DLinkedList(T) {
 				it--;
 			}
 			return tmp.getStore();
+		}
+	}
+
+	public Iterator!(T) insert(Iterator!(T) it, T value, bool before = false) {
+		if(it !is null && it.isValid()) {
+			if(this.size == 0 || (this.head == it.getElem() && before)) {
+				this.pushFront(value);
+				return this.begin();
+			}
+			if(this.tail == it.getElem() && !before) {
+				this.pushBack(value);
+				return this.end();
+			}
+			if(before) {
+				Elem!(T) tmp = it.getElem();
+				Elem!(T) prev = tmp.getPrev();
+				Elem!(T) tIn = new Elem!(T)(value);
+				prev.setNext(tIn);
+				tIn.setPrev(prev);
+				tIn.setNext(tmp);
+				tmp.setPrev(tIn);
+				this.size++;
+				return new Iterator!(T)(tIn);
+			} else {
+				Elem!(T) tmp = it.getElem();
+				Elem!(T) next = tmp.getNext();
+				Elem!(T) tIn = new Elem!(T)(value);
+				next.setPrev(tIn);
+				tIn.setNext(next);
+				tIn.setPrev(tmp);
+				tmp.setNext(tIn);
+				this.size++;
+				return new Iterator!(T)(tIn);
+			}
+		} else {
+			throw new InvalidIteratorException(__FILE__ ~ conv!(int,string)(__LINE__) ~ ": Iterator not valid");
 		}
 	}
 
