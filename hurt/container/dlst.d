@@ -195,8 +195,12 @@ public class DLinkedList(T) {
 		this.tail = null;
 		this.size = 0;
 	}
+
+	public bool empty() const {
+		return this.size == 0;
+	}
 	
-	public ulong getSize() {
+	public size_t getSize() const {
 		return this.size;
 	}	
 

@@ -105,6 +105,19 @@ class MultiMap(T,S) {
 		return true;
 	}
 
+	bool replace(S old, S replace) {
+		foreach(ref it; this.multi.values()) {
+			foreach(ref jt; it.values()) {
+				if(jt == old) {
+					jt = replace;
+					return true;
+				}
+			}
+		}
+		return false;
+
+	}
+
 	S[] find(T key) {
 		if(key in this.multi) {	
 			S[] tmp = this.multi[key].values();	
@@ -124,6 +137,15 @@ class MultiMap(T,S) {
 		return true;
 	}
 
+	bool find(T key, S value) {
+		Value!(S) tmp = this.multi[key];
+		foreach(it; tmp.values()) {
+			if(it == value)
+				return true;
+		}
+		return true;
+	}
+
 	T[] keys() {
 		return this.multi.keys();
 	}
@@ -131,17 +153,29 @@ class MultiMap(T,S) {
 	bool empty() const {
 		return this.multi.length == 0;
 	}
+
+	bool opEquals(Object o) {
+		MultiMap!(T,S) t = cast(MultiMap!(T,S))o;
+		foreach(kit; this.keys()) {
+			foreach(oit; this.find(kit)) {
+				if(!t.find(kit, oit))
+					return false;
+			}
+		}
+		return true;
+	}
 }
 
 unittest {
 	MultiMap!(char,int) mm1 = new MultiMap!(char,int)();
 	mm1.insert('t', 12);
 	mm1.insert('t', 22);
+	mm1.remove(22);
 	mm1.insert('t', 32);
 	mm1.insert('t', 42);
-	assert(mm1.find('t') == [12,22,32,42]);
+	assert(mm1.find('t') == [12,32,42]);
 	mm1.remove('t', 0u);
-	assert(mm1.find('t') == [22,32,42]);
+	assert(mm1.find('t') == [32,42]);
 	assert(mm1.find('r') is null);
 	mm1.insert('r', 92);
 	assert(mm1.find('r') !is null);
@@ -150,6 +184,7 @@ unittest {
 	assert(mm1.find('r') == [92,32,82]);
 	mm1.remove('r', 1u);
 	assert(mm1.find('r') == [92,82]);
+	assert(mm1.replace(92, 93));
 	mm1.remove('t');
 	assert(mm1.find('t') is null);
 }
