@@ -2,6 +2,8 @@ module rbtree;
 
 import std.stdio;
 
+extern(C) long getTicks();
+
 int rand() {
 	immutable M = 2147483647;
 	immutable A = 16807;
@@ -368,15 +370,19 @@ class RBTree(T) {
 
 unittest {
 	RBTree!(int) rbt1 = new RBTree!(int)();
-	int[] rn = new int[10];
-	for(int i = 0; i < 10; i++) {
+	int times = 10000;
+	int[] rn = new int[times];
+	writeln(getTicks());
+	
+	for(int i = 0; i < times; i++) {
 		int tmp = rand();
 		rn[i] = tmp;
 		rbt1.insert(tmp);
 		rbt1.validate();
 	}
+	writeln(getTicks());
 
-	for(int i = 0; i < 10; i++) {
+	for(int i = 0; i < times; i++) {
 		rbt1.remove(rn[i]);
 		rbt1.validate();
 	}
