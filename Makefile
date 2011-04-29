@@ -14,7 +14,7 @@ MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o
 
-UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o
+UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.getticks.o
 
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
@@ -86,6 +86,9 @@ hurt.util.array.o: hurt/util/array.d Makefile
 
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
+
+hurt.util.getticks.o: hurt/util/getticks.c Makefile
+	gcc -m64 -c hurt/util/getticks.c -o hurt.util.getticks.o
 
 hurt.conv.conv.o: hurt/conv/conv.d hurt/conv/charconv.d hurt/conv/tointeger.d hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/conv.d -ofhurt.conv.conv.o

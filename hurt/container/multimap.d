@@ -154,7 +154,7 @@ class MultiMap(T,S) {
 		return this.multi.length == 0;
 	}
 
-	bool opEquals(Object o) {
+	override bool opEquals(Object o) {
 		MultiMap!(T,S) t = cast(MultiMap!(T,S))o;
 		foreach(kit; this.keys()) {
 			foreach(oit; this.find(kit)) {

@@ -2,13 +2,14 @@ module util.stacktrace;
 
 import core.sync.mutex;
 import std.stdio;
-import std.date;
+//import std.date;
 import std.conv;
-//import std.stdarg;
 import core.vararg;
 
 import hurt.container.dlst;
 import hurt.algo.sorting;
+
+extern(C) long getTicks();
 
 public interface Printable {
 	public string toString();
@@ -64,7 +65,7 @@ public final class StackTrace {
 		this.file = file;
 		this.line = line;
 		this.funcName = funcName;
-		this.startTime = getUTCtime();
+		this.startTime = getTicks();
 		this.localDepth = StackTrace.depth++;
 		StackTrace.stack.pushBack(this);
 	}
@@ -105,7 +106,7 @@ public final class StackTrace {
 	}
 
 	~this() {
-		ulong timeDiff = getUTCtime() - this.startTime;
+		ulong timeDiff = getTicks() - this.startTime;
 		//writeln("destructor ", timeDiff);
 		string id = this.file ~ ":" ~ to!string(this.line);
 		StackTrace.allCallsMutex.lock();
