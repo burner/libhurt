@@ -124,6 +124,35 @@ class MultiMap(T,S) {
 		return true;
 	}
 
+	override bool opEquals(Object o) {
+		if(is(o == MultiMap!(T))) {
+			MultiMap!(T,S) t = cast(MultiMap!(T,S))o;
+			if(this.keys() != t.keys()) {
+				return false;
+			}
+			foreach(it; this.keys()) {
+				S[] thisv = this.find(it);	
+				S[] tv = t.find(it);	
+				foreach(S kt; thisv) {
+					bool isIn = false;
+					foreach(S lt; tv) {
+						if(kt == lt) {
+							isIn = true;
+							break;
+						}
+					}
+					if(!isIn) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+				
+			
+
 	T[] keys() {
 		return this.multi.keys();
 	}
@@ -139,6 +168,8 @@ unittest {
 	mm1.insert('t', 22);
 	mm1.insert('t', 32);
 	mm1.insert('t', 42);
+	MultiMap!(char,int) mm2 = mm1;
+	assert(mm1 == mm2, "should be the same");
 	assert(mm1.find('t') == [12,22,32,42]);
 	mm1.remove('t', 0u);
 	assert(mm1.find('t') == [22,32,42]);

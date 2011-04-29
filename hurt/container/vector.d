@@ -173,4 +173,8 @@ class Vector(T) {
 		return ret;*/
 		return this.data[0..this.index+1].dup;
 	}
+
+	public void clean() {
+		this.index = -1;
+	}
 }
