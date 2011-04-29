@@ -1,0 +1,1468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0067)http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	Eternally Confuzzled - The Art of Hashing
+</title><link href="./Eternally Confuzzled - The Art of Hashing_files/StyleSheet.css" rel="stylesheet" type="text/css"><style type="text/css">
+	.ctl00_NavTree_0 { text-decoration:none; }
+	.ctl00_NavTree_1 { color:Black;font-family:Tahoma;font-size:10pt; }
+	.ctl00_NavTree_2 { padding:0px 5px 0px 5px; }
+	.ctl00_NavTree_3 { font-weight:normal; }
+	.ctl00_NavTree_4 {  }
+	.ctl00_NavTree_5 { color:#5555DD;text-decoration:underline; }
+	.ctl00_NavTree_6 { padding:0px 0px 0px 0px; }
+	.ctl00_NavTree_7 { color:#5555DD;text-decoration:underline; }
+	.ctl00_NavTree_8 { color:#5555DD;text-decoration:underline; }
+
+</style></head>
+<body>
+  <form name="aspnetForm" method="post" action="./Eternally Confuzzled - The Art of Hashing_files/Eternally Confuzzled - The Art of Hashing.html" id="aspnetForm">
+<div>
+<input type="hidden" name="ctl00_NavTree_ExpandState" id="ctl00_NavTree_ExpandState" value="neeccnnncnnnncnnnnnnnnncncnnnnncnncnnnnnnnnecnnnnncnnnnnnnncnnnnccnnnnnnenncnnnnnnn">
+<input type="hidden" name="ctl00_NavTree_SelectedNode" id="ctl00_NavTree_SelectedNode" value="">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="ctl00_NavTree_PopulateLog" id="ctl00_NavTree_PopulateLog" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNDc2NDI5MzgyD2QWAmYPZBYCAgMPZBYCAgEPPCsACQIADxYGHg1OZXZlckV4cGFuZGVkZB4MU2VsZWN0ZWROb2RlZB4JTGFzdEluZGV4AlNkCBQrAARkFCsAAhYCHghFeHBhbmRlZGdkFCsAAmQUKwAEZBQrAAJkFCsABGQUKwACZBQrAAlkFCsAAmQUKwAEZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAJkFCsABWQUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAmQUKwAKZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAJkFCsAAmQUKwACFgIfA2dkFCsAAmQUKwAGZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAmQUKwADZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAmQUKwAIZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnFCsABGQUKwACZBQrAAZkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACZBQrAAlkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACZBQrAAVkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAJkFCsAAmQUKwACZBQrAAdkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAmQUKwADZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAmQUKwAHZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2QUKwACFgIfA2dkFCsAAhYCHwNnZBQrAAIWAh8DZ2RkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBQ1jdGwwMCROYXZUcmVlMWuFxCTzpcsVGE5FlwrQOUPB9mM=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./Eternally Confuzzled - The Art of Hashing_files/WebResource.axd" type="text/javascript"></script>
+
+
+<script src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+
+    function TreeView_PopulateNodeDoCallBack(context,param) {
+        WebForm_DoCallback(context.data.treeViewID,param,TreeView_ProcessNodeData,context,TreeView_ProcessNodeData,false);
+    }
+var ctl00_NavTree_Data = null;//]]>
+</script>
+
+    <div id="menu" style="left: 2px; top: 14.43em">
+      <a href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#ctl00_NavTree_SkipLink"><img alt="Skip Navigation Links." src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(2).axd" width="0" height="0" style="border-width:0px;"></a><div id="ctl00_NavTree" style="background-color:Transparent;border-style:None;">
+	<table cellpadding="0" cellspacing="0" style="border-width:0;">
+		<tbody><tr>
+			<td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/jsw_home.aspx" id="ctl00_NavTreet0">Home</a></td>
+		</tr><tr style="height:0px;">
+			<td></td>
+		</tr>
+	</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+		<tbody><tr style="height:0px;">
+			<td></td>
+		</tr><tr>
+			<td><a id="ctl00_NavTreen1" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,1,document.getElementById('ctl00_NavTreen1'),' ',document.getElementById('ctl00_NavTreen1Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(4).axd" alt="Collapse Learning" style="border-width:0;"></a></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/jsw_brain.aspx" id="ctl00_NavTreet1">Learning</a></td>
+		</tr><tr style="height:0px;">
+			<td></td>
+		</tr>
+	</tbody></table><div id="ctl00_NavTreen1Nodes" style="display:block;">
+		<table cellpadding="0" cellspacing="0" style="border-width:0;">
+			<tbody><tr style="height:0px;">
+				<td></td>
+			</tr><tr>
+				<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen2" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,2,document.getElementById('ctl00_NavTreen2'),' ',document.getElementById('ctl00_NavTreen2Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(4).axd" alt="Collapse Tutorials" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,2,document.getElementById('ctl00_NavTreen2'),' ',document.getElementById('ctl00_NavTreen2Nodes'))" id="ctl00_NavTreet2">Tutorials</a></td>
+			</tr><tr style="height:0px;">
+				<td></td>
+			</tr>
+		</tbody></table><div id="ctl00_NavTreen2Nodes" style="display:block;">
+			<table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,3,document.getElementById('ctl00_NavTreen3'),' ',document.getElementById('ctl00_NavTreen3Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Data Structures" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,3,document.getElementById('ctl00_NavTreen3'),' ',document.getElementById('ctl00_NavTreen3Nodes'))" id="ctl00_NavTreet3">Data Structures</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_NavTreen3Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen4" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,4,document.getElementById('ctl00_NavTreen4'),' ',document.getElementById('ctl00_NavTreen4Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Andersson Trees" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_andersson.aspx" id="ctl00_NavTreet4">Andersson Trees</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen4Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_andersson.aspx#concept" id="ctl00_NavTreet5">Concept</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_andersson.aspx#insert" id="ctl00_NavTreet6">Insertion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_andersson.aspx#delete" id="ctl00_NavTreet7">Deletion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen8" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,8,document.getElementById('ctl00_NavTreen8'),' ',document.getElementById('ctl00_NavTreen8Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand AVL Trees" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_avl.aspx" id="ctl00_NavTreet8">AVL Trees</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen8Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_avl.aspx#concept" id="ctl00_NavTreet9">Concept</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_avl.aspx#boundins" id="ctl00_NavTreet10">Bounded AVL</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_avl.aspx#topdown" id="ctl00_NavTreet11">Top-Down Insertion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_avl.aspx#unboundins" id="ctl00_NavTreet12">Unbounded AVL</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen13" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,13,document.getElementById('ctl00_NavTreen13'),' ',document.getElementById('ctl00_NavTreen13Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Binary Search Trees I" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx" id="ctl00_NavTreet13">Binary Search Trees I</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen13Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#concept" id="ctl00_NavTreet14">Concept</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#search" id="ctl00_NavTreet15">Search</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#insert" id="ctl00_NavTreet16">Insertion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#delete" id="ctl00_NavTreet17">Deletion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#destroy" id="ctl00_NavTreet18">Destruction</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#traverse" id="ctl00_NavTreet19">Traversal</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#parent" id="ctl00_NavTreet20">Parent Pointers</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#thread" id="ctl00_NavTreet21">Right Threading</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst1.aspx#performance" id="ctl00_NavTreet22">Performance</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen23" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,23,document.getElementById('ctl00_NavTreen23'),' ',document.getElementById('ctl00_NavTreen23Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Binary Search Trees II" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst2.aspx" id="ctl00_NavTreet23">Binary Search Trees II</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen23Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_bst2.aspx#treap" id="ctl00_NavTreet24">Treaps</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen25" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,25,document.getElementById('ctl00_NavTreen25'),' ',document.getElementById('ctl00_NavTreen25Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Hash Tables" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx" id="ctl00_NavTreet25">Hash Tables</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen25Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx#chaining" id="ctl00_NavTreet26">Separate Chaining</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx#openaddr" id="ctl00_NavTreet27">Open Addressing</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx#coalesced" id="ctl00_NavTreet28">Coalesced Chaining</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx#rehash" id="ctl00_NavTreet29">Rehashing</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_hashtable.aspx#performance" id="ctl00_NavTreet30">Performance</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen31" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,31,document.getElementById('ctl00_NavTreen31'),' ',document.getElementById('ctl00_NavTreen31Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Red Black Trees" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_rbtree.aspx" id="ctl00_NavTreet31">Red Black Trees</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen31Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_rbtree.aspx#buinsert" id="ctl00_NavTreet32">Bottom-Up</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_rbtree.aspx#tdinsert" id="ctl00_NavTreet33">Top-Down</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen34" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,34,document.getElementById('ctl00_NavTreen34'),' ',document.getElementById('ctl00_NavTreen34Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Skip Lists" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx" id="ctl00_NavTreet34">Skip Lists</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen34Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#height" id="ctl00_NavTreet35">Random Height</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#search" id="ctl00_NavTreet36">Searching</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#cinsert" id="ctl00_NavTreet37">Insertion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#traverse" id="ctl00_NavTreet38">Traversal</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#cdelete" id="ctl00_NavTreet39">Deletion</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#balance" id="ctl00_NavTreet40">Balancing</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_skip.aspx#performance" id="ctl00_NavTreet41">Performance</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/datastructures/jsw_tut_linklist.aspx" id="ctl00_NavTreet42">Linked Lists</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen43" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,43,document.getElementById('ctl00_NavTreen43'),' ',document.getElementById('ctl00_NavTreen43Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(4).axd" alt="Collapse Algorithms" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,43,document.getElementById('ctl00_NavTreen43'),' ',document.getElementById('ctl00_NavTreen43Nodes'))" id="ctl00_NavTreet43">Algorithms</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_NavTreen43Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen44" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,44,document.getElementById('ctl00_NavTreen44'),' ',document.getElementById('ctl00_NavTreen44Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Random Numbers" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx" id="ctl00_NavTreet44">Random Numbers</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen44Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx#lcg" id="ctl00_NavTreet45">LCGs</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx#uniform-deviate" id="ctl00_NavTreet46">Uniform Deviates</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx#stdlib" id="ctl00_NavTreet47">Standard Library</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx#mersenne" id="ctl00_NavTreet48">Mersenne Twister</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_rand.aspx#seeds" id="ctl00_NavTreet49">Random Seeds</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen50" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,50,document.getElementById('ctl00_NavTreen50'),' ',document.getElementById('ctl00_NavTreen50Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand The Art of Sorting" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx" id="ctl00_NavTreet50">The Art of Sorting</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen50Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#select" id="ctl00_NavTreet51">Selection Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#heap" id="ctl00_NavTreet52">Heap Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#insert" id="ctl00_NavTreet53">Insertion Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#shell" id="ctl00_NavTreet54">Shell Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#bubble" id="ctl00_NavTreet55">Bubble Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#quick" id="ctl00_NavTreet56">Quicksort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#merge" id="ctl00_NavTreet57">Merge Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_sorting.aspx#radix" id="ctl00_NavTreet58">Radix Sort</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen59" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,59,document.getElementById('ctl00_NavTreen59'),' ',document.getElementById('ctl00_NavTreen59Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand The Art of Hashing" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4 ctl00_NavTree_8" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3 ctl00_NavTree_7" href="./Eternally Confuzzled - The Art of Hashing_files/Eternally Confuzzled - The Art of Hashing.html" id="ctl00_NavTreet59">The Art of Hashing</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen59Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#uses" id="ctl00_NavTreet60">Uses for Hashing</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#perfect" id="ctl00_NavTreet61">Perfect hashing</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#existing" id="ctl00_NavTreet62">Existing hashes</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#design" id="ctl00_NavTreet63">Designing hashes</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen64" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,64,document.getElementById('ctl00_NavTreen64'),' ',document.getElementById('ctl00_NavTreen64Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Languages" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,64,document.getElementById('ctl00_NavTreen64'),' ',document.getElementById('ctl00_NavTreen64Nodes'))" id="ctl00_NavTreet64">Languages</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_NavTreen64Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen65" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,65,document.getElementById('ctl00_NavTreen65'),' ',document.getElementById('ctl00_NavTreen65Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand All About Pointers" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx" id="ctl00_NavTreet65">All About Pointers</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_NavTreen65Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#ptrwhat" id="ctl00_NavTreet66">What are pointers?</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#ptrtype" id="ctl00_NavTreet67">Types of pointers</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#refwhat" id="ctl00_NavTreet68">What are references?</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#reftype" id="ctl00_NavTreet69">Types of references</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#ptusing" id="ctl00_NavTreet70">Using pointers</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/tuts/languages/jsw_tut_pointers.aspx#rfusing" id="ctl00_NavTreet71">Using references</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div>
+			</div>
+		</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+			<tbody><tr style="height:0px;">
+				<td></td>
+			</tr><tr>
+				<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen72" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,72,document.getElementById('ctl00_NavTreen72'),' ',document.getElementById('ctl00_NavTreen72Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(4).axd" alt="Collapse Articles" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,72,document.getElementById('ctl00_NavTreen72'),' ',document.getElementById('ctl00_NavTreen72Nodes'))" id="ctl00_NavTreet72">Articles</a></td>
+			</tr><tr style="height:0px;">
+				<td></td>
+			</tr>
+		</tbody></table><div id="ctl00_NavTreen72Nodes" style="display:block;">
+			<table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/arts/jsw_art_bigo.aspx" id="ctl00_NavTreet73">Asymptotic Notation</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx" id="ctl00_NavTreet74">Using rand()</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table>
+		</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+			<tbody><tr style="height:0px;">
+				<td></td>
+			</tr><tr>
+				<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_NavTreen75" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,75,document.getElementById('ctl00_NavTreen75'),' ',document.getElementById('ctl00_NavTreen75Nodes'))"><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(5).axd" alt="Expand Libraries" style="border-width:0;"></a></td><td class="ctl00_NavTree_2 ctl00_NavTree_4" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1 ctl00_NavTree_3" href="javascript:TreeView_ToggleNode(ctl00_NavTree_Data,75,document.getElementById('ctl00_NavTreen75'),' ',document.getElementById('ctl00_NavTreen75Nodes'))" id="ctl00_NavTreet75">Libraries</a></td>
+			</tr><tr style="height:0px;">
+				<td></td>
+			</tr>
+		</tbody></table><div id="ctl00_NavTreen75Nodes" style="display:none;">
+			<table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_rand.zip" id="ctl00_NavTreet76">Mersenne Twister</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_hlib.zip" id="ctl00_NavTreet77">Chained Hash Table</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_atree.zip" id="ctl00_NavTreet78">Andersson Tree</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_avltree.zip" id="ctl00_NavTreet79">AVL Tree</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_slib.zip" id="ctl00_NavTreet80">Classic Skip List</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/libs/jsw_rbtree.zip" id="ctl00_NavTreet81">Red Black Tree</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table>
+		</div>
+	</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+		<tbody><tr style="height:0px;">
+			<td></td>
+		</tr><tr>
+			<td><img src="./Eternally Confuzzled - The Art of Hashing_files/WebResource(3).axd" alt=""></td><td class="ctl00_NavTree_2" onmouseover="TreeView_HoverNode(ctl00_NavTree_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_NavTree_0 ctl00_NavTree_1" href="http://eternallyconfuzzled.com/jsw_license.aspx" id="ctl00_NavTreet82">Licensing</a></td>
+		</tr><tr style="height:0px;">
+			<td></td>
+		</tr>
+	</tbody></table>
+</div><a id="ctl00_NavTree_SkipLink"></a>
+      <br>
+    </div>
+    <div id="wrapper" style="left: 16em; top: 1em;">
+      
+  <p><span style="font-size: 0.8em">By <a href="mailto:happyfrosty@hotmail.com">Julienne Walker</a><br>License: Public Domain</span></p>
+  <p>
+    <span class="drop-cap">I</span>n Binary Search Trees I, II, and III, we considered methods
+    for efficient searching of an ordered collection by using key comparisons. While
+    these methods were indeed very fast, they were limited to O(log N) performance due
+    to the comparison tree inherent in the data structure. Binary search trees are also
+    somewhat complicated, especially when the chance of encountering a degenerate tree
+    is minimized, or removed entirely.</p>
+  <p>
+    <span class="drop-cap">A</span>n alternative method for searching uses they key
+    itself an an address into the data structure, thus breaking the O(log N) barrier
+    and allowing searches to be performed with an expected time complexity of O(1),
+    which is as good as it gets when it comes to searching, and algorithms in general.</p>
+  <p>
+    <span class="drop-cap">U</span>nfortunately, not all keys are easily used as a table
+    address. Strings, for example, are not suitable, because array subscripting requires
+    an integer. Even when using integers, if the value is outside of the range of the
+    array, using it as an index will cause an out of bounds access. Hashing is the solution
+    to this problem.</p>
+  <p>
+    <span class="drop-cap">T</span>he simplest case when it comes to converting a key
+    into a table address is when you have an integer key. In that case it is a simple
+    matter of forcing the integer into the range of the table, most commonly with the
+    remainder operator:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;">1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> index </span><span style="color: #000000;">=</span><span style="color: #000000;"> key </span><span style="color: #000000;">%</span><span style="color: #000000;"> N;</span></div></pre>
+  <p>
+    <span class="drop-cap">U</span>nfortunately, this is insufficient most of the time
+    for two reasons. First, keys are more likely to be strings than integers. There
+    has to be some way to convert a string into a table address, or hashing would die
+    a quick death. Second, by forcing the integer into a smaller range, there is a good
+    chance that unique keys will have the same table address after the conversion. This
+    is called a collision, and collisions are the bane of hash function designers.
+  </p>
+  <p>
+    <span class="drop-cap">H</span>ashing a string into a table address is more complicated
+    because instead of a single numeric value there are several, and a good hash function
+    should take them all into account when constructing a table address. Fortunately,
+    hashing strings can be generalized into hashing a sequence of memory blocks, so
+    it is possible to avoid having to develop a different hash function for different
+    key types. The rest of this tutorial will assume that this generalization has been
+    made and we will look at several general hash functions.
+  </p>
+  <h4 id="uses">
+    &nbsp;</h4>
+  <h4>
+    Uses for hashing</h4>
+  <p>
+    <span class="drop-cap">B</span>y far, the most well known use for hashing is to
+    convert a key into an array index for table lookup. Such data structures are called
+    hash tables, and they are incredibly useful for a wide range of fields. For example,
+    in a compiler, a hash table will likely be used for keyword and identifier storage
+    because a compiler needs quick access to this information. A compiler may (should!)
+    also use a hash table for optimizing switch statements, and a number of other purposes.
+    A hash table is also surprisingly well suited to the implementation of a cache,
+    and many web browsers and operating systems will use a hash table for just that.</p>
+  <p>
+    <span class="drop-cap">P</span>robably the second most well known use for hashing
+    is in cryptography, where algorithms that are geared more toward security are used
+    to create digital fingerpints for authentication and data integrity. While lookup
+    hashes are not as complicated or as powerful as cryptographic hashes, adherence
+    to many of the design principles for a cryptographic hash will typically result
+    in a very good lookup hash, so even though there is a clear distinction between
+    hashing for lookup and hashing for cryptography, one can encourage improvement in
+    the other.</p>
+  <p>
+    <span class="drop-cap"></span>This tutorial will focus on hashing for lookup.</p>
+  <h4 id="pigeon">
+    &nbsp;</h4>
+  <h4>
+    Pigeonhole Principle</h4>
+  <p>
+    <span class="drop-cap">W</span>hen hashing a key so that it can be used as an array
+    index, it should be immediately obvious that the size of the array should be at
+    least as large as the input collection. This observation is simple, and some might
+    think that it goes without saying, but it is actually a specialization of the Pigeonhole
+    Principle, where if M items are placed in N buckets, and M is greater than N, one
+    or more buckets contain two or more items. This is one of the two principles that
+    pave the way toward understanding collisions.</p>
+  <p>
+    <span class="drop-cap">A</span> collision is when two keys hash to the same index.
+    The pigeonhole principle proves that no hashing algorithm can hash every key to
+    a unique index if the possible keys exceeds the size of the array. Since most uses
+    of hashing for lookup involve trying to take keys in a broad range and force them
+    into indices for a smaller range, it stands to reason that no hash algorithm can
+    perfectly hash a sequence of unknown keys into unique indices.</p>
+  <h4 id="perfect">
+    &nbsp;</h4>
+  <h4>
+    Perfect hashing</h4>
+  <p>
+    <span class="drop-cap">A</span>fter having told you that collisions are a necessary
+    evil, and dashing your hopes that there could be a “perfect” hash function,
+    I will now contradict myself and say that there is such a thing as perfect hashing!
+    However, despite the existence of perfect hash algorithms, they are dreadfully difficult
+    to discover for all but the smallest inputs where the number of keys and the exact
+    construction of every possible key is known. As such, while a perfect hash algorithm
+    exists for every input, it is unreasonable to expect that it can be found, so instead
+    of searching for a perfect hash function, it is better to simply build a hash function
+    that minimizes collisions instead of denying them completely.</p>
+  <h4 id="makeperf">
+    &nbsp;</h4>
+  <h4>
+    Constructing a perfect hash</h4>
+  <p>
+    <span class="drop-cap">A</span> perfect hash can be created if the number and construction
+    of the keys are known factors. For example, a perfect hash for a list of ten product
+    numbers that are sure to differ in their 4th and 5th digits can be easily constructed:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;">1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> hash ( </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> pid )
+</span><span style="color: #008080;">2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;">3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> pid </span><span style="color: #000000;">/</span><span style="color: #000000;"> </span><span style="color: #800080;">1000</span><span style="color: #000000;"> </span><span style="color: #000000;">%</span><span style="color: #000000;"> </span><span style="color: #800080;">100</span><span style="color: #000000;">;
+</span><span style="color: #008080;">4</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">H</span>owever, notice that even though there are only ten
+    product numbers, a table of 100 buckets must be created because the resulting hash
+    values are at least two digits. This is a terrible waste of space, but if the range
+    is forced into an array of 10 buckets, the right digit of the hash values may cause
+    a collision. In such a case, the pigeonhole principle applies, and we can no longer
+    guarantee that this hash algorithm is perfect.</p>
+  <h4 id="minperf">
+    &nbsp;</h4>
+  <h4>
+    Minimal perfect hashing</h4>
+  <p>
+    <span class="drop-cap">A</span> minimal perfect hash algorithm maps every key to
+    every bucket, without any unused buckets. Unlike the perfect hash function above,
+    a minimal perfect hash function would not have any collisions when hashing the 4th
+    and 5th digits of the product numbers and placing the result in an array of 10 buckets.
+    Discovering this function is considerably more difficult, and we are still only
+    dealing with two digit numbers.</p>
+  <p>
+    <span class="drop-cap">A</span> minimal perfect hash algorithm can only be found
+    manually with a great deal of work, or in exceptionally simple cases. For example,
+    hashing ten single digit integers into an array with 10 buckets is trivial, but
+    by adding another digit to the integers, the problem becomes much harder. In general,
+    a minimal perfect hash function can only be found through an exhaustive search of
+    the possibilities.</p>
+  <p>
+    <span class="drop-cap">A</span>lgorithms have been devised that will exhaustively
+    search for perfect and minimal perfect hash functions. If one is needed then these
+    tools will be a much better option than trying to discover an algorithm manually.
+    Many of these tools are freely available on the web.</p>
+  <h4 id="properties">
+    &nbsp;</h4>
+  <h4>
+    Properties of an ideal hash</h4>
+  <p>
+    <span class="drop-cap">W</span>ith the understanding that collisions will be inevitable
+    in all but the most specialized of cases, a primary goal in developing a hash function
+    for lookup is to minimize collisions. This typically means forcing a uniform distribution
+    of the hash value, much like a random number generator. However, unlike a random
+    number generator, the process must be repeatable so that the same key hashes to
+    the same index, while different keys do not. This goal can be broken down into two
+    general properties of an ideal hash.</p>
+  <p>
+    <span class="drop-cap">A</span>n ideal hash will permute its internal state such
+    that every resulting hash value has exactly one input that will produce it. Any
+    hash function that uses every part of the key to calculate the hash value will typically
+    meet this requirement, so general hash functions that only process a part of the
+    key will almost always be very poor because the differing parts of the key may not
+    be the parts involved in creating the hash value. A good example of this is only
+    hashing the first four or five characters of a string, and then using the algorithm
+    to hash URLs that start with “http://”.</p>
+  <p>
+    <span class="drop-cap">A</span> hash function is said to achieve avalanche if the
+    resulting hash value is wildly different if even a single bit is different in the
+    key. This effect aids distribution because similar keys will not have similar hash
+    values. A hash function that distributes the hash values in a uniform manner will
+    minimize collisions and fill the array more evenly. Avalanche is a concept derived
+    from cryptographic hashing, and it offers a way to ensure that a hash function is
+    good when used for table lookup.</p>
+  <p>
+    <span class="drop-cap">O</span>ften you will see hash functions that claim to be
+    "best for strings" or “best for integers”. These functions should be
+    avoided because if a hash function is not good for all types of data then it is
+    probably a poor algorithm in general. Sometimes, on the other hand, a hash function
+    may be optimized for a single type for performance reasons. It is good to learn
+    to tell the difference between the two, but a safe practice is to only use general
+    hash functions that are known to be good. This tutorial offers several examples
+    of good general hash functions.</p>
+  <h4 id="existing">
+    &nbsp;</h4>
+  <h4>
+    Using existing hash functions</h4>
+  <p>
+    <span class="drop-cap">D</span>esigning a hash function is a black art. As such,
+    it is always better to use a known good algorithm than to try and invent one. Hash
+    functions are similar to random number generators in many ways, and just as with
+    random number generators, it is easier to design a very poor hash function than
+    to design even a mediocre one. This tutorial will describe several good hash functions
+    so that you can avoid the temptation to write an ad hoc algorithm when the time
+    comes. We will also look at a few not so good hash functions so that you will be
+    able to recognize them in the real world.
+  </p>
+  <h4 id="add">
+    &nbsp;</h4>
+  <h4>
+    Additive hash</h4>
+  <p>
+    <span class="drop-cap">P</span>robably the simplest algorithm for hashing a sequence
+    of integral values (such as a string), is to add all of the characters together
+    and then force the range into something suitable for lookup with the remainder of
+    division. I will give an example of this algorithm only because books commonly suggest
+    it in their rush to get past the topic of hash functions on their way to collision
+    resolution methods. This algorithm is very bad:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> add_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">+=</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">G</span>enerally, any hash algorithm that relies primarily
+    on a commutitive operation will have an exceptionally bad distribution. This hash
+    fails to treat permutations differently, so “abc”, “cba”,
+    and “cab” will all result in the same hash value.</p>
+  <p>
+    <span class="drop-cap">D</span>espite the suckiness of this algorithm, the example
+    is useful in that it shows how to create a general hash function. <strong>add_hash</strong>
+    can be used to hash strings, single integers, single floating-point values, arrays
+    of scalar values, and just about anything else you can think of because it is always
+    legal to pun a simple object into an array of unsigned char and work with the individual
+    bytes of the object.</p>
+  <h4 id="xor">
+    &nbsp;</h4>
+  <h4>
+    XOR hash</h4>
+  <p>
+    <span class="drop-cap">T</span>he XOR hash is another algorithm commonly suggested
+    by textbooks. Instead of adding together the bytes of an object as the additive
+    hash does, the XOR hash repeatedly folds the bytes together to produce a seemingly
+    random hash value:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> xor_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">^=</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">U</span>nfortunately, this algorithm is too simple to work
+    properly on most input data. The internal state, the variable <strong>h</strong>,
+    is not mixed nearly enough to come close to achieving avalanche, nor is a single
+    XOR effective at permuting the internal state, so the resulting distribution, while
+    better than the additive and multiplicative hashes, is still not very good.</p>
+  <h4 id="rot">
+    &nbsp;</h4>
+  <h4>
+    Rotating hash</h4>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> rot_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">4</span><span style="color: #000000;"> ) </span><span style="color: #000000;">^</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">28</span><span style="color: #000000;"> ) </span><span style="color: #000000;">^</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">T</span>he rotating hash is identical to the XOR hash except
+    instead of simply folding each byte of the input into the internal state, it also
+    performs a fold of the internal state before combining it with the each byte of
+    the input. This extra mixing step is enough to give the rotating hash a much better
+    distribution. Much of the time, the rotating hash is sufficient, and can be considered
+    the minimal acceptable algorithm. Notice that with each improvement, the internal
+    state is being mixed up more and more. This is a key element in a good hash function.</p>
+  <h4 id="djb">
+    &nbsp;</h4>
+  <h4>
+    Bernstein hash</h4>
+  <p>
+    <span class="drop-cap">D</span>an Bernstein created this algorithm and posted it
+    in a newsgroup. It is known by many as the Chris Torek hash because Chris went a
+    long way toward popularizing it. Since then it has been used successfully by many,
+    but despite that the algorithm itself is not very sound when it comes to avalanche
+    and permutation of the internal state. It has proven very good for small character
+    keys, where it can outperform algorithms that result in a more random distribution:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> djb_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">33</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;"> h </span><span style="color: #000000;">+</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">B</span>ernstein's hash should be used with caution. It performs
+    very well in practice, for no apparently known reasons (much like how the constant
+    33 does better than more logical constants for no apparent reason), but in theory
+    it is not up to snuff. Always test this function with sample data for every application
+    to ensure that it does not encounter a degenerate case and cause excessive collisions.</p>
+  <h4 id="djb2">
+    &nbsp;</h4>
+  <h4>
+    Modified Bernstein</h4>
+  <p>
+    <span class="drop-cap">A</span> minor update to Bernstein's hash replaces addition
+    with XOR for the combining step. This change does not appear to be well known or
+    often used, the original algorithm is still recommended by nearly everyone, but
+    the new algorithm typically results in a better distribution:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> djb_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">33</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;"> h </span><span style="color: #000000;">^</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <h4 id="sax">
+    &nbsp;</h4>
+  <h4>
+    Shift-Add-XOR hash</h4>
+  <p>
+    <span class="drop-cap">T</span>he shift-add-XOR hash was designed as a string hashing
+    function, but because it is so effective, it works for any data as well with similar
+    efficiency. The algorithm is surprisingly similar to the rotating hash except a
+    different choice of constants for the rotation is used, and addition is a preferred
+    operation for mixing. All in all, this is a surprisingly powerful and flexible hash.
+    Like many effective hashes, it will fail tests for avalanche, but that does not
+    seem to affect its performance in practice.
+  </p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> sax_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">5</span><span style="color: #000000;"> ) </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">2</span><span style="color: #000000;"> ) </span><span style="color: #000000;">+</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <h4 id="fnv">
+    &nbsp;</h4>
+  <h4>
+    FNV hash</h4>
+  <p>
+    <span class="drop-cap">T</span>he FNV hash, short for Fowler/Noll/Vo in honor of
+    the creators, is a very powerful algorithm that, not surprisingly, follows the same
+    lines as Bernstein's modified hash with carefully chosen constants. This algorithm
+    has been used in many applications with wonderful results, and for its simplicity,
+    the FNV hash should be one of the first hashes tried in an application. It is also
+    recommended that the <a href="http://www.isthe.com/chongo/tech/comp/fnv/">FNV website</a>
+    be visited for useful descriptions of how to modify the algorithm for various uses.
+  </p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> fnv_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">2166136261</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">*</span><span style="color: #000000;"> </span><span style="color: #800080;">16777619</span><span style="color: #000000;"> ) </span><span style="color: #000000;">^</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <h4 id="oat">
+    &nbsp;</h4>
+  <h4>
+    One-at-a-Time hash</h4>
+  <p>
+    <span class="drop-cap">B</span>ob Jenkins is a well known authority on designing
+    hash functions for table lookup. In fact, one of his hashes is considered state
+    of the art for lookup, which we will see shortly. A considerably simpler algorithm
+    of his design is the One-at-a-Time hash:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> oat_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> ) {
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">+=</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">    h </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">10</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">    h </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">6</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">  }
+</span><span style="color: #008080;">12</span> <span style="color: #000000;">
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">  h </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">3</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">14</span> <span style="color: #000000;">  h </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">11</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">15</span> <span style="color: #000000;">  h </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">15</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">16</span> <span style="color: #000000;">
+</span><span style="color: #008080;">17</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">18</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">T</span>his algorithm quickly reaches avalanche and performs
+    very well. This function is another that should be one of the first to be tested
+    in any application, if not the very first. This algorithm is my personal preference
+    as a first test hash, and it has seen effective use in several high level scripting
+    languages as the hash function for their associative array data type.
+  </p>
+  <h4 id="jsw">
+    &nbsp;</h4>
+  <h4>
+    JSW hash</h4>
+  <p>
+    <span class="drop-cap">T</span>his is a hash of my own devising that combines a
+    rotating hash with a table of randomly generated numbers. The algorithm walks through
+    each byte of the input, and uses it as an index into a table of random integers
+    generated by a good random number generator. The internal state is rotated to mix
+    it up a bit, then XORed with the random number from the table. The result is a uniform
+    distribution if the random numbers are uniform. The size of the table should match
+    the values in a byte. For example, if a byte is eight bits then the table would
+    hold 256 random numbers:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> jsw_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">16777551</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> )
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">1</span><span style="color: #000000;"> </span><span style="color: #000000;">|</span><span style="color: #000000;"> h </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">31</span><span style="color: #000000;"> ) </span><span style="color: #000000;">^</span><span style="color: #000000;"> tab[p[i]];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    <span class="drop-cap">I</span>n general, this algorithm is among the better ones
+    that I have tested in terms of both distribution and performance. I may be slightly
+    biased, but I feel that this function should be on the list of the first to test
+    in a new application using hash lookup.</p>
+  <h4 id="elf">
+    &nbsp;</h4>
+  <h4>
+    ELF hash</h4>
+  <p>
+    <span class="drop-cap">T</span>he ELF hash function has been around for a while,
+    and it is believed to be one of the better algorithms out there. In my experience,
+    this is true, though ELF hash does not perform sufficiently better than most of
+    the other algorithms presented in this tutorial to justify its slightly more complicated
+    implementation. It should be on your list of first functions to test in a new lookup
+    implementation:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> elf_hash ( </span><span style="color: #0000FF;">void</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">key, </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> len )
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">p </span><span style="color: #000000;">=</span><span style="color: #000000;"> key;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> h </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">, g;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">int</span><span style="color: #000000;"> i;
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">for</span><span style="color: #000000;"> ( i </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;">; i </span><span style="color: #000000;">&lt;</span><span style="color: #000000;"> len; i</span><span style="color: #000000;">++</span><span style="color: #000000;"> ) {
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    h </span><span style="color: #000000;">=</span><span style="color: #000000;"> ( h </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">4</span><span style="color: #000000;"> ) </span><span style="color: #000000;">+</span><span style="color: #000000;"> p[i];
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">    g </span><span style="color: #000000;">=</span><span style="color: #000000;"> h </span><span style="color: #000000;">&amp;</span><span style="color: #000000;"> </span><span style="color: #800080;">0xf0000000L</span><span style="color: #000000;">;
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">    </span><span style="color: #0000FF;">if</span><span style="color: #000000;"> ( g </span><span style="color: #000000;">!=</span><span style="color: #000000;"> </span><span style="color: #800080;">0</span><span style="color: #000000;"> )
+</span><span style="color: #008080;">12</span> <span style="color: #000000;">      h </span><span style="color: #000000;">^=</span><span style="color: #000000;"> g </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;">;
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">
+</span><span style="color: #008080;">14</span> <span style="color: #000000;">    h </span><span style="color: #000000;">&amp;=</span><span style="color: #000000;"> </span><span style="color: #000000;">~</span><span style="color: #000000;">g;
+</span><span style="color: #008080;">15</span> <span style="color: #000000;">  }
+</span><span style="color: #008080;">16</span> <span style="color: #000000;">
+</span><span style="color: #008080;">17</span> <span style="color: #000000;">  </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> h;
+</span><span style="color: #008080;">18</span> <span style="color: #000000;">}</span></div></pre>
+  <h4 id="jen">
+    &nbsp;</h4>
+  <h4>
+    Jenkins hash</h4>
+  <p>
+    <span class="drop-cap">T</span>he dreaded Jenkins hash has been thoroughly tested
+    and passes all kinds of tests for avalanche and permutations. As such it is considered
+    to be one of the best and most thoroughly analyzed algorithms on the market presently.
+    Unfortunately, it is also ridiculously complicated compared to the other hashes
+    examined in this tutorial:</p>
+  <pre><div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+
+--><span style="color: #008080;"> 1</span> <span style="color: #0000FF;">#define</span><span style="color: #000000;"> hashsize(n) ( 1U &lt;&lt; (n) )</span><span style="color: #000000;">
+</span><span style="color: #008080;"> 2</span> <span style="color: #000000;"></span><span style="color: #0000FF;">#define</span><span style="color: #000000;"> hashmask(n) ( hashsize ( n ) - 1 )</span><span style="color: #000000;">
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;"></span><span style="color: #0000FF;">#define</span><span style="color: #000000;"> mix(a,b,c) \</span><span style="color: #000000;">
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">{ \
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">  a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; a </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( c </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">13</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">  b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; b </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( a </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">  c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; c </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( b </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">13</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">  a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; a </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( c </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">12</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">10</span> <span style="color: #000000;">  b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; b </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( a </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">  c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; c </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( b </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">5</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">12</span> <span style="color: #000000;">  a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; a </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; a </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( c </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">3</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">  b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> c; b </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; b </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( a </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">10</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">14</span> <span style="color: #000000;">  c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> a; c </span><span style="color: #000000;">-=</span><span style="color: #000000;"> b; c </span><span style="color: #000000;">^=</span><span style="color: #000000;"> ( b </span><span style="color: #000000;">&gt;&gt;</span><span style="color: #000000;"> </span><span style="color: #800080;">15</span><span style="color: #000000;"> ); \
+</span><span style="color: #008080;">15</span> <span style="color: #000000;">}
+</span><span style="color: #008080;">16</span> <span style="color: #000000;">
+</span><span style="color: #008080;">17</span> <span style="color: #000000;"></span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> jen_hash ( </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> </span><span style="color: #0000FF;">char</span><span style="color: #000000;"> </span><span style="color: #000000;">*</span><span style="color: #000000;">k, </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> length, </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> initval )
+</span><span style="color: #008080;">18</span> <span style="color: #000000;">{
+</span><span style="color: #008080;">19</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> a, b;
+</span><span style="color: #008080;">20</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> c </span><span style="color: #000000;">=</span><span style="color: #000000;"> initval;
+</span><span style="color: #008080;">21</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;"> len </span><span style="color: #000000;">=</span><span style="color: #000000;"> length;
+</span><span style="color: #008080;">22</span> <span style="color: #000000;">
+</span><span style="color: #008080;">23</span> <span style="color: #000000;">   a </span><span style="color: #000000;">=</span><span style="color: #000000;"> b </span><span style="color: #000000;">=</span><span style="color: #000000;"> </span><span style="color: #800080;">0x9e3779b9</span><span style="color: #000000;">;
+</span><span style="color: #008080;">24</span> <span style="color: #000000;">
+</span><span style="color: #008080;">25</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">while</span><span style="color: #000000;"> ( len </span><span style="color: #000000;">&gt;=</span><span style="color: #000000;"> </span><span style="color: #800080;">12</span><span style="color: #000000;"> ) {
+</span><span style="color: #008080;">26</span> <span style="color: #000000;">      a </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( k[</span><span style="color: #800080;">0</span><span style="color: #000000;">] </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">1</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> ) 
+</span><span style="color: #008080;">27</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">2</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> )
+</span><span style="color: #008080;">28</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">3</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> ) );
+</span><span style="color: #008080;">29</span> <span style="color: #000000;">      b </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( k[</span><span style="color: #800080;">4</span><span style="color: #000000;">] </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">5</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> ) 
+</span><span style="color: #008080;">30</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">6</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> )
+</span><span style="color: #008080;">31</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">7</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> ) );
+</span><span style="color: #008080;">32</span> <span style="color: #000000;">      c </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( k[</span><span style="color: #800080;">8</span><span style="color: #000000;">] </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">9</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> ) 
+</span><span style="color: #008080;">33</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">10</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> )
+</span><span style="color: #008080;">34</span> <span style="color: #000000;">        </span><span style="color: #000000;">+</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">11</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> ) );
+</span><span style="color: #008080;">35</span> <span style="color: #000000;">
+</span><span style="color: #008080;">36</span> <span style="color: #000000;">      mix ( a, b, c );
+</span><span style="color: #008080;">37</span> <span style="color: #000000;">
+</span><span style="color: #008080;">38</span> <span style="color: #000000;">      k </span><span style="color: #000000;">+=</span><span style="color: #000000;"> </span><span style="color: #800080;">12</span><span style="color: #000000;">;
+</span><span style="color: #008080;">39</span> <span style="color: #000000;">      len </span><span style="color: #000000;">-=</span><span style="color: #000000;"> </span><span style="color: #800080;">12</span><span style="color: #000000;">;
+</span><span style="color: #008080;">40</span> <span style="color: #000000;">   }
+</span><span style="color: #008080;">41</span> <span style="color: #000000;">
+</span><span style="color: #008080;">42</span> <span style="color: #000000;">   c </span><span style="color: #000000;">+=</span><span style="color: #000000;"> length;
+</span><span style="color: #008080;">43</span> <span style="color: #000000;">
+</span><span style="color: #008080;">44</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">switch</span><span style="color: #000000;"> ( len ) {
+</span><span style="color: #008080;">45</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">11</span><span style="color: #000000;">: c </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">10</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">46</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">10</span><span style="color: #000000;">: c </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">9</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">47</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">9</span><span style="color: #000000;"> : c </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">8</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">48</span> <span style="color: #000000;">   </span><span style="color: #008000;">/*</span><span style="color: #008000;"> First byte of c reserved for length </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+</span><span style="color: #008080;">49</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> : b </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">7</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">50</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">7</span><span style="color: #000000;"> : b </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">6</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">51</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">6</span><span style="color: #000000;"> : b </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">5</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">52</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">5</span><span style="color: #000000;"> : b </span><span style="color: #000000;">+=</span><span style="color: #000000;"> k[</span><span style="color: #800080;">4</span><span style="color: #000000;">];
+</span><span style="color: #008080;">53</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">4</span><span style="color: #000000;"> : a </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">3</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">24</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">54</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">3</span><span style="color: #000000;"> : a </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">2</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">16</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">55</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">2</span><span style="color: #000000;"> : a </span><span style="color: #000000;">+=</span><span style="color: #000000;"> ( (</span><span style="color: #0000FF;">unsigned</span><span style="color: #000000;">)k[</span><span style="color: #800080;">1</span><span style="color: #000000;">] </span><span style="color: #000000;">&lt;&lt;</span><span style="color: #000000;"> </span><span style="color: #800080;">8</span><span style="color: #000000;"> );
+</span><span style="color: #008080;">56</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">case</span><span style="color: #000000;"> </span><span style="color: #800080;">1</span><span style="color: #000000;"> : a </span><span style="color: #000000;">+=</span><span style="color: #000000;"> k[</span><span style="color: #800080;">0</span><span style="color: #000000;">];
+</span><span style="color: #008080;">57</span> <span style="color: #000000;">   }
+</span><span style="color: #008080;">58</span> <span style="color: #000000;">
+</span><span style="color: #008080;">59</span> <span style="color: #000000;">   mix ( a, b, c );
+</span><span style="color: #008080;">60</span> <span style="color: #000000;">
+</span><span style="color: #008080;">61</span> <span style="color: #000000;">   </span><span style="color: #0000FF;">return</span><span style="color: #000000;"> c;
+</span><span style="color: #008080;">62</span> <span style="color: #000000;">}</span></div></pre>
+  <p>
+    For details on how this algorithm works, feel free to visit Bob Jenkins' <a href="http://burtleburtle.net/bob/">
+      website</a>.</p>
+  <h4 id="design">
+    &nbsp;</h4>
+  <h4>
+    Designing hash functions</h4>
+  <p>
+    <span class="drop-cap">D</span>esigning a hash function is more trial and error
+    with a touch of theory than any well defined procedure. For example, beyond making
+    the connection between random numbers and the desirable random distribution of hash
+    values, the better part of the design for my JSW hash involved playing around with
+    constants to see what would work best.</p>
+  <p>
+    <span class="drop-cap">I</span> would also be lying if I said that the choice of
+    operations was not almost completely random trial and error by pulling from a pool
+    of combinations of XOR, OR, AND, addition, subtraction, and multiplication. The
+    biggest design element of JSW hash is using the table of random numbers keyed on
+    each byte of the input to act as a mixing step. Then it was simply a matter of choosing
+    a less complicated hash algorithm to paste that addition onto, and finally the fiddling
+    and testing to get the algorithm performing well.</p>
+  <p>
+    <span class="drop-cap"></span>I will not claim that hash function design is always
+    like that, but the evidence certainly suggests it. If you design hash functions
+    in a deterministic way, I would love to hear from you.</p>
+  <h4 id="testing">
+    &nbsp;</h4>
+  <h4>
+    Testing hash functions</h4>
+  <p>
+    <span class="drop-cap">T</span>he most important test for a hash function is distribution
+    on a sample of the expected input. No hash function is best for all possible inputs,
+    which is why I introduced a large number of algorithms in this tutorial. Sometimes
+    one of the good hash functions will work better than the others, and that one should
+    be used. Other times they will all be fairly equal and you can choose at random.
+    The key here is that a hash function should never be used blindly without testing
+    it, no matter how good the author says it is. Often, hash tests are designed around
+    a hash function, and that introduces a bias in favor of that function.</p>
+  <p>
+    <span class="drop-cap">A</span> test for distribution is a simple affair. Just take
+    a sample of the expected input and insert it into a chained hash table with the
+    chosen function. Work out the statistics of chain length, and you can determine
+    how many collisions were detected. Alternatively, a quick test for collisions can
+    be performed without the use of a hash table by simply taking a sample input with
+    no duplicates and counting collisions with an existence table:</p>
+  <pre>function collisions: file, n
+begin
+  table[n] = {0}
+
+  while get ( file, buffer ) do
+    table[hash ( buffer ) % n] +:= 1
+  loop
+
+  for i := 0 to n do
+    println table[i]
+  loop
+end</pre>
+  <p>
+    Another alternative is to plug the hash function into my <a href="http://eternallyconfuzzled.com/tuts/libs/jsw_hlib.html">
+      jsw_hlib</a> library and run it with a few files of sample input. This saves you
+    the trouble of having to work out a collision test, or designing and implementing
+    a working hash table while calculating several more useful measurements than just
+    collisions.
+  </p>
+  <p class="right-foot">
+    <a href="http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#wrapper">Top</a></p>
+
+      <span class="left-foot">From the twisted mind of <a href="mailto:happyfrosty@hotmail.com">Julienne Walker</a></span>
+    </div>
+    <img src="./Eternally Confuzzled - The Art of Hashing_files/eclogo.png" alt="EC Logo" style="left: 19px; position: absolute; top: 19px">
+  
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_NavTree_ImageArray =  new Array('', '', '', '/WebResource.axd?d=afc0I3r2VUHiwv5lu9NQuWPkaPc3o0FDLCUueSUzzuI1&t=634183690373123000', '/WebResource.axd?d=afc0I3r2VUHiwv5lu9NQuYH2PDBuOT_fk3D5eciR3PY1&t=634183690373123000', '/WebResource.axd?d=afc0I3r2VUHiwv5lu9NQuZkD4SZvXpvkZAhLQ9gn5tc1&t=634183690373123000');
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();var ctl00_NavTree_Data = new Object();
+ctl00_NavTree_Data.images = ctl00_NavTree_ImageArray;
+ctl00_NavTree_Data.collapseToolTip = "Collapse {0}";
+ctl00_NavTree_Data.expandToolTip = "Expand {0}";
+ctl00_NavTree_Data.expandState = theForm.elements['ctl00_NavTree_ExpandState'];
+ctl00_NavTree_Data.selectedNodeID = theForm.elements['ctl00_NavTree_SelectedNode'];
+ctl00_NavTree_Data.hoverClass = 'ctl00_NavTree_8';
+ctl00_NavTree_Data.hoverHyperLinkClass = 'ctl00_NavTree_7';
+for (var i=0;i<6;i++) {
+var preLoad = new Image();
+if (ctl00_NavTree_ImageArray[i].length > 0)
+preLoad.src = ctl00_NavTree_ImageArray[i];
+}
+ctl00_NavTree_Data.lastIndex = 83;
+ctl00_NavTree_Data.populateLog = theForm.elements['ctl00_NavTree_PopulateLog'];
+ctl00_NavTree_Data.treeViewID = 'ctl00$NavTree';
+ctl00_NavTree_Data.name = 'ctl00_NavTree_Data';
+//]]>
+</script>
+</form>
+
+
+</body></html>

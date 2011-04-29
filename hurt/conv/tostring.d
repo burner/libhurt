@@ -53,7 +53,6 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10, bool sign 
 public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false)
 		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
 			(is(S == float) || is(S == double) || is(S == real))) {
-	writeln(__FILE__,__LINE__,": round = ",round);
 	long intp;
 	long fractp;
 	long power = 1;
@@ -72,12 +71,10 @@ public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false
 
 	immutable(T)[] dec = integerToString!(T,long)(intp, 10, sign, true);
 	immutable(T)[] frac = integerToString!(T,long)(fractp, 10, false, true);
-	writeln(__FILE__,__LINE__,": ",frac," ", round);
 	round--;
 	while(frac.length < round) {
 		frac = frac ~ "0";
 	}
-	writeln(__FILE__,__LINE__,": ",frac);
 	return dec ~ "." ~ frac;
 }
 
