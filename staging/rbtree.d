@@ -7,25 +7,63 @@ extern(C) long getTicks();
 int rand() {
 	immutable M = 2147483647;
 	immutable A = 16807;
-	
 	static int seed = 1;
 
 	seed = A * ( seed % (M/A) ) - (M%A) * ( seed / (M/A) );
-
 	if(seed <= 0)
 		seed += M;
 
 	return seed;
 }
 
+class Iterator(T) {
+	Node!(T) stack[256];
+	size_t sPtr = 0;
+	Node!(T) current;
+	bool right;
+	
+	this(Node!(T) root) {
+		this.current = root;
+		this.right = false;
+		this.opUnary!("++")();
+	}
+
+	void opUnary(string s)() if(s == "++") {
+		if(this.right) {
+			current = current.link[1];
+			this.right = false;
+		}
+		while(sPtr > 0 || current) {
+			if(current) {
+				stack[sPtr++] = current;
+				current = current.link[0];
+			} else {
+				current = stack[--sPtr];
+				this.right = true;
+				break;
+			}
+		}
+	}
+
+	T opUnary(string s)() if(s == "*") {
+		return this.current.data;
+	}
+
+	bool isValid() const {
+		return current !is null || this.sPtr > 0;
+	}
+}
+
 class Node(T) {
 	bool red;
 	T data;
+	Node!(T) par;
 	Node!(T) link[2];
 
-	this(T data) {
+	this(T data, Node!(T) parent) {
 		this.data = data;
 		this.red = true;
+		this.par = parent;
 		this.link[0] = null;	
 		this.link[1] = null;	
 	}
@@ -48,7 +86,14 @@ class RBTree(T) {
 		Node!(T) save = root.link[!dir];
 
 		root.link[!dir] = save.link[dir];
+		if(root.link[!dir] !is null) {
+			root.link[!dir].par = root;
+		}
 		save.link[dir] = root;
+		if(save.link[dir] !is null) {
+			save.link[dir].par = save;
+		}
+		//root.par = save;
 
 		root.red = true;
 		save.red = false;
@@ -58,82 +103,19 @@ class RBTree(T) {
 
 	Node!(T) doubleRot(Node!(T) root, bool dir) {
 		root.link[!dir] = singleRot(root.link[!dir], !dir);
+		root.link[!dir].par = root;
 		return singleRot(root, dir);
 	}
 
-	int insert(T data) {
-		if(this.root is null) {
-			/* Empty tree case */
-			this.root = new Node!(T)(data);
-			if(this.root is null)
-				return 0;
-		} else {
-			Node!(T) head = new Node!(T)(); /* False tree root */
-
-			Node!(T) g, t;     /* Grandparent & parent */
-			Node!(T) p, q;     /* Iterator & parent */
-			bool dir = false, last;
-
-			/* Set up helpers */
-			t = head;
-			g = p = null;
-			q = t.link[1] = this.root;
-
-			/* Search down the tree */
-			for(; ;) {
-				if(q is null) {
-					/* Insert new node at the bottom */
-					p.link[dir] = q = new Node!(T)(data);
-					if(q is null)
-						return 0;
-				}
-				else if(isRed(q.link[0]) && isRed(q.link[1])) {
-					/* Color flip */
-					q.red = 1;
-					q.link[0].red = 0;
-					q.link[1].red = 0;
-				}
-
-				/* Fix red violation */
-				if(isRed(q) && isRed(p)) {
-					int dir2 = t.link[1] == g;
-
-					if(q == p.link[last])
-						t.link[dir2] = singleRot(g, !last);
-					else
-						t.link[dir2] = doubleRot(g, !last);
-				}
-
-				/* Stop if found */
-				if(q.data == data)
-					break;
-
-				last = dir;
-				dir = q.data < data;
-
-				/* Update helpers */
-				if(g !is null)
-					t = g;
-				g = p, p = q;
-				q = q.link[dir];
-			}
-
-			/* Update root */
-			this.root = head.link[1];
-		}
-
-		/* Make root black */
-		this.root.red = 0;
-
-		return 1;
-	}
-
-	Node!(T) insertRecursive(Node!(T) root, T data) {
-		if(root is null)
-			root = new Node!(T)(data);
-		else if(data != root.data) {
+	Node!(T) insertRecursive(Node!(T) root, T data, Node!(T) parent) {
+		if(root is null) {
+			root = new Node!(T)(data, parent);
+		} else if(data != root.data) {
 			bool dir = root.data < data;
-			root.link[dir] = insertRecursive(root.link[dir], data);
+			root.link[dir] = insertRecursive(root.link[dir], data, root);
+			if(root.link[dir] !is null) {
+				root.link[dir].par = root;
+			}
 			/* Hey, let's rebalance here! */
 			if(isRed(root.link[dir])) {
 				if(isRed(root.link[!dir])) {
@@ -143,18 +125,22 @@ class RBTree(T) {
 					root.link[1].red = false;
 				} else {
 					/* Cases 2 & 3 */
-					if(isRed(root.link[dir].link[dir]))
+					if(isRed(root.link[dir].link[dir])) {
 						root = singleRot(root, !dir);
-					else if(isRed(root.link[dir].link[!dir]))
+						root.par = parent;
+					} else if(isRed(root.link[dir].link[!dir])) {
 						root = doubleRot(root, !dir);
+						root.par = parent;
+					}
 				}
 			}
 		}
 		return root;
 	}
 
-	bool insertBU(T data) {
-		this.root = this.insertRecursive(this.root, data);
+	bool insert(T data) {
+		this.root = this.insertRecursive(this.root, data, null);
+		this.root.par = null;
 		this.root.red = false;
 		return true;
 	}
@@ -190,91 +176,24 @@ class RBTree(T) {
 
 			dir = root.data < data;
 			root.link[dir] = removeRecursive(root.link[dir], data, done);
+			if(root.link[dir] !is null) {
+				root.link[dir].par = root;
+			}
 
-			if(!done)
+			if(!done) {
 				root = removeBalance(root, dir, done);
+			}
 		}
 		return root;
 	}
 
-	int removeBU(T data) {
+	int remove(T data) {
 		bool done = false;
 
 		this.root = removeRecursive(this.root, data, done);
-		if(this.root !is null)
-			this.root.red = 0;
-
-		return 1;
-	}
-
-
-	int remove(int data) {
 		if(this.root !is null) {
-			Node!(T) head = new Node!(T); /* False this.root */
-			Node!(T) q, p, g; /* Helpers */
-			Node!(T) f = null;  /* Found item */
-			bool dir = true;
-
-			/* Set up helpers */
-			q = head;
-			g = p = null;
-			q.link[1] = this.root;
-
-			/* Search and push a red down */
-			while(q.link[dir] !is null) {
-				bool last = dir;
-
-				/* Update helpers */
-				g = p, p = q;
-				q = q.link[dir];
-				dir = q.data < data;
-
-				/* Save found node */
-				if(q.data == data)
-					f = q;
-
-				/* Push the red node down */
-				if(!isRed(q) && !isRed(q.link[dir])) {
-					if(isRed(q.link[!dir]))
-						p = p.link[last] = singleRot(q, dir);
-					else if(!isRed(q.link[!dir])) {
-						Node!(T) s = p.link[!last];
-
-						if(s !is null) {
-							if(!isRed(s.link[!last]) && !isRed(s.link[last])) {
-								/* Color flip */
-								p.red = 0;
-								s.red = 1;
-								q.red = 1;
-							} else {
-								bool dir2 = g.link[1] == p;
-
-								if(isRed(s.link[last]))
-									g.link[dir2] = doubleRot(p, last);
-								else if(isRed(s.link[!last]))
-									g.link[dir2] = singleRot(p, last);
-
-								/* Ensure correct coloring */
-								q.red = g.link[dir2].red = 1;
-								g.link[dir2].link[0].red = 0;
-								g.link[dir2].link[1].red = 0;
-							}
-						}
-					}
-				}
-			}
-
-			/* Replace and remove if found */
-			if(f !is null) {
-				f.data = q.data;
-				p.link[p.link[1] == q] =
-					q.link[q.link[0] is null];
-			}
-
-			/* Update root and make it black */
-			this.root = head.link[1];
-			if(this.root !is null)
-				this.root.red = 0;
+			this.root.red = 0;
+			this.root.par = null;
 		}
 
 		return 1;
@@ -311,8 +230,10 @@ class RBTree(T) {
 
 				if(new_root)
 					root = p;
-				else
+				else {
 					root.link[dir] = p;
+					root.link[dir].par = root;
+				}
 
 				done = true;
 			}
@@ -321,16 +242,50 @@ class RBTree(T) {
 		return root;
 	}
 
-	
-
-	int validate() {
-		return rbAssert(this.root);
+	Node!(T) find(T data) {
+		Node!(T) it = this.root;
+		while(it !is null) {
+			if(it.data == data) {
+				return it;
+			} else {
+				bool dir = it.data < data;
+				it = it.link[dir];
+			}
+		}
+		return null;
 	}
 
-	int rbAssert(Node!(T) root) {
+	void inOrder() {
+		Node!(T) stack[256];
+		size_t sPtr = 0;
+		Node!(T) current = this.root;
+		while(sPtr > 0 || current) {
+			if(current) {
+				stack[sPtr++] = current;
+				current = current.link[0];
+			} else {
+				current = stack[--sPtr];
+				writeln(current.data);
+				current = current.link[1];
+			}
+		}
+	}
+
+	Iterator!(T) begin() {
+		return new Iterator!(T)(this.root);
+	}
+
+	int validate() {
+		return rbAssert(this.root, null);
+	}
+
+	int rbAssert(Node!(T) root, Node!(T) parent) {
 		if(root is null)
 			return 1;
 		else {
+			if(parent !is null && root.par !is parent) {
+				writeln("Parent not correct ", parent.data, " ",root.data);
+			}
 			Node!(T) ln = root.link[false];
 			Node!(T) rn = root.link[true];
 
@@ -343,8 +298,8 @@ class RBTree(T) {
 			}
 
 			int lh, rh;
-			lh = rbAssert(ln);
-			rh = rbAssert(rn);
+			lh = rbAssert(ln, root);
+			rh = rbAssert(rn, root);
 
 			/* Invalid binary search tree */
 			if((ln !is null && ln.data >= root.data)
@@ -369,23 +324,37 @@ class RBTree(T) {
 }
 
 unittest {
-	RBTree!(int) rbt1 = new RBTree!(int)();
-	int times = 10000;
+	RBTree!(int) rbt2 = new RBTree!(int)();
+	int times = 20_000;
 	int[] rn = new int[times];
-	writeln(getTicks());
-	
-	for(int i = 0; i < times; i++) {
-		int tmp = rand();
-		rn[i] = tmp;
-		rbt1.insert(tmp);
-		rbt1.validate();
+	foreach(ref it; rn) {
+		it = rand();
 	}
-	writeln(getTicks());
 
+	long st = getTicks();
 	for(int i = 0; i < times; i++) {
-		rbt1.remove(rn[i]);
-		rbt1.validate();
+		int tmp = rn[i];
+		rbt2.insert(tmp);
+		/*foreach(it;rn[0..i]) {
+			assert(rbt2.find(it) !is null);
+		}*/
+		//writeln(i);
+		//rbt2.validate();
 	}
+	//rbt2.inOrder();
+	/*Iterator!(int) it = rbt2.begin();
+	while(it.isValid()) {
+		writeln(*it);
+		it++;
+	}*/
+		
+	writeln("bottom up insert ", getTicks()-st);
+	st = getTicks();
+	for(int i = 0; i < times; i++) {
+		rbt2.remove(rn[i]);
+		//rbt2.validate();
+	}
+	writeln("bottom up remove ", getTicks()-st);
 }
 
 void main() {
