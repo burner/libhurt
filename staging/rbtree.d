@@ -4,7 +4,7 @@ import std.stdio;
 
 extern(C) long getTicks();
 
-int rand() {
+int rand(int low = 0, int up = int.max) {
 	immutable M = 2147483647;
 	immutable A = 16807;
 	static int seed = 1;
@@ -13,69 +13,100 @@ int rand() {
 	if(seed <= 0)
 		seed += M;
 
-	return seed;
+	return (seed + low) % up;
 }
 
-class Iterator(T) {
-	Node!(T) stack[256];
-	size_t sPtr = 0;
-	Node!(T) current;
-	bool right;
-	
-	this(Node!(T) root) {
-		this.current = root;
-		this.right = false;
-		this.opUnary!("++")();
-	}
-
-	void opUnary(string s)() if(s == "++") {
-		if(this.right) {
-			current = current.link[1];
-			this.right = false;
-		}
-		while(sPtr > 0 || current) {
-			if(current) {
-				stack[sPtr++] = current;
-				current = current.link[0];
-			} else {
-				current = stack[--sPtr];
-				this.right = true;
-				break;
-			}
-		}
-	}
-
-	T opUnary(string s)() if(s == "*") {
-		return this.current.data;
-	}
-
-	bool isValid() const {
-		return current !is null || this.sPtr > 0;
-	}
-}
-
-class Node(T) {
-	bool red;
-	T data;
-	Node!(T) par;
-	Node!(T) link[2];
-
-	this(T data, Node!(T) parent) {
-		this.data = data;
-		this.red = true;
-		this.par = parent;
-		this.link[0] = null;	
-		this.link[1] = null;	
-	}
-
-	this() {
-		this.red = false;
-		this.link[0] = null;	
-		this.link[1] = null;	
-	}
-}
  
 class RBTree(T) {
+	class Iterator(T) {
+		Node!(T) current;
+		Node!(T) treeRoot;
+		
+		this(Node!(T) root, bool begin) {
+			this.current = root;
+			this.treeRoot = root;
+			if(begin) {
+				this.begin();
+			} else {
+				this.end();
+			}
+		}
+	
+		void begin() {
+			while(this.current.link[0] !is null) {
+				this.current = this.current.link[0];
+			}
+		}
+
+		void end() {
+			while(this.current.link[1] !is null) {
+				this.current = this.current.link[1];
+			}
+		}
+
+		void opUnary(string s)() if(s == "++") {
+			Node!(T) y;
+			if(null !is (y = this.current.link[1])) {
+				while(y.link[0] !is null) {
+					y = y.link[0];
+				}
+				this.current = y;
+			} else {
+				y = this.current.par;
+				while(y !is null && this.current is y.link[1]) {
+					this.current = y;
+					y = y.par;
+				}
+				this.current = y;
+			}
+		}	
+
+		void opUnary(string s)() if(s == "--") {
+			Node!(T) y;
+			if(null !is (y = this.current.link[0])) {
+				while(y.link[1] !is null) {
+					y = y.link[1];
+				}
+				this.current = y;
+			} else {
+				y = this.current.par;
+				while(y !is null && this.current is y.link[0]) {
+					this.current = y;
+					y = y.par;
+				}
+				this.current = y;
+			}
+		}	
+	
+		T opUnary(string s)() if(s == "*") {
+			return this.current.data;
+		}
+	
+		bool isValid() const {
+			return current !is null;
+		}
+	}
+	
+	class Node(T) {
+		bool red;
+		T data;
+		Node!(T) par;
+		Node!(T) link[2];
+	
+		this(T data, Node!(T) parent) {
+			this.data = data;
+			this.red = true;
+			this.par = parent;
+			this.link[0] = null;	
+			this.link[1] = null;	
+		}
+	
+		this() {
+			this.red = false;
+			this.link[0] = null;	
+			this.link[1] = null;	
+		}
+	}
 	static bool isRed(Node!(T) tt) {
 		return tt !is null && tt.red;
 	}
@@ -325,28 +356,28 @@ class RBTree(T) {
 
 unittest {
 	RBTree!(int) rbt2 = new RBTree!(int)();
-	int times = 20_000;
+	int times = 20;
 	int[] rn = new int[times];
 	foreach(ref it; rn) {
-		it = rand();
+		it = rand(5, times*2);
 	}
 
 	long st = getTicks();
 	for(int i = 0; i < times; i++) {
 		int tmp = rn[i];
 		rbt2.insert(tmp);
-		/*foreach(it;rn[0..i]) {
-			assert(rbt2.find(it) !is null);
-		}*/
-		//writeln(i);
-		//rbt2.validate();
 	}
 	//rbt2.inOrder();
-	/*Iterator!(int) it = rbt2.begin();
+	RBTree!(int).Iterator!(int) it = rbt2.begin(true);
 	while(it.isValid()) {
-		writeln(*it);
+		writeln("hello ", *it);
 		it++;
-	}*/
+	}
+	RBTree!(int).Iterator!(int) it = rbt2.begin(false);
+	while(it.isValid()) {
+		writeln("hello ", *it);
+		it--;
+	}
 		
 	writeln("bottom up insert ", getTicks()-st);
 	st = getTicks();
