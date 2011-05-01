@@ -5,7 +5,8 @@ CFLAGS=-c -w -gc -debug -m64 -unittest
 ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o \
-hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o 
+hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o \
+hurt.container.rbtree.o
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
 hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o
@@ -14,7 +15,8 @@ MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o
 
-UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.getticks.o
+UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.milli.o hurt.util.random.o \
+hurt.util.datetime.o
 
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
@@ -50,6 +52,9 @@ hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
 
 hurt.container.stack.o: hurt/container/stack.d Makefile
 	$(DC) $(CFLAGS) hurt/container/stack.d -ofhurt.container.stack.o
+
+hurt.container.rbtree.o: hurt/container/rbtree.d Makefile
+	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/container/dlst.d -ofhurt.container.dlst.o
@@ -87,8 +92,14 @@ hurt.util.array.o: hurt/util/array.d Makefile
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
 
-hurt.util.getticks.o: hurt/util/getticks.c Makefile
-	gcc -m64 -c hurt/util/getticks.c -o hurt.util.getticks.o
+hurt.util.random.o: hurt/util/random.d Makefile
+	$(DC) $(CFLAGS) hurt/util/random.d -ofhurt.util.random.o
+
+hurt.util.datetime.o: hurt/util/datetime.d Makefile
+	$(DC) $(CFLAGS) hurt/util/datetime.d -ofhurt.util.datetime.o
+
+hurt.util.milli.o: hurt/util/milli.c Makefile
+	gcc -m64 -c hurt/util/milli.c -o hurt.util.milli.o
 
 hurt.conv.conv.o: hurt/conv/conv.d hurt/conv/charconv.d hurt/conv/tointeger.d hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/conv.d -ofhurt.conv.conv.o

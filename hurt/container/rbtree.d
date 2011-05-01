@@ -1,21 +1,9 @@
-module rbtree;
+module hurt.container.rbtree;
+
+import hurt.util.random;
+import hurt.util.datetime;
 
 import std.stdio;
-
-extern(C) long getTicks();
-
-int rand(int low = 0, int up = int.max) {
-	immutable M = 2147483647;
-	immutable A = 16807;
-	static int seed = 1;
-
-	seed = A * ( seed % (M/A) ) - (M%A) * ( seed / (M/A) );
-	if(seed <= 0)
-		seed += M;
-
-	return (seed + low) % up;
-}
-
  
 class RBTree(T) {
 	class Iterator(T) {
@@ -25,22 +13,8 @@ class RBTree(T) {
 		this(Node!(T) root, bool begin) {
 			this.current = root;
 			this.treeRoot = root;
-			if(begin) {
-				this.begin();
-			} else {
-				this.end();
-			}
-		}
-	
-		void begin() {
-			while(this.current.link[0] !is null) {
-				this.current = this.current.link[0];
-			}
-		}
-
-		void end() {
-			while(this.current.link[1] !is null) {
-				this.current = this.current.link[1];
+			while(this.current.link[!begin] !is null) {
+				this.current = this.current.link[!begin];
 			}
 		}
 
@@ -107,11 +81,21 @@ class RBTree(T) {
 			this.link[1] = null;	
 		}
 	}
-	static bool isRed(Node!(T) tt) {
+	static bool isRed(const Node!(T) tt) {
 		return tt !is null && tt.red;
 	}
 
 	Node!(T) root;
+	size_t size;
+
+	this() {
+		this.size = 0;
+		this.root = null;
+	}
+
+	size_t getSize() const {
+		return this.size;
+	}
 
 	Node!(T) singleRot(Node!(T) root, bool dir) {
 		Node!(T) save = root.link[!dir];
@@ -141,6 +125,7 @@ class RBTree(T) {
 	Node!(T) insertRecursive(Node!(T) root, T data, Node!(T) parent) {
 		if(root is null) {
 			root = new Node!(T)(data, parent);
+			this.size++;
 		} else if(data != root.data) {
 			bool dir = root.data < data;
 			root.link[dir] = insertRecursive(root.link[dir], data, root);
@@ -193,6 +178,7 @@ class RBTree(T) {
 						save.red = 0;
 						done = true;
 					}
+					this.size--;
 					return save;
 				} else {
 					Node!(T) heir = root.link[0];
@@ -273,7 +259,7 @@ class RBTree(T) {
 		return root;
 	}
 
-	Node!(T) find(T data) {
+	Node!(T) find(const T data) {
 		Node!(T) it = this.root;
 		while(it !is null) {
 			if(it.data == data) {
@@ -303,22 +289,26 @@ class RBTree(T) {
 	}
 
 	Iterator!(T) begin() {
-		return new Iterator!(T)(this.root);
+		return new Iterator!(T)(this.root, true);
 	}
 
-	int validate() {
+	Iterator!(T) end() {
+		return new Iterator!(T)(this.root, false);
+	}
+
+	int validate() const {
 		return rbAssert(this.root, null);
 	}
 
-	int rbAssert(Node!(T) root, Node!(T) parent) {
+	int rbAssert(const Node!(T) root, const Node!(T) parent) const {
 		if(root is null)
 			return 1;
 		else {
 			if(parent !is null && root.par !is parent) {
 				writeln("Parent not correct ", parent.data, " ",root.data);
 			}
-			Node!(T) ln = root.link[false];
-			Node!(T) rn = root.link[true];
+			const Node!(T) ln = root.link[false];
+			const Node!(T) rn = root.link[true];
 
 			/* Consecutive red links */
 			if(isRed(root)) {
@@ -362,33 +352,32 @@ unittest {
 		it = rand(5, times*2);
 	}
 
-	long st = getTicks();
+	long st = getMilli();
 	for(int i = 0; i < times; i++) {
 		int tmp = rn[i];
 		rbt2.insert(tmp);
+		//writeln(rbt2.getSize());
 	}
+	//writeln("bottom up insert ", getMilli()-st);
 	//rbt2.inOrder();
-	RBTree!(int).Iterator!(int) it = rbt2.begin(true);
+	RBTree!(int).Iterator!(int) it = rbt2.begin();
+	size_t count = 0;
 	while(it.isValid()) {
-		writeln("hello ", *it);
+		//writeln("hello ", *it);
 		it++;
+		count++;
 	}
-	RBTree!(int).Iterator!(int) it = rbt2.begin(false);
-	while(it.isValid()) {
-		writeln("hello ", *it);
-		it--;
+	assert(count == rbt2.getSize());
+	RBTree!(int).Iterator!(int) jt = rbt2.end();
+	while(jt.isValid()) {
+		//writeln("hello ", *jt);
+		jt--;
 	}
 		
-	writeln("bottom up insert ", getTicks()-st);
-	st = getTicks();
+	st = getMilli();
 	for(int i = 0; i < times; i++) {
 		rbt2.remove(rn[i]);
 		//rbt2.validate();
 	}
-	writeln("bottom up remove ", getTicks()-st);
-}
-
-void main() {
-	writeln("rbtree unittest passed");
-	return;
+	//writeln("bottom up remove ", getTicks()-st);
 }
