@@ -32,7 +32,7 @@ int close(const int fd) {
 	return closeC(fd);
 }
 
-int fsync(const int fd) {
+int sync(const int fd) {
 	return fsyncC(fd);
 }
 

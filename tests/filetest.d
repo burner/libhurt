@@ -12,11 +12,11 @@ void main() {
 	//assert(seek(fd, 0L, SeekType.SEEK_SET) != -1);
 	println("seek work");
 	println(conv!(int,string)(seek(fd, -12L, SeekType.SEEK_CUR)));
-	char[] read = new char[12];
-	long rcnt = hurt.stdio.file.read(fd, cast(byte[])read, 12);
+	char[] readb = new char[12];
+	long rcnt = read(fd, cast(byte[])readb, 12);
 	println(conv!(long,string)(rcnt));
 	println("Errno value " ~ conv!(long,string)(getErrno()));
-	println(read[0..rcnt].idup);
+	println(readb[0..rcnt].idup);
 	assert(close(fd) != -1, "close failed");
 	println("close worked");
 	//assert(fsync(fd) != -1, "fsync failed");
