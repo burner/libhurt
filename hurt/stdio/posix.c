@@ -14,3 +14,7 @@ int openC(const char *name, unsigned int flags, unsigned int mode) {
 	int f = open(name, flags, mode);
 	return f;
 }
+
+int closeC(const int fd) {
+	return close(fd);
+}
