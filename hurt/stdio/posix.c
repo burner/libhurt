@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -17,4 +19,10 @@ int openC(const char *name, unsigned int flags, unsigned int mode) {
 
 int closeC(const int fd) {
 	return close(fd);
+}
+
+long getFdSize(const int fd) {
+	struct stat s;
+	int i = fstat(fd, &s);
+	return s.st_size;
 }

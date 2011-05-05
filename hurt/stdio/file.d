@@ -5,6 +5,7 @@ extern(C) long writeC(int fd, const void *buf, size_t count);
 extern(C) int openC(const char* name, uint flags, uint modevalues);
 extern(C) int fsyncC(int fd);
 extern(C) int closeC(int fd);
+extern(C) int getFdSize(int fd);
 
 size_t print(const string str) {
 	return writeC(0, str.ptr, str.length);	
@@ -30,6 +31,10 @@ int close(const int fd) {
 
 int fsync(const int fd) {
 	return fsyncC(fd);
+}
+
+int sizeOfFD(const int fd) {
+	return getFdSize(fd);
 }
 
 unittest {
