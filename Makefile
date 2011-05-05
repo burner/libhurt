@@ -21,7 +21,9 @@ hurt.util.datetime.o
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
-all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(MATH_OBJS)
+STDIO_OBJS=hurt.stdio.ioflags.o hurt.stdio.posix.o hurt.stdio.file.o
+
+all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(MATH_OBJS) $(STDIO_OBJS)
 	ar -r libhurt.a *.o
 
 clean:
@@ -139,3 +141,12 @@ hurt.exception.formaterror.o: hurt/exception/formaterror.d Makefile
 
 hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/invaliditeratorexception.d -ofhurt.exception.invaliditeratorexception.o
+
+hurt.stdio.ioflags.o: hurt/stdio/ioflags.d Makefile
+	$(DC) $(CFLAGS) hurt/stdio/ioflags.d -ofhurt.stdio.ioflags.o
+
+hurt.stdio.posix.o: hurt/stdio/posix.c Makefile
+	gcc -m64 -c hurt/stdio/posix.c -o hurt.stdio.posix.o
+
+hurt.stdio.file.o:hurt/stdio/file.d Makefile
+	$(DC) $(CFLAGS) hurt/stdio/file.d -ofhurt.stdio.file.o
