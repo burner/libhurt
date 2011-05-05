@@ -35,3 +35,9 @@ enum ModeValues {
 	S_IWOTH = 0x002,
 	S_IXOTH = 0x001
 }
+
+enum SeekType {
+	SEEK_SET = 0,
+	SEEK_CUR = 1,
+	SEEK_END = 2
+}

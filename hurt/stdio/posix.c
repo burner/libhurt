@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <errno.h>
 
 int writeC(int fd, const void *buf, size_t count) {
 	return write(fd, buf, count);
@@ -18,11 +19,24 @@ int openC(const char *name, unsigned int flags, unsigned int mode) {
 }
 
 int closeC(const int fd) {
-	return close(fd);
+	//return close(fd);
+	return 0;
 }
 
 long getFdSize(const int fd) {
 	struct stat s;
-	int i = fstat(fd, &s);
+	fstat(fd, &s);
 	return s.st_size;
+}
+
+int seekC(const int fd, const long offset, const int st) {
+	return lseek(fd, offset, st);
+}
+
+long readC(const int fd, void *buf, const long count) {
+	return read(fd, buf, count);
+}
+
+int getErrno() {
+	return errno;
 }

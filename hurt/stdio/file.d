@@ -6,6 +6,9 @@ extern(C) int openC(const char* name, uint flags, uint modevalues);
 extern(C) int fsyncC(int fd);
 extern(C) int closeC(int fd);
 extern(C) int getFdSize(int fd);
+extern(C) int seekC(int fd, ulong offset, int st);
+extern(C) int readC(int fd, void *buf, const long count);
+extern(C) int getErrno();
 
 size_t print(const string str) {
 	return writeC(0, str.ptr, str.length);	
@@ -37,9 +40,10 @@ int sizeOfFD(const int fd) {
 	return getFdSize(fd);
 }
 
-unittest {
-	string a = "Hello World";
-	//println(a);
-	//int fd = open("testFile.text", FileFlags.O_CREAT, ModeValues.S_IRWXU);
-	//assert(fd != -1);
+int seek(int fd, long offset, SeekType st) {
+	return seekC(fd, offset, st);	
+} 
+
+long read(const int fd, byte[] buf, const long count) {
+	return readC(fd, buf.ptr, count);
 }

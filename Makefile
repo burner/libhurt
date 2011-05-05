@@ -1,6 +1,7 @@
 DC=dmd
 #CFLAGS=-c -w -gc -d-debug -m64
 CFLAGS=-c -w -gc -debug -m64 -unittest
+CCFLAGS=-c -Wall -m64 -static
 
 ALGO_OBJS=hurt.algo.sorting.o
 
@@ -37,7 +38,7 @@ new: clean all
 	
 
 count:
-	wc -l `find hurt -name \*.d`
+	wc -l `find hurt -name \*.d && find hurt -name \*.c`
 
 test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 	make
@@ -101,7 +102,7 @@ hurt.util.datetime.o: hurt/util/datetime.d Makefile
 	$(DC) $(CFLAGS) hurt/util/datetime.d -ofhurt.util.datetime.o
 
 hurt.util.milli.o: hurt/util/milli.c Makefile
-	gcc -m64 -c hurt/util/milli.c -o hurt.util.milli.o
+	gcc $(CCFLAGS) hurt/util/milli.c -o hurt.util.milli.o
 
 hurt.conv.conv.o: hurt/conv/conv.d hurt/conv/charconv.d hurt/conv/tointeger.d hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/conv.d -ofhurt.conv.conv.o
@@ -146,7 +147,7 @@ hurt.stdio.ioflags.o: hurt/stdio/ioflags.d Makefile
 	$(DC) $(CFLAGS) hurt/stdio/ioflags.d -ofhurt.stdio.ioflags.o
 
 hurt.stdio.posix.o: hurt/stdio/posix.c Makefile
-	gcc -m64 -c hurt/stdio/posix.c -o hurt.stdio.posix.o
+	gcc $(CCFLAGS) hurt/stdio/posix.c -o hurt.stdio.posix.o
 
 hurt.stdio.file.o:hurt/stdio/file.d Makefile
 	$(DC) $(CFLAGS) hurt/stdio/file.d -ofhurt.stdio.file.o
