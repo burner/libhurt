@@ -2,8 +2,8 @@ DC=dmd
 CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 -unittest
 #CFLAGS=-w -gc -I../ -debug -m64
 
-#TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest unit
-TESTS=filetest
+#TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest unit filetest rbtreetest maptest
+TESTS=maptest
 
 all:tests
 
@@ -14,6 +14,14 @@ new: clean tests
 filetest: filetest.d Makefile
 	$(DC) $(CFLAGS) filetest.d
 	exec ./filetest
+
+maptest: maptest.d Makefile
+	$(DC) $(CFLAGS) maptest.d
+	exec ./maptest
+
+rbtreetest: rbtreetest.d Makefile
+	$(DC) $(CFLAGS) rbtreetest.d
+	exec ./rbtreetest
 
 convtest: convtest.d Makefile
 	$(DC) $(CFLAGS) convtest.d

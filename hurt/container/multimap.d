@@ -138,7 +138,7 @@ class MultiMap(T,S) {
 	}
 
 	override bool opEquals(Object o) {
-		if(is(o == MultiMap!(T))) {
+		if(is(o == MultiMap!(T,S))) {
 			MultiMap!(T,S) t = cast(MultiMap!(T,S))o;
 			if(this.keys() != t.keys()) {
 				return false;

@@ -7,7 +7,7 @@ ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o \
 hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o \
-hurt.container.rbtree.o
+hurt.container.rbtree.o hurt.container.map.o
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
 hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o
@@ -58,6 +58,9 @@ hurt.container.stack.o: hurt/container/stack.d Makefile
 
 hurt.container.rbtree.o: hurt/container/rbtree.d Makefile
 	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
+
+hurt.container.map.o: hurt/container/map.d Makefile
+	$(DC) $(CFLAGS) hurt/container/map.d -ofhurt.container.map.o
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
 	$(DC) $(CFLAGS) hurt/container/dlst.d -ofhurt.container.dlst.o

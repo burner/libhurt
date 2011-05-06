@@ -9,7 +9,7 @@ import core.vararg;
 import hurt.container.dlst;
 import hurt.algo.sorting;
 
-extern(C) long getTicks();
+extern(C) long getMilli();
 
 public interface Printable {
 	public string toString();
@@ -65,7 +65,7 @@ public final class StackTrace {
 		this.file = file;
 		this.line = line;
 		this.funcName = funcName;
-		this.startTime = getTicks();
+		this.startTime = getMilli();
 		this.localDepth = StackTrace.depth++;
 		StackTrace.stack.pushBack(this);
 	}
@@ -106,7 +106,7 @@ public final class StackTrace {
 	}
 
 	~this() {
-		ulong timeDiff = getTicks() - this.startTime;
+		ulong timeDiff = getMilli() - this.startTime;
 		//writeln("destructor ", timeDiff);
 		string id = this.file ~ ":" ~ to!string(this.line);
 		StackTrace.allCallsMutex.lock();

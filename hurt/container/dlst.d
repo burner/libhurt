@@ -109,29 +109,35 @@ public class DLinkedList(T) {
 		}
 	}
 
-	public void pushBack(T store) {
+	public Iterator!(T) pushBack(T store) {
 		if(this.size == 0) {
 			this.head = new Elem!(T)(store, null);
 			this.tail = head;
+			this.size++;
+			return new Iterator!(T)(this.head);
 		} else {
 			Elem!(T) tmp = new Elem!(T)(store, this.tail);
 			this.tail.setNext(tmp);
 			this.tail = tmp;
+			this.size++;
+			return new Iterator!(T)(tmp);
 		}
-		this.size++;
 	}
 
-	public void pushFront(T store) {
+	public Iterator!(T) pushFront(T store) {
 		if(this.size == 0) {	
 			this.head = new Elem!(T)(store, null);
 			this.tail = head;
+			this.size++;
+			return new Iterator!(T)(this.head);
 		} else {
 			Elem!(T) tmp = new Elem!(T)(store, null);
 			tmp.setNext(this.head);
 			this.head.setPrev(tmp);
 			this.head = tmp;
+			this.size++;
+			return new Iterator!(T)(tmp);
 		}
-		this.size++;
 	}
 
 	public T popBack() {
