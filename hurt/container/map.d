@@ -2,58 +2,52 @@ module hurt.container.map;
 
 import hurt.container.rbtree;
 
-class Value(T,S) {
+class MapItem(T,S) : Node {
 	T key;
-	S value;
+	S data;
 
-	this(T key, S value) {
+	this() {}
+	
+	this(T key, S data) {
 		this.key = key;
-		this.value = value;
+		this.data = data;
+	}
+
+	override bool opEquals(Object o) {
+		Map!(T,S) f = cast(Map!(T,S))o;
+		return this.key == f.key;
+	}
+
+	override void set(Node toSet) {
+		Map!(T,S) c = cast(Map!(T,S))toSet;
+		this.key = c.key;
+		this.data = c.data;
 	}
 
 	override int opCmp(Object o) {
-		if(is(o == Value!(T,S))) {
-			Value!(T,S) f = cast(Value!(T,S))o;
-			if(this.key > f.key)
-				return 1;
-			else if(this.key < f.key)
-				return -1;
-			else
-				return 0;
-		} else if(is(o == T)) {
-			T f = cast(T)o;
-			if(this.key > f)
-				return 1;
-			else if(this.key < f)
-				return -1;
-			else
-				return 0;
-		}
-		return 1;
+		Map!(T,S) f = cast(Map!(T,S))o;
+		T fHash = f.key;
+		T thisHash = this.key;
+		if(thisHash > fHash)
+			return 1;
+		else if(thisHash < fHash)
+			return -1;
+		else
+			return 0;
 	}
 }
 
-class Map(T,S) : RBTree!(Value!(T,S)) {
+class Map(T,S) {
+	RBTree!(MapItem!(T,S)) map;
+
+	MapItem!(T,S) finder;
+
 	this() {
-		super();
+		this.map = new RBTree!(MapItem!(T,S))();
+		this.finder = new MapItem!(T,S)();
 	}
 
-	Value!(T,S) insert(T key, S data) {
-		Value!(T,S) it = new Value!(T,S)(key,data);
-		Node!(Value!(T,S)) tmp = super.find(it);
-		if(tmp is null) {
-			super.insert(it);
-			return it;
-		} else {
-			return tmp.data;
-		}
-	}
-
-	Value!(T,S) find(T key) {
-			return null;
-	}
-
-	Value!(T,S) remove(T key) {
+	MapItem!(T,S) find(T key) {
 		return null;
 	}
 }

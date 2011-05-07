@@ -10,6 +10,7 @@ void main() {
 	RBTree!(int) rbt2 = new RBTree!(int)();
 	foreach(it;t[0..10]) {
 		rbt2.insert(it);
+		assert(rbt2.find(it));
 	}
 	rbt2.insert(t[0]);
 	rbt2.insert(t[9]);
@@ -21,5 +22,5 @@ void main() {
 	writeln();
 
 	assert(rbt2.find(t[0]) !is null);
-	assert(rbt2.find(32452345) !is null);
+	assert(rbt2.find(32452345) is null);
 }
