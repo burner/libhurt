@@ -1,4 +1,5 @@
 import hurt.container.map;
+import hurt.conv.conv;
 
 import std.stdio;
 
@@ -9,9 +10,9 @@ void main() {
 	int[] v	= [2663, 1299, 1642, 1265, 621, 112, 1651, 2165, 1146, 2171, 2684, 1152, 
 		2177, 2695, 1162, 651, 1677, 148, 1685, 662, 1175, 2245, 2211, 943];
 
-	Map!(int, int) map = new Map!(int,int)();
+	Map!(int, string) map = new Map!(int,string)();
 	foreach(idx, it; k) {
-		map.insert(it, v[idx]);
+		map.insert(it, conv!(int,string)(v[idx]));
 		assert(map.find(it));
 	}
 }

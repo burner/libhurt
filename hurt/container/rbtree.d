@@ -222,7 +222,7 @@ class RBTree(T : Node) {
 		return root;
 	}
 
-	int remove(Node data) {
+	bool remove(Node data) {
 		bool done = false;
 
 		this.root = removeRecursive(this.root, data, done);
@@ -231,7 +231,7 @@ class RBTree(T : Node) {
 			this.root.setPar(null);
 		}
 
-		return 1;
+		return done;
 	}
 
 	Node removeBalance(Node root, bool dir, ref bool done) {
@@ -290,21 +290,54 @@ class RBTree(T : Node) {
 		return null;
 	}
 
-	public int opApply(scope int delegate(ref Node) dg) {
-		Node stack[256];
-		size_t sPtr = 0;
-		Node current = this.root;
-		while(sPtr > 0 || current) {
-			if(current) {
-				stack[sPtr++] = current;
-				current = current.getLink(0);
-			} else {
-				current = stack[--sPtr];
-				if(int r = dg(current)) {
-					return r;
-				}
-				current = current.getLink(1);
+	public int opApply(scope int delegate(ref T) dg) {
+		Iterator!(T) it = this.begin();
+		while(it.isValid()) {
+			T tmp = cast(T)(*it);
+			if(int r = dg(tmp)) {
+				return r;
 			}
+			it++;
+		}
+		return 0;
+	}
+
+	public int opApply(scope int delegate(ref size_t, ref T) dg) {
+		Iterator!(T) it = this.begin();
+		size_t idx = 0;
+		while(it.isValid()) {
+			T tmp = cast(T)(*it);
+			if(int r = dg(idx, tmp)) {
+				return r;
+			}
+			idx++;
+			it++;
+		}
+		return 0;
+	}
+
+	public int opApplyReverse(scope int delegate(ref T) dg) {
+		Iterator!(T) it = this.end();
+		while(it.isValid()) {
+			T tmp = cast(T)(*it);
+			if(int r = dg(tmp)) {
+				return r;
+			}
+			it--;
+		}
+		return 0;
+	}
+
+	public int opApplyReverse(scope int delegate(ref size_t, ref T) dg) {
+		Iterator!(T) it = this.end();
+		size_t idx = this.getSize();
+		while(it.isValid()) {
+			T tmp = cast(T)(*it);
+			if(int r = dg(idx, tmp)) {
+				return r;
+			}
+			idx--;
+			it--;
 		}
 		return 0;
 	}
@@ -447,20 +480,21 @@ unittest {
 	}
 	rbt2.validate();
 	writeln("bottom up insert ", getMilli()-st);
-	foreach(it; rbt2) {
-		writeln(it);
+	foreach(idx, it; rbt2) {
+		assert(it.data == rn[idx]);
 	}
 	RBTree!(ISet).Iterator!(ISet) it = rbt2.begin();
 	size_t count = 0;
 	while(it.isValid()) {
-		writeln("hello ", *it);
 		it++;
 		count++;
 	}
 	assert(count == rbt2.getSize());
 	RBTree!(ISet).Iterator!(ISet) jt = rbt2.end();
+	size_t ptr = 0;
 	while(jt.isValid()) {
 		//writeln("hello ", *jt);
+		assert((*jt).data == rn[ptr++]);
 		jt--;
 	}
 		

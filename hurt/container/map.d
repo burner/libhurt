@@ -14,18 +14,18 @@ class MapItem(T,S) : Node {
 	}
 
 	override bool opEquals(Object o) {
-		Map!(T,S) f = cast(Map!(T,S))o;
+		MapItem!(T,S) f = cast(MapItem!(T,S))o;
 		return this.key == f.key;
 	}
 
 	override void set(Node toSet) {
-		Map!(T,S) c = cast(Map!(T,S))toSet;
+		MapItem!(T,S) c = cast(MapItem!(T,S))toSet;
 		this.key = c.key;
 		this.data = c.data;
 	}
 
 	override int opCmp(Object o) {
-		Map!(T,S) f = cast(Map!(T,S))o;
+		MapItem!(T,S) f = cast(MapItem!(T,S))o;
 		T fHash = f.key;
 		T thisHash = this.key;
 		if(thisHash > fHash)
@@ -48,6 +48,28 @@ class Map(T,S) {
 	}
 
 	MapItem!(T,S) find(T key) {
-		return null;
+		this.finder.key = key;
+		MapItem!(T,S) found = cast(MapItem!(T,S))this.map.find(this.finder);
+		return found;
+	}
+
+	MapItem!(T,S) insert(T key, S data) {
+		MapItem!(T,S) found = this.find(key);
+		if(found is null) {
+			found = new MapItem!(T,S)(key, data);
+			this.map.insert(found);
+			return found;
+		} else {
+			return found;
+		}
+	}
+
+	bool remove(T key) {
+		this.finder.key = key;
+		return this.map.remove(this.finder);
+	}
+	
+	size_t getSize() const {
+		return map.getSize();
 	}
 }

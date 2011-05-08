@@ -18,7 +18,7 @@ filetest: filetest.d Makefile
 
 maptest: maptest.d Makefile
 	$(DC) $(CFLAGS) maptest.d
-	#exec ./maptest
+	exec ./maptest
 
 rbtreetest: rbtreetest.d Makefile
 	$(DC) $(CFLAGS) rbtreetest.d
