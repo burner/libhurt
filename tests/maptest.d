@@ -1,5 +1,6 @@
 import hurt.container.map;
 import hurt.conv.conv;
+import hurt.algo.sorting;
 
 import std.stdio;
 
@@ -13,6 +14,22 @@ void main() {
 	Map!(int, string) map = new Map!(int,string)();
 	foreach(idx, it; k) {
 		map.insert(it, conv!(int,string)(v[idx]));
-		assert(map.find(it));
+	}
+
+	bool contains(int[] a, int tf) {
+		foreach(it; a) 
+			if(it == tf)
+				return true;
+
+		return false;
+	}
+
+	sort!(int)(k, function(in int a, in int b) { return a < b; });
+
+
+	size_t idx = 0;
+	foreach(key, value; map) {
+		assert(key == k[idx] && contains(v,conv!(string,int)(value)));
+		idx++;
 	}
 }

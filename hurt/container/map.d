@@ -64,6 +64,27 @@ class Map(T,S) {
 		}
 	}
 
+	Iterator!(MapItem!(T,S)) begin() {
+		return this.map.begin();
+	}
+
+	Iterator!(MapItem!(T,S)) end() {
+		return this.map.end();
+	}
+
+	int opApply(scope int delegate(ref T, ref S) dg) {
+		Iterator!(MapItem!(T,S)) it = this.begin();
+		while(it.isValid()) {
+			T key = cast(T)(*it).key;
+			S data = cast(S)(*it).data;
+			if(int r = dg(key, data)) {
+				return r;
+			}
+			it++;
+		}
+		return 0;
+	}
+
 	bool remove(T key) {
 		this.finder.key = key;
 		return this.map.remove(this.finder);

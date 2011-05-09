@@ -1,4 +1,6 @@
-module algo.sorting;
+module hurt.algo.sorting;
+
+import hurt.conv.conv;
 
 import std.stdio;
 
@@ -66,11 +68,23 @@ unittest {
 	for(size_t i = 0; i < a.length; i++) {
 		a[i] = a.length-i;
 	}
-	void print() {
-		foreach(it; a) write(it, " ");
-		writeln();
+	void test(size_t[] v) {
+		foreach(idx, it; v) {
+			if(idx > 0) {
+				assert(v[idx-1] < it, conv!(size_t,string)(v[idx-1]) ~ " " ~ conv!(size_t,string)(it));
+			}
+		}
 	}
-	print();
-	sort!(size_t)(a, function(in size_t l, in size_t r) { return l < r; }, 2L, 3L);
-	print();
+	void test2(int[] v) {
+		foreach(idx, it; v) {
+			if(idx > 0) {
+				assert(v[idx-1] < it, conv!(size_t,string)(v[idx-1]) ~ " " ~ conv!(size_t,string)(it));
+			}
+		}
+	}
+	sort!(size_t)(a, function(in size_t l, in size_t r) { return l < r; });
+	test(a);
+	int[] k = [0, 31, 32, 1027, 1540, 1541, 1452, 1546, 1547, 1036, 1282, 526];
+	sort!(int)(k, function(in int l, in int r) { return l < r; });
+	test2(k);
 }

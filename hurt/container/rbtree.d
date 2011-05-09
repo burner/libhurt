@@ -39,63 +39,63 @@ abstract class Node {
 	public override bool opEquals(Object o);
 	public void set(Node);
 }
- 
-class RBTree(T : Node) {
-	class Iterator(T) {
-		Node current;
-		//Node treeRoot;
-		
-		this(Node root, bool begin) {
-			this.current = root;
-			//this.treeRoot = root;
-			while(this.current.getLink(!begin) !is null) {
-				this.current = this.current.getLink(!begin);
-			}
-		}
 
-		void opUnary(string s)() if(s == "++") {
-			Node y;
-			if(null !is (y = this.current.getLink(true))) {
-				while(y.getLink(false) !is null) {
-					y = y.getLink(false);
-				}
-				this.current = y;
-			} else {
-				y = this.current.par;
-				while(y !is null && this.current is y.getLink(true)) {
-					this.current = y;
-					y = y.par;
-				}
-				this.current = y;
-			}
-		}	
-
-		void opUnary(string s)() if(s == "--") {
-			Node y;
-			if(null !is (y = this.current.getLink(false))) {
-				while(y.getLink(true) !is null) {
-					y = y.getLink(true);
-				}
-				this.current = y;
-			} else {
-				y = this.current.par;
-				while(y !is null && this.current is y.getLink(false)) {
-					this.current = y;
-					y = y.par;
-				}
-				this.current = y;
-			}
-		}	
+public class Iterator(T) {
+	Node current;
+	//Node treeRoot;
 	
-		T opUnary(string s)() if(s == "*") {
-			return cast(T)this.current;
-		}
-	
-		bool isValid() const {
-			return current !is null;
+	this(Node root, bool begin) {
+		this.current = root;
+		//this.treeRoot = root;
+		while(this.current.getLink(!begin) !is null) {
+			this.current = this.current.getLink(!begin);
 		}
 	}
-	
+
+	void opUnary(string s)() if(s == "++") {
+		Node y;
+		if(null !is (y = this.current.getLink(true))) {
+			while(y.getLink(false) !is null) {
+				y = y.getLink(false);
+			}
+			this.current = y;
+		} else {
+			y = this.current.par;
+			while(y !is null && this.current is y.getLink(true)) {
+				this.current = y;
+				y = y.par;
+			}
+			this.current = y;
+		}
+	}	
+
+	void opUnary(string s)() if(s == "--") {
+		Node y;
+		if(null !is (y = this.current.getLink(false))) {
+			while(y.getLink(true) !is null) {
+				y = y.getLink(true);
+			}
+			this.current = y;
+		} else {
+			y = this.current.par;
+			while(y !is null && this.current is y.getLink(false)) {
+				this.current = y;
+				y = y.par;
+			}
+			this.current = y;
+		}
+	}	
+
+	T opUnary(string s)() if(s == "*") {
+		return cast(T)this.current;
+	}
+
+	bool isValid() const {
+		return current !is null;
+	}
+}
+ 
+class RBTree(T : Node) {
 	static bool isRed(const Node tt) {
 		return tt !is null && tt.isRed();
 	}
@@ -465,11 +465,13 @@ class ISet : Node {
 }
 
 unittest {
+	int[] t = [ 0, 31, 32, 105, 526, 531, 1027, 1036, 1048, 1282, 1452, 1540,
+		1541, 1546, 1547, 1554, 1563, 2575, 2576, 2585, 2590];
 	RBTree!(ISet) rbt2 = new RBTree!(ISet)();
 	int times = 20;
 	int[] rn = new int[times];
-	foreach(ref it; rn) {
-		it = rand(5, times*2);
+	foreach(idx,ref it; rn) {
+		it = t[idx];
 	}
 
 	long st = getMilli();
@@ -479,23 +481,24 @@ unittest {
 		rbt2.validate();
 	}
 	rbt2.validate();
-	writeln("bottom up insert ", getMilli()-st);
+	//writeln("bottom up insert ", getMilli()-st);
 	foreach(idx, it; rbt2) {
-		assert(it.data == rn[idx]);
+		assert(it.data == rn[idx], conv!(int,string)(it.data) ~ " : " ~ conv!(int,string)(rn[idx]));
 	}
-	RBTree!(ISet).Iterator!(ISet) it = rbt2.begin();
+	Iterator!(ISet) it = rbt2.begin();
 	size_t count = 0;
 	while(it.isValid()) {
 		it++;
 		count++;
 	}
 	assert(count == rbt2.getSize());
-	RBTree!(ISet).Iterator!(ISet) jt = rbt2.end();
-	size_t ptr = 0;
+	Iterator!(ISet) jt = rbt2.end();
+	size_t ptr = t.length-2;
 	while(jt.isValid()) {
-		//writeln("hello ", *jt);
-		assert((*jt).data == rn[ptr++]);
+		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
+		assert((*jt).data == rn[ptr],conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
 		jt--;
+		ptr--;
 	}
 		
 	st = getMilli();
@@ -503,7 +506,7 @@ unittest {
 		rbt2.remove(new ISet(rn[i]));
 		rbt2.validate();
 	}
-	writeln("bottom up remove ", getMilli()-st);
+	//writeln("bottom up remove ", getMilli()-st);
 	assert(rbt2.getSize() == 0);
 
 	RBTree!(Map!(int,string)) map = new RBTree!(Map!(int,string));
