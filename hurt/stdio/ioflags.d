@@ -42,7 +42,7 @@ enum SeekType {
 	SEEK_END = 2
 }
 
-string errnoToString(const int errno) {
+pure string errnoToString(const int errno) {
 	switch(errno) {
 		case 1 : return "Operation not permitted";
 		case 2 : return "No such file or directory";
@@ -79,5 +79,5 @@ string errnoToString(const int errno) {
 		case 33: return "Math argument out of domain of func";
 		case 34: return "Math result not representable";
 		default: return "unknown Errno Number";
-		}
+	}
 }

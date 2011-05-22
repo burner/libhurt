@@ -1,5 +1,6 @@
 import hurt.stdio.file;
 import hurt.stdio.ioflags;
+import hurt.stdio.inputstream;
 
 import hurt.conv.conv;
 
@@ -19,5 +20,8 @@ void main() {
 	println(readb[0..rcnt].idup);
 	assert(close(fd) != -1, "close failed");
 	println("close worked");
+	println("€");
+	InputStream ins = new InputStream("testFile2utf16.txt");
+	println("ins bom " ~ ins.getBOM());
 	//assert(fsync(fd) != -1, "fsync failed");
 }

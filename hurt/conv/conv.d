@@ -49,6 +49,10 @@ public pure S conv(T, S)(T t) {
 		static if( is(S == string) ) {
 			return integerToString!(char,short)(t);	
 		}
+	} else static if( is(T == byte) ) {
+		static if( is(S == string) ) {
+			return integerToString!(char,byte)(t);	
+		}
 	} else static if( is(T == dchar) ) {
 		static if( is(S == char) ) {
 			return dcharToChar(t);
