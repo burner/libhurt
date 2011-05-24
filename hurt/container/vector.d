@@ -133,6 +133,16 @@ class Vector(T) {
 		return result;
 	}
 
+	int opApply(int delegate(ref size_t,ref T) dg) {
+		int result;
+		//uint up = (this.data.length-1) * this.partSize + this.curPos;
+		size_t up = this.index;
+		for(size_t i = 0; i < up && result is 0; i++) {
+			result = dg(i,this.data[i]);
+		}
+		return result;
+	}
+
 	public typeof(this.index) getSize() const {
 		return this.index+1;
 	}

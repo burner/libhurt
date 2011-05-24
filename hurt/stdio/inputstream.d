@@ -5,6 +5,7 @@ import hurt.stdio.ioflags;
 
 import hurt.conv.conv;
 import hurt.container.vector;
+import hurt.string.stringbuffer;
 
 import std.stdio;
 
@@ -18,6 +19,7 @@ class InputStream {
 	
 	BOM encoding;
 	Vector!(ubyte) buf;
+	StringBuffer!(char) sbchar;
 
 	this(string fileName) {
 		this.fd = open(fileName, FileFlags.O_RDONLY, 0);
@@ -55,7 +57,17 @@ class InputStream {
 
 	string readLine() {
 		ubyte[128] tmp;
+		sbchar.clear();
 		long rcnt = read(fd, cast(byte[])tmp, 128);
+		if(!this.buf.empty()) {
+			size_t bre = -1;
+			foreach(idx, it; this.buf) {
+				sbchar.pushBack(it);
+				if(it == '\n') {
+					bre = idx;	
+				}
+			}	
+		}
 		return null;
 	}
 
