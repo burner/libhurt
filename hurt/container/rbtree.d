@@ -43,6 +43,10 @@ abstract class Node {
 public class Iterator(T) {
 	Node current;
 	//Node treeRoot;
+
+	this(Node root) {
+		this.current = root;
+	}
 	
 	this(Node root, bool begin) {
 		this.current = root;
@@ -170,11 +174,11 @@ class RBTree(T : Node) {
 		return root;
 	}
 
-	bool insert(Node data) {
+	Iterator!(T) insert(Node data) {
 		this.root = this.insertRecursive(this.root, data, null);
 		this.root.setPar(null);
 		this.root.setRed(false);
-		return true;
+		return new Iterator!(T)(data);
 	}
 
 	Node removeRecursive(Node root, Node data, ref bool done) {
@@ -288,6 +292,19 @@ class RBTree(T : Node) {
 			}
 		}
 		return null;
+	}
+
+	Iterator!(T) findIt(const Node data) {
+		Node it = this.root;
+		while(it !is null) {
+			if(it == data) {
+				return new Iterator!(T)(it);
+			} else {
+				bool dir = it < data;
+				it = it.getLink(dir);
+			}
+		}
+		return new Iterator!(T)(null);
 	}
 
 	public int opApply(scope int delegate(ref T) dg) {

@@ -1,17 +1,18 @@
 import hurt.container.rbtree;
 import hurt.container.dlst;
+import hurt.exception.invaliditeratorexception;
+
+import std.stdio;
 
 class Iterator(T,S) {
-	hurt.container.rbtree.Iterator!(Item!(T,S)) treeIt;
-	DLinkedList!(S).Iterator!(S) listIt;
-	private bool valid;
+	private hurt.container.rbtree.Iterator!(Item!(T,S)) treeIt;
+	private DLinkedList!(S).Iterator!(S) listIt;
 	private bool range;
 
 	this(hurt.container.rbtree.Iterator!(Item!(T,S)) it, bool begin = true, bool range = true) {
 		this.treeIt = it;
 		this.range = range;
 		if(this.treeIt is null) {
-			this.valid = false;
 			return;
 		}
 		if(begin) {
@@ -19,11 +20,49 @@ class Iterator(T,S) {
 		} else {
 			this.listIt = (*this.treeIt).getLast();
 		}
-		this.valid = true;
+	}
+
+	public void opUnary(string s)() if(s == "++") {
+		++this.listIt;
+		if(this.listIt.isValid()) {
+			return;
+		} else if(!this.range) {
+			++this.treeIt;
+			if(this.treeIt.isValid()) {
+				this.listIt = (*this.treeIt).getFirst();
+			}
+		}
+	}
+
+	protected bool remove() {
+		return (*this.treeIt).remove(this.listIt);
+	}
+
+	public hurt.container.rbtree.Iterator!(Item!(T,S)) getTreeIt() {
+		return this.treeIt;
+	}
+
+	public void opUnary(string s)() if(s == "--") {
+		--this.listIt;
+		if(this.listIt.isValid()) {
+			return;
+		} else if(!this.range) {
+			--this.treeIt;
+			if(this.treeIt.isValid()) {
+				this.listIt = (*this.treeIt).getLast();
+			}
+		}
+	}
+
+	public S opUnary(string s)() if(s == "*") {
+		if(this.listIt.isValid()) {
+			return *this.listIt;
+		}
+		throw new InvalidIteratorException("MultiMap Iterator is not valid");	
 	}
 
 	bool isValid() const {
-		return this.valid;
+		return this.listIt.isValid();
 	}
 }
 
@@ -49,6 +88,11 @@ class Item(T,S) : Node {
 
 	protected DLinkedList!(S).Iterator!(S) getLast() {
 		return this.values.end();
+	}
+
+	bool remove(DLinkedList!(S).Iterator!(S) it) {
+		this.values.remove(it);
+		return this.values.empty();
 	}
 
 	override bool opEquals(Object o) const {
@@ -84,19 +128,19 @@ class MultiMap(T,S) {
 
 	Iterator!(T,S) insert(T key, S value) {
 		this.finder.key = key;
-		Item!(T,S) found = cast(Item!(T,S))this.tree.find(this.finder);
-		if(found is null) {
-			this.tree.insert(new Item!(T,S)(key, value));
-			return null; // TODO upper limit
+		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
+		if(found.isValid()) {
+			(*found).append(value);
+			return new Iterator!(T,S)(found, false, true);
 		} else {
-			found.append(value);
-			return null; // TODO upper limit
+			auto treeIt = this.tree.insert(new Item!(T,S)(key, value));
+			return new Iterator!(T,S)(treeIt, true, true);
 		}
 	}
 
 	Iterator!(T,S) begin() {
 		auto tmp = this.tree.begin();
-		return new Iterator!(T,S)(tmp);
+		return new Iterator!(T,S)(tmp, true, false);
 	}
 
 	Iterator!(T,S) end() {
@@ -104,20 +148,47 @@ class MultiMap(T,S) {
 		return new Iterator!(T,S)(tmp, false, false);
 	}
 		
-	Iterator!(T,S) upper(T key) {
+	Iterator!(T,S) range(T key) {
 		this.finder.key = key;
-		Item!(T,S) found = cast(Item!(T,S))this.tree.find(this.finder);
-		return new Iterator!(T,S)(found, false, true);
-	}
-
-	Iterator!(T,S) lower(T key) {
-		this.finder.key = key;
-		Item!(T,S) found = cast(Item!(T,S))this.tree.find(this.finder);
+		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
 		return new Iterator!(T,S)(found, true, true);
 	}
-		
+
+	bool remove(Iterator!(T,S) it) {
+		bool listEmpty = it.remove();					
+		if(listEmpty) {
+			this.tree.remove(*it.getTreeIt());
+		}
+		return listEmpty;
+	}
 }
 
 void main() {
-	auto mm = new MultiMap!(uint, string)();	
+	auto mm = new MultiMap!(uint, string)();
+	mm.insert(0, "zero");
+	mm.insert(0, "null");
+	mm.insert(1, "one");
+	mm.insert(1, "eins");
+	auto it = mm.range(0);
+	for(;it.isValid(); it++)
+		write(*it, " ");
+	writeln("\n");
+
+	it = mm.begin();
+	for(;it.isValid(); it++)
+		write(*it, " ");
+	writeln("\n");
+
+	it = mm.end();
+	for(;it.isValid(); it--)
+		write(*it, " ");
+	writeln("\n");
+
+	it == mm.end();
+	mm.remove(it);
+
+	it = mm.end();
+	for(;it.isValid(); it--)
+		write(*it, " ");
+	writeln("\n");
 }
