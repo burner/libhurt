@@ -36,10 +36,11 @@ class Iterator(T,S) {
 
 	protected bool remove() {
 		auto item = (*this.treeIt);
-		writeln(__LINE__, item is null, this.isValid());
-		//return item.remove(this.listIt);
-		return false;
-		
+		return item.remove(this.listIt);
+	}
+
+	T getKey() {
+		return (*this.treeIt).getKey();
 	}
 
 	public hurt.container.rbtree.Iterator!(Item!(T,S)) getTreeIt() {
@@ -95,7 +96,6 @@ class Item(T,S) : Node {
 	}
 
 	bool remove(DLinkedList!(S).Iterator!(S) it) {
-		writeln(__LINE__);
 		this.values.remove(it);
 		return this.values.empty();
 	}
@@ -119,6 +119,10 @@ class Item(T,S) : Node {
 			return -1;
 		else
 			return 0;
+	}
+
+	public T getKey() {
+		return this.key;
 	}
 }
 
@@ -158,15 +162,31 @@ class MultiMap(T,S) {
 		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
 		return new Iterator!(T,S)(found, true, true);
 	}
+	
+	size_t getSize() const {
+		return this.tree.getSize();
+	}
+
+	T[] keys() {
+		T[] ret = new T[this.getSize()];
+		auto it = this.tree.begin();
+		foreach(ref jt; ret) {
+			jt = (*it).getKey();
+			it++;
+		}
+		return ret;
+	}
 
 	bool remove(Iterator!(T,S) it) {
-		writeln(__LINE__, it is null);
 		bool listEmpty = it.remove();					
-		writeln(listEmpty);
 		if(listEmpty) {
 			this.tree.remove(*it.getTreeIt());
 		}
 		return listEmpty;
+	}
+
+	int validate() {
+		return this.tree.validate();
 	}
 }
 
@@ -176,27 +196,16 @@ void main() {
 	mm.insert(0, "null");
 	mm.insert(1, "one");
 	mm.insert(1, "eins");
+	mm.insert(2, "two");
+	mm.insert(2, "zwei");
+	mm.insert(3, "three");
+	mm.insert(3, "drei");
+	mm.validate();
+
 	auto it = mm.range(0);
-	for(;it.isValid(); it++)
-		write(*it, " ");
-	writeln("\n");
+	while(it.isValid())
+		mm.remove(it);
 
-	it = mm.begin();
-	for(;it.isValid(); it++)
-		write(*it, " ");
-	writeln("\n");
+	writeln(mm.keys());
 
-	it = mm.end();
-	for(;it.isValid(); it--)
-		write(*it, " ");
-	writeln("\n");
-
-	it == mm.begin();
-	writeln(__LINE__, it.isValid());
-	mm.remove(it);
-
-	it = mm.end();
-	for(;it.isValid(); it--)
-		write(*it, " ");
-	writeln("\n");
 }
