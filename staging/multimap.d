@@ -35,7 +35,11 @@ class Iterator(T,S) {
 	}
 
 	protected bool remove() {
-		return (*this.treeIt).remove(this.listIt);
+		auto item = (*this.treeIt);
+		writeln(__LINE__, item is null, this.isValid());
+		//return item.remove(this.listIt);
+		return false;
+		
 	}
 
 	public hurt.container.rbtree.Iterator!(Item!(T,S)) getTreeIt() {
@@ -68,7 +72,7 @@ class Iterator(T,S) {
 
 class Item(T,S) : Node {
 	private T key;
-	private DLinkedList!(S) values;
+	DLinkedList!(S) values;
 
 	this() { }
 
@@ -91,6 +95,7 @@ class Item(T,S) : Node {
 	}
 
 	bool remove(DLinkedList!(S).Iterator!(S) it) {
+		writeln(__LINE__);
 		this.values.remove(it);
 		return this.values.empty();
 	}
@@ -155,7 +160,9 @@ class MultiMap(T,S) {
 	}
 
 	bool remove(Iterator!(T,S) it) {
+		writeln(__LINE__, it is null);
 		bool listEmpty = it.remove();					
+		writeln(listEmpty);
 		if(listEmpty) {
 			this.tree.remove(*it.getTreeIt());
 		}
@@ -184,7 +191,8 @@ void main() {
 		write(*it, " ");
 	writeln("\n");
 
-	it == mm.end();
+	it == mm.begin();
+	writeln(__LINE__, it.isValid());
 	mm.remove(it);
 
 	it = mm.end();
