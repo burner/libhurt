@@ -258,7 +258,7 @@ public class DLinkedList(T) {
 		return tmp;
 	}
 
-	public T remove( Iterator!(T) it) {
+	public T remove(Iterator!(T) it) {
 		if(!it.isValid()) {
 			throw new InvalidIteratorException(__FILE__ ~ conv!(int,string)(__LINE__) ~ ": Iterator not valid");
 		}

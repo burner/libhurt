@@ -1,6 +1,7 @@
 import hurt.container.rbtree;
 import hurt.container.dlst;
 import hurt.exception.invaliditeratorexception;
+import hurt.util.array;
 
 import std.stdio;
 
@@ -177,12 +178,45 @@ class MultiMap(T,S) {
 		return ret;
 	}
 
+	override bool opEquals(Object o) {
+		MultiMap!(T,S) m = cast(MultiMap!(T,S))o;
+		T[] tkey = this.keys();
+		T[] mkey = m.keys();
+		if(!compare!(T)(tkey, mkey)) {
+			return false;
+		}
+		foreach(it; tkey) {
+			Iterator!(T,S) tit = this.range(it);
+			outer: for(; tit.isValid(); tit++) {
+				Iterator!(T,S) mit = m.range(it);
+				for(; mit.isValid(); mit++) {
+					if((*tit) == (*mit)) {
+						continue outer;	
+					}
+				}
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool remove(Iterator!(T,S) it) {
 		bool listEmpty = it.remove();					
 		if(listEmpty) {
 			this.tree.remove(*it.getTreeIt());
 		}
 		return listEmpty;
+	}
+
+	DLinkedList!(S) removeRange(T key) {
+		this.finder.key = key;
+		Item!(T,S) it = cast(Item!(T,S))this.tree.find(this.finder);
+		if(it !is null) {
+			this.tree.remove(this.finder);
+			return it.values;
+		} else {
+			return null;
+		}		
 	}
 
 	int validate() {
@@ -202,10 +236,28 @@ void main() {
 	mm.insert(3, "drei");
 	mm.validate();
 
+	auto mn = new MultiMap!(uint, string)();
+	mn.insert(0, "null");
+	mn.insert(0, "zero");
+	mn.insert(1, "eins");
+	mn.insert(1, "one");
+	mn.insert(3, "three");
+	mn.insert(3, "drei");
+	mn.insert(2, "two");
+	mn.insert(2, "zwei");
+
+	assert(mm == mn);
+
 	auto it = mm.range(0);
 	while(it.isValid())
 		mm.remove(it);
 
 	writeln(mm.keys());
+	auto rr = mm.removeRange(1);
+	if(rr !is null)
+		foreach(it;rr)
+			writeln(it);
+	
+	assert(mm != mn);
 
 }

@@ -73,7 +73,7 @@ pure T[] appendWithIdx(T)(ref T[] arr, size_t idx, immutable(T) toAppend, size_t
 	return arr;
 }
 
-/* returns the index of the searched element 
+/** returns the index of the searched element 
  * if the element is not part of the array the length
  * array is returned. */
 pure size_t find(T)(in T[] arr, in T toSearch) {
@@ -83,6 +83,20 @@ pure size_t find(T)(in T[] arr, in T toSearch) {
 		}
 	}
 	return arr.length;
+}
+
+/** compares to arrays. the sorting of the elements
+ *  must not be same. */
+pure bool compare(T)(in T[] a, in T[] b) {
+	if(a.length != b.length) {
+		return false;
+	}
+	foreach(it; a) {
+		if(a.length == find!(T)(b, it)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 pure T[] remove(T)(T[] arr, in size_t idx) {
