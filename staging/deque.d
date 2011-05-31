@@ -1,13 +1,14 @@
 module hurt.container.deque;
 
 import std.stdio;
+import hurt.conv.conv;
 
 class Deque(T) {
 	private T[] data;
 	private size_t head, tail;
 
 	this() {
-		this(16);	
+		this(4);	
 	}
 
 	this(size_t size) {
@@ -28,35 +29,49 @@ class Deque(T) {
 		return this.data[this.tail];
 	}
 
-	bool empty() const {
-		return this.head == this.tail;
+	T popFront() {
+		if(this.empty())
+			assert(0);
+		this.head = (this.head+1) % this.data.length;
+		T ret = this.data[this.head];
+		this.data[this.head] = T.init;
+		return ret;
 	}
 
-	int opApply(int delegate(ref T value) dg) {
-		int result;
-		for(size_t i = this.head; i < this.tail && result is 0; 
-				i = (i+1) % this.data.length) {
-			result = dg(this.data[i]);
+	T popBack() {
+		if(this.empty())
+			assert(0);
+		T ret = this.data[this.tail];
+		this.data[this.tail] = T.init;
+		this.tail = (this.tail-1) % this.data.length;
+		return ret;
+	}
+
+	void pushFront(T toPush) {
+		if((this.head-1) % this.data.length == this.tail) {
+			this.growCapacity();
 		}
-		return result;
+		this.data[this.head] = toPush;
+		this.head = (this.head-1) % this.data.length;
 	}
-
-	T popFront() {assert(0, "Not implementet");}
-	T popBack() {assert(0, "Not implementet");}
-
-	void pushFront(T toPush) {assert(0, "Not implementet");}
 
 	void pushBack(T toPush) {
-		size_t newHead = (this.head-1) % this.data.length;
-		if(newHead == this.tail) {
+		if((this.tail+1) % this.data.length == this.head) {
 			this.growCapacity();
-			newHead = (this.head-1) % this.data.length;
 		}
-		this.data[newHead] = toPush;
-		this.head = newHead;
+		this.tail = (this.tail+1) % this.data.length;
+		this.data[this.tail] = toPush;
+	}
+
+	bool empty() const {
+		return this.head == this.tail && this.head >= this.tail;
 	}
 
 	size_t getSize() const { return 0; }
+
+	void print() {
+		writeln(this.data, " ", this.head, " ", this.tail);
+	}
 }
 
 void main() {
@@ -64,7 +79,14 @@ void main() {
 	de.pushBack(10);
 	de.pushBack(11);
 	de.pushBack(12);
-	foreach(it;de) {
-		writeln(it);
+	de.pushFront(9);
+	de.pushFront(8);
+	de.pushFront(7);
+	de.pushFront(6);
+	de.pushBack(13);
+	writeln("pop", de.empty());
+	while(!de.empty()) {
+		writeln(de.popFront());
+		de.print();
 	}
 }
