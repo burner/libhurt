@@ -38,7 +38,7 @@ new: clean all
 	
 
 count:
-	wc -l `find hurt -name \*.d && find hurt -name \*.c`
+	wc -l `find . -name \*.d && find . -name \*.c`
 
 test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 	make

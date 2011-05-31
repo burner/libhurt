@@ -7,8 +7,23 @@ import std.stdio;
 
 class Iterator(T,S) {
 	private hurt.container.rbtree.Iterator!(Item!(T,S)) treeIt;
+	private MultiMap!(T,S) map;
 	private DLinkedList!(S).Iterator!(S) listIt;
 	private bool range;
+
+	this(MultiMap!(T,S) map, hurt.container.rbtree.Iterator!(Item!(T,S)) it, bool begin = true, bool range = true) {
+		this.treeIt = it;
+		this.range = range;
+		this.map = map;
+		if(this.treeIt is null) {
+			return;
+		}
+		if(begin) {
+			this.listIt = (*this.treeIt).getFirst();
+		} else {
+			this.listIt = (*this.treeIt).getLast();
+		}
+	}
 
 	this(hurt.container.rbtree.Iterator!(Item!(T,S)) it, bool begin = true, bool range = true) {
 		this.treeIt = it;
@@ -44,11 +59,15 @@ class Iterator(T,S) {
 		return (*this.treeIt).getKey();
 	}
 
-	public hurt.container.rbtree.Iterator!(Item!(T,S)) getTreeIt() {
+	protected DLinkedList!(S).Iterator!(S) getListIt() {
+		return this.listIt;
+	}
+
+	protected hurt.container.rbtree.Iterator!(Item!(T,S)) getTreeIt() {
 		return this.treeIt;
 	}
 
-	public void opUnary(string s)() if(s == "--") {
+	protected void opUnary(string s)() if(s == "--") {
 		--this.listIt;
 		if(this.listIt.isValid()) {
 			return;
@@ -69,6 +88,17 @@ class Iterator(T,S) {
 
 	bool isValid() const {
 		return this.listIt.isValid();
+	}
+
+	override bool opEquals(Object o) {
+		Iterator!(T,S) i = cast(Iterator!(T,S))o;
+		if(this.getKey() != i.getKey()) {
+			return false;
+		}
+		bool a = (*this.getListIt()) == (*i.getListIt());
+		bool b = (*this.getTreeIt()) is (*i.getTreeIt());
+		bool c = this.map is i.map;
+		return a && b && c;
 	}
 }
 
@@ -144,24 +174,24 @@ class MultiMap(T,S) {
 			return new Iterator!(T,S)(found, false, true);
 		} else {
 			auto treeIt = this.tree.insert(new Item!(T,S)(key, value));
-			return new Iterator!(T,S)(treeIt, true, true);
+			return new Iterator!(T,S)(this,treeIt, true, true);
 		}
 	}
 
 	Iterator!(T,S) begin() {
 		auto tmp = this.tree.begin();
-		return new Iterator!(T,S)(tmp, true, false);
+		return new Iterator!(T,S)(this,tmp, true, false);
 	}
 
 	Iterator!(T,S) end() {
 		auto tmp = this.tree.end();
-		return new Iterator!(T,S)(tmp, false, false);
+		return new Iterator!(T,S)(this,tmp, false, false);
 	}
 		
 	Iterator!(T,S) range(T key) {
 		this.finder.key = key;
 		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
-		return new Iterator!(T,S)(found, true, true);
+		return new Iterator!(T,S)(this,found, true, true);
 	}
 	
 	size_t getSize() const {
@@ -259,5 +289,16 @@ void main() {
 			writeln(it);
 	
 	assert(mm != mn);
-
+	assert(mm.begin() == mm.begin());
+	it = mm.range(3);
+	auto jt = mn.range(3);
+	assert(it != jt);
+	it = mm.range(3);
+	jt = mm.range(3);
+	assert(it == jt);
+	jt++;
+	assert(it != jt);
+	it++;
+	assert(it == jt, *it ~ *jt);
+	
 }
