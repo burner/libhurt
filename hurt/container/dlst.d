@@ -186,6 +186,17 @@ public class DLinkedList(T) {
 		return tt.getElem() == this.head;
 	}
 
+	int opApply(int delegate(ref size_t,ref T) dg) {
+		size_t cnt = 0;
+		for(Elem!(T) e = this.head; e; e = e.getNext(), cnt++) {
+			T s = e.getStore();
+			if(int r = dg(cnt,s)) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
 	public int opApply(scope int delegate(ref T) dg) {
 		for(Elem!(T) e = this.head; e; e = e.getNext()) {
 			T s = e.getStore();

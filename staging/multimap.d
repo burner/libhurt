@@ -1,3 +1,4 @@
+import hurt.conv.conv;
 import hurt.container.rbtree;
 import hurt.container.dlst;
 import hurt.exception.invaliditeratorexception;
@@ -51,7 +52,7 @@ class Iterator(T,S) {
 	}
 
 	protected bool remove() {
-		auto item = (*this.treeIt);
+		Item!(T,S) item = (*this.treeIt);
 		return item.remove(this.listIt);
 	}
 
@@ -92,6 +93,12 @@ class Iterator(T,S) {
 
 	override bool opEquals(Object o) {
 		Iterator!(T,S) i = cast(Iterator!(T,S))o;
+		if(this.isValid() != i.isValid()) {
+			return false;
+		}
+		if(this.isValid() == false && i.isValid() == false) {
+			return true;
+		}
 		if(this.getKey() != i.getKey()) {
 			return false;
 		}
@@ -131,6 +138,10 @@ class Item(T,S) : Node {
 		return this.values.empty();
 	}
 
+	size_t getSize() const {
+		return values.getSize();
+	}
+
 	override bool opEquals(Object o) const {
 		Item!(T,S) f = cast(Item!(T,S))o;
 		return this.key == f.key;
@@ -158,8 +169,9 @@ class Item(T,S) : Node {
 }
 
 class MultiMap(T,S) {
-	RBTree!(Item!(T,S)) tree;
-	Item!(T,S) finder;
+	private RBTree!(Item!(T,S)) tree;
+	private Item!(T,S) finder;
+	private size_t size;
 
 	this() {
 		this.tree = new RBTree!(Item!(T,S));
@@ -169,6 +181,7 @@ class MultiMap(T,S) {
 	Iterator!(T,S) insert(T key, S value) {
 		this.finder.key = key;
 		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
+		this.size++;
 		if(found.isValid()) {
 			(*found).append(value);
 			return new Iterator!(T,S)(found, false, true);
@@ -187,6 +200,20 @@ class MultiMap(T,S) {
 		auto tmp = this.tree.end();
 		return new Iterator!(T,S)(this,tmp, false, false);
 	}
+
+	Iterator!(T,S) lower(T key) {
+		this.finder.key = key;
+		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
+		return new Iterator!(T,S)(this,found, true, false);
+	}
+
+	Iterator!(T,S) upper(T key) {
+		this.finder.key = key;
+		hurt.container.rbtree.Iterator!(Item!(T,S)) found = this.tree.findIt(this.finder);
+		Iterator!(T,S) ret = new Iterator!(T,S)(this,found, false, false);
+		ret++;
+		return ret;
+	}
 		
 	Iterator!(T,S) range(T key) {
 		this.finder.key = key;
@@ -194,12 +221,16 @@ class MultiMap(T,S) {
 		return new Iterator!(T,S)(this,found, true, true);
 	}
 	
-	size_t getSize() const {
+	size_t getCountKeys() const {
 		return this.tree.getSize();
 	}
 
+	size_t getSize() const {
+		return this.size;
+	}
+
 	T[] keys() {
-		T[] ret = new T[this.getSize()];
+		T[] ret = new T[this.getCountKeys()];
 		auto it = this.tree.begin();
 		foreach(ref jt; ret) {
 			jt = (*it).getKey();
@@ -231,10 +262,17 @@ class MultiMap(T,S) {
 	}
 
 	bool remove(Iterator!(T,S) it) {
+		size_t oldSize = (*it.getTreeIt()).getSize();
+		size_t newSize = oldSize-1;
 		bool listEmpty = it.remove();					
 		if(listEmpty) {
+			this.size--;
 			this.tree.remove(*it.getTreeIt());
+		} else {
+			oldSize = (*it.getTreeIt()).getSize();
 		}
+		if(oldSize > newSize) 
+			this.size--;
 		return listEmpty;
 	}
 
@@ -243,6 +281,7 @@ class MultiMap(T,S) {
 		Item!(T,S) it = cast(Item!(T,S))this.tree.find(this.finder);
 		if(it !is null) {
 			this.tree.remove(this.finder);
+			this.size -= it.getSize();
 			return it.values;
 		} else {
 			return null;
@@ -264,6 +303,7 @@ void main() {
 	mm.insert(2, "zwei");
 	mm.insert(3, "three");
 	mm.insert(3, "drei");
+	assert(mm.getSize() == 8, conv!(size_t,string)(mm.getSize()));
 	mm.validate();
 
 	auto mn = new MultiMap!(uint, string)();
@@ -275,18 +315,28 @@ void main() {
 	mn.insert(3, "drei");
 	mn.insert(2, "two");
 	mn.insert(2, "zwei");
+	assert(mn.getSize() == 8);
 
 	assert(mm == mn);
 
 	auto it = mm.range(0);
-	while(it.isValid())
+	while(it.isValid()) {
 		mm.remove(it);
+	}
+	assert(mm.getSize() == 6, conv!(size_t,string)(mm.getSize()));
 
-	writeln(mm.keys());
+	assert(mm.keys() == [1,2,3]);
+	size_t old = mm.getSize();
 	auto rr = mm.removeRange(1);
-	if(rr !is null)
-		foreach(it;rr)
-			writeln(it);
+	assert(rr !is null);
+	string[] expectValues = ["one", "eins"];
+	foreach(idx, it; rr) {
+		assert(it == expectValues[idx]);
+	}
+	
+	size_t nSi = mm.getSize();
+	assert(old != nSi);
+	assert(mm.getSize() == 4, conv!(size_t,string)(mm.getSize()));
 	
 	assert(mm != mn);
 	assert(mm.begin() == mm.begin());
@@ -300,5 +350,11 @@ void main() {
 	assert(it != jt);
 	it++;
 	assert(it == jt, *it ~ *jt);
+	it = mm.lower(2);
+	jt = mm.upper(3);
+	expectValues = ["two", "zwei", "three", "drei"];
+	for(size_t idx = 0; it != jt; it++, idx++) {
+		assert(*it == expectValues[idx]);
+	}
 	
 }
