@@ -5,7 +5,7 @@ import hurt.conv.conv;
 
 class Deque(T) {
 	private T[] data;
-	private size_t head, tail;
+	private long head, tail;
 
 	this() {
 		this(4);	
@@ -19,12 +19,17 @@ class Deque(T) {
 
 	private void growCapacity() {
 		T[] n = new T[this.data.length];
-		writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail);
+		size_t oldNLength = n.length;
 		if(this.tail > this.head) {
+			writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
+			writeln(__LINE__, " ", data[0..this.tail+1], " ", data[$-this.head..$]);
 			n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
+			//this.tail = n.length-this.tail + oldNLength;
 		} else {
-			n = this.data[0..this.head+1] ~ n ~ this.data[$-this.tail..$];
-			this.head = n.length-this.head;
+			writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
+			writeln(__LINE__, " ", data[0..this.head+1], " ", data[this.tail+1..$]);
+			n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
+			this.head = this.head + oldNLength +1;
 		}
 		writeln(__LINE__, " ", n," ", head," ", tail);
 		this.data = n;
@@ -50,7 +55,9 @@ class Deque(T) {
 		if(this.head == this.tail)
 			assert(0, "empty");
 		T ret = this.data[this.tail];
-		this.tail = (this.tail-1) % this.data.length;
+		this.tail = this.tail-1;
+		if(this.tail > this.data.length)
+			this.tail = this.data.length-1;
 		return ret;
 	}
 
@@ -91,6 +98,20 @@ void main() {
 	de.pushFront(7);
 	de.pushFront(6);
 	de.pushBack(13);
+	de.pushFront(5);
+	de.pushFront(4);
+	de.pushFront(3);
+	de.pushFront(2);
+	de.pushFront(1);
+	de.pushFront(0);
+	de.pushFront(-1);
+	de.pushFront(-2);
+	de.pushFront(-3);
+	de.pushBack(14);
+	de.pushBack(15);
+	for(int i = 16; i < 23; i++)
+		de.pushBack(i);
+	de.print();
 	writeln("pop", de.empty());
 	while(!de.empty()) {
 		writeln(de.popFront());
