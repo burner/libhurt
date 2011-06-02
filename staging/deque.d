@@ -21,17 +21,17 @@ class Deque(T) {
 		T[] n = new T[this.data.length];
 		size_t oldNLength = n.length;
 		if(this.tail > this.head) {
-			writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
-			writeln(__LINE__, " ", data[0..this.tail+1], " ", data[$-this.head..$]);
+			//writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
+			//writeln(__LINE__, " ", data[0..this.tail+1], " ", data[$-this.head..$]);
 			n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
 			//this.tail = n.length-this.tail + oldNLength;
 		} else {
-			writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
-			writeln(__LINE__, " ", data[0..this.head+1], " ", data[this.tail+1..$]);
+			//writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
+			//writeln(__LINE__, " ", data[0..this.head+1], " ", data[this.tail+1..$]);
 			n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
 			this.head = this.head + oldNLength +1;
 		}
-		writeln(__LINE__, " ", n," ", head," ", tail);
+		//writeln(__LINE__, " ", n," ", head," ", tail);
 		this.data = n;
 	}
 
@@ -81,7 +81,13 @@ class Deque(T) {
 		return this.head == this.tail;
 	}
 
-	size_t getSize() const { return 0; }
+	size_t getSize() const { 
+		if(this.tail > this.head) {
+			return this.tail-this.head;
+		} else {
+			return this.tail + (this.data.length-this.head);
+		}
+	}
 
 	void print() {
 		writeln(this.data, " ", this.head, " ", this.tail);
@@ -93,26 +99,34 @@ void main() {
 	de.pushBack(10);
 	de.pushBack(11);
 	de.pushBack(12);
+	writeln("size ", de.getSize());
 	de.pushFront(9);
 	de.pushFront(8);
 	de.pushFront(7);
 	de.pushFront(6);
 	de.pushBack(13);
+	writeln("size ", de.getSize());
 	de.pushFront(5);
 	de.pushFront(4);
 	de.pushFront(3);
 	de.pushFront(2);
+	writeln("size ", de.getSize());
 	de.pushFront(1);
 	de.pushFront(0);
 	de.pushFront(-1);
 	de.pushFront(-2);
+	writeln("size ", de.getSize());
 	de.pushFront(-3);
 	de.pushBack(14);
 	de.pushBack(15);
+	writeln("size ", de.getSize());
 	for(int i = 16; i < 23; i++)
 		de.pushBack(i);
 	de.print();
 	writeln("pop", de.empty());
+	for(int i = 0; i < 5; i++)
+		writeln(de.popBack());
+	writeln(__LINE__);
 	while(!de.empty()) {
 		writeln(de.popFront());
 	}
