@@ -3,6 +3,51 @@ module hurt.container.deque;
 import std.stdio;
 import hurt.conv.conv;
 
+class Iterator(T) {
+	private size_t pos;
+	Deque!(T) deque;
+	
+	this(Deque!(T) deque, bool begin) {
+		this.deque = deque;
+		if(begin) {
+			this.pos = this.deque.getHeadPos();
+			this.pos++;
+		} else {
+			this.pos = this.deque.getTailPos();
+		}
+	}
+
+	public void opUnary(string s)() if(s == "++") {
+		this.pos++;
+		if(this.pos >= this.deque.getLength()) {
+			this.pos = 0;
+		}
+	}
+
+	public void opUnary(string s)() if(s == "--") {
+		this.pos--;
+		if(this.pos > this.deque.getLength()) {
+			this.pos = this.deque.getLength-1;
+		}
+	}
+
+	public T opUnary(string s)() if(s == "*") {
+		//writeln("deref ", this.pos, " ", this.deque.getValue(this.pos));
+		return this.deque.getValue(this.pos);
+	}
+
+	public bool isValid() const {
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
+		//writeln("valid ", this.pos, " ",head, " ", tail);
+		if(tail > head) {
+			return this.pos > head && this.pos < tail;
+		} else {
+			return !(this.pos <= head && this.pos > tail);
+		}
+	}
+}
+
 class Deque(T) {
 	private T[] data;
 	private long head, tail;
@@ -17,21 +62,39 @@ class Deque(T) {
 		this.tail = 0;
 	}
 
+	protected size_t getHeadPos() const {
+		return this.head;
+	}
+
+	protected T getValue(size_t idx) {
+		return this.data[idx];
+	}
+
+	protected size_t getTailPos() const {
+		return this.tail;
+	}
+
+	protected size_t getLength() const {
+		return this.data.length;
+	}
+
+	Iterator!(T) begin() {
+		return new Iterator!(T)(this, true);
+	}
+
+	Iterator!(T) end() {
+		return new Iterator!(T)(this, false);
+	}
+
 	private void growCapacity() {
 		T[] n = new T[this.data.length];
 		size_t oldNLength = n.length;
 		if(this.tail > this.head) {
-			//writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
-			//writeln(__LINE__, " ", data[0..this.tail+1], " ", data[$-this.head..$]);
 			n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
-			//this.tail = n.length-this.tail + oldNLength;
 		} else {
-			//writeln(__LINE__, " ", this.data, " ",this.head, " ", this.tail, " ", oldNLength);
-			//writeln(__LINE__, " ", data[0..this.head+1], " ", data[this.tail+1..$]);
 			n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
 			this.head = this.head + oldNLength +1;
 		}
-		//writeln(__LINE__, " ", n," ", head," ", tail);
 		this.data = n;
 	}
 
@@ -120,14 +183,25 @@ void main() {
 	de.pushBack(14);
 	de.pushBack(15);
 	writeln("size ", de.getSize());
-	for(int i = 16; i < 23; i++)
-		de.pushBack(i);
-	de.print();
-	writeln("pop", de.empty());
-	for(int i = 0; i < 5; i++)
-		writeln(de.popBack());
-	writeln(__LINE__);
-	while(!de.empty()) {
-		writeln(de.popFront());
+	auto it = de.begin();
+	writeln(__LINE__, it.isValid());
+	for(; it.isValid(); it++) {
+		write(*it, " ");
 	}
+	writeln();
+	it = de.end();
+	for(; it.isValid(); it--) {
+		write(*it, " ");
+	}
+	writeln();
+	//for(int i = 16; i < 23; i++)
+	//	de.pushBack(i);
+	//de.print();
+	//writeln("pop", de.empty());
+	//for(int i = 0; i < 5; i++)
+	//	writeln(de.popBack());
+	//writeln(__LINE__);
+	//while(!de.empty()) {
+	//	writeln(de.popFront());
+	//}
 }
