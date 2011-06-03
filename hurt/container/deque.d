@@ -155,7 +155,7 @@ class Deque(T) {
 	}
 }
 
-void main() {
+unittest {
 	Deque!(int) de = new Deque!(int)();
 	de.pushBack(10);
 	de.pushBack(11);
