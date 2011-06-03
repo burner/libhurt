@@ -11,7 +11,7 @@ import std.stdio;
 class Iterator(T,S) {
 	private hurt.container.rbtree.Iterator!(Item!(T,S)) treeIt;
 	private MultiMap!(T,S) map;
-	private DLinkedList!(S).Iterator!(S) listIt;
+	private hurt.container.dlst.Iterator!(S) listIt;
 	private bool range;
 
 	this(MultiMap!(T,S) map, hurt.container.rbtree.Iterator!(Item!(T,S)) it, bool begin = true, bool range = true) {
@@ -62,7 +62,7 @@ class Iterator(T,S) {
 		return (*this.treeIt).getKey();
 	}
 
-	protected DLinkedList!(S).Iterator!(S) getListIt() {
+	protected hurt.container.dlst.Iterator!(S) getListIt() {
 		return this.listIt;
 	}
 
@@ -127,15 +127,15 @@ class Item(T,S) : Node {
 		this.values.pushBack(value);
 	}
 
-	protected DLinkedList!(S).Iterator!(S) getFirst() {
+	protected hurt.container.dlst.Iterator!(S) getFirst() {
 		return this.values.begin();
 	}
 
-	protected DLinkedList!(S).Iterator!(S) getLast() {
+	protected hurt.container.dlst.Iterator!(S) getLast() {
 		return this.values.end();
 	}
 
-	bool remove(DLinkedList!(S).Iterator!(S) it) {
+	bool remove(hurt.container.dlst.Iterator!(S) it) {
 		this.values.remove(it);
 		return this.values.empty();
 	}

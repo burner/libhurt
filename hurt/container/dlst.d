@@ -1,53 +1,58 @@
 module hurt.container.dlst;
 
 import hurt.conv.conv;
+import hurt.container.iterator;
 import hurt.exception.nullexception;
 import hurt.exception.invaliditeratorexception;
 
 import std.stdio;
 
+public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
+	private DLinkedList!(T).Elem!(T) elem;
 
-public class DLinkedList(T) {
-	public class Iterator(T) {
-		Elem!(T) elem;
-	
-		public this(Elem!(T) elem) {
-			this.elem = elem;
-		}
-	
-		public T getValue() {
-			if(elem is null) {
-				throw new NullException("Iterator value is null");
-			} else {
-				return elem.getStore();
-			}
-		}
-	
-		public void opUnary(string s)() if(s == "++") {
-			this.elem = elem.getNext();
-		}
-	
-		public void opUnary(string s)() if(s == "--") {
-			this.elem = elem.getPrev();
-		}
+	public this(DLinkedList!(T).Elem!(T) elem) {
+		this.elem = elem;
+	}
 
-		public T opUnary(string s)() if(s == "*") {
-			return this.getValue();
-		}
-	
-		public bool isValid() const {
-			return this.elem !is null;
-		}
-	
-		public Elem!(T) getElem() {
-			return this.elem;
-		}
-	
-		public void setElem(Elem!(T) elem) {
-			this.elem = elem;
+	public T getValue() {
+		if(elem is null) {
+			throw new NullException("Iterator value is null");
+		} else {
+			return elem.getStore();
 		}
 	}
-	
+
+	public override void opUnary(string s)() if(s == "++") {
+		this.elem = elem.getNext();
+	}
+
+	public override void opUnary(string s)() if(s == "--") {
+		this.elem = elem.getPrev();
+	}
+
+	public T opUnary(string s)() if(s == "*") {
+		return this.getValue();
+	}
+
+	public override bool opEquals(Object o) {
+		Iterator!(T) it = cast(Iterator!(T))o;
+		return this.elem.getStore() == it.getElem().getStore();
+	}
+
+	public override bool isValid() const {
+		return this.elem !is null;
+	}
+
+	public DLinkedList!(T).Elem!(T) getElem() {
+		return this.elem;
+	}
+
+	public void setElem(DLinkedList!(T).Elem!(T) elem) {
+		this.elem = elem;
+	}
+}
+
+public class DLinkedList(T) {
 	private class Elem(T) {
 		private T store;
 		private Elem!(T) prev;
