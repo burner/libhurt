@@ -1,6 +1,7 @@
 module hurt.container.multimap;
 
 import hurt.conv.conv;
+import hurt.container.iterator;
 import hurt.container.rbtree;
 import hurt.container.dlst;
 import hurt.exception.invaliditeratorexception;
@@ -8,7 +9,7 @@ import hurt.util.array;
 
 import std.stdio;
 
-class Iterator(T,S) {
+class Iterator(T,S) : hurt.container.iterator.Iterator!(T) {
 	private hurt.container.rbtree.Iterator!(Item!(T,S)) treeIt;
 	private MultiMap!(T,S) map;
 	private hurt.container.dlst.Iterator!(S) listIt;
@@ -70,7 +71,7 @@ class Iterator(T,S) {
 		return this.treeIt;
 	}
 
-	protected void opUnary(string s)() if(s == "--") {
+	public void opUnary(string s)() if(s == "--") {
 		--this.listIt;
 		if(this.listIt.isValid()) {
 			return;
@@ -89,11 +90,11 @@ class Iterator(T,S) {
 		throw new InvalidIteratorException("MultiMap Iterator is not valid");	
 	}
 
-	bool isValid() const {
+	public bool isValid() const {
 		return this.listIt.isValid();
 	}
 
-	override bool opEquals(Object o) {
+	public override bool opEquals(Object o) {
 		Iterator!(T,S) i = cast(Iterator!(T,S))o;
 		if(this.isValid() != i.isValid()) {
 			return false;

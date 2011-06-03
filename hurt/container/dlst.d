@@ -22,11 +22,11 @@ public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 		}
 	}
 
-	public override void opUnary(string s)() if(s == "++") {
+	public void opUnary(string s)() if(s == "++") {
 		this.elem = elem.getNext();
 	}
 
-	public override void opUnary(string s)() if(s == "--") {
+	public void opUnary(string s)() if(s == "--") {
 		this.elem = elem.getPrev();
 	}
 
@@ -39,7 +39,7 @@ public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 		return this.elem.getStore() == it.getElem().getStore();
 	}
 
-	public override bool isValid() const {
+	public bool isValid() const {
 		return this.elem !is null;
 	}
 
