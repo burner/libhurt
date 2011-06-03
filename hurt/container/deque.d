@@ -2,8 +2,9 @@ module hurt.container.deque;
 
 import std.stdio;
 import hurt.conv.conv;
+import hurt.container.iterator;
 
-class Iterator(T) {
+class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 	private size_t pos;
 	Deque!(T) deque;
 	
@@ -34,6 +35,11 @@ class Iterator(T) {
 	public T opUnary(string s)() if(s == "*") {
 		return this.deque.getValue(this.pos);
 	}
+
+	public override bool opEquals(Object o) {
+		Iterator!(T) it = cast(Iterator!(T))o;
+		return this.pos == it.pos;
+	}	
 
 	public bool isValid() const {
 		size_t head = this.deque.getHeadPos();
