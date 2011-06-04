@@ -204,4 +204,17 @@ void main() {
 	//while(!de.empty()) {
 	//	writeln(de.popFront());
 	//}
+	Deque!(int) de2 = new Deque!int();
+	de2.pushFront(1);
+	de2.pushFront(2);
+	de2.pushFront(3);
+	de2.print();
+	writeln(de2.popBack());
+	writeln(de2.popBack());
+	de2.print();
+	de2.pushFront(4);
+	de2.pushFront(5);
+	de2.print();
+	writeln(de2.popBack());
+	writeln(de2.popBack());
 }
