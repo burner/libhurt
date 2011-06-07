@@ -11,10 +11,14 @@ import core.vararg;
 
 import std.stdio;
 
-public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
+public immutable(S)[] format(T,S)(immutable(T)[] form, ...) {
+	return formatString!(T,S)(form, _arguments, _argptr);
+}
+
+public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] arguments, void* arg)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
-	writeln(_arguments);
+	//writeln(_arguments);
 	size_t argPtr = 0;
 	size_t ptr = 0;
 	size_t vaTypePtr = 0;
@@ -73,13 +77,13 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						break;
 					case '*': {
 						if(idx < form.length && form[idx] == '*') {
-							if(_arguments[argPtr] == typeid(int)) {
-								padding = va_arg!(int)(_argptr);
+							if(arguments[argPtr] == typeid(int)) {
+								padding = va_arg!(int)(arg);
 								argPtr++;
-								debug writeln(__FILE__,__LINE__,": ", padding, " " , _argptr);
+								debug writeln(__FILE__,__LINE__,": ", padding, " " , arg);
 							} else {
 								throw new IllegalArgumentException("Expected an int not an " 
-									~ _arguments[argPtr].toString());
+									~ arguments[argPtr].toString());
 							}
 						}
 						break;
@@ -87,13 +91,13 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 					case '.': {
 						idx++;
 						if(idx < form.length && form[idx] == '*') {
-							if(_arguments[argPtr] == typeid(int)) {
-								precision = va_arg!(int)(_argptr);
+							if(arguments[argPtr] == typeid(int)) {
+								precision = va_arg!(int)(arg);
 								argPtr++;
-								debug writeln(__FILE__,__LINE__,": ", precision, " ", _argptr);
+								debug writeln(__FILE__,__LINE__,": ", precision, " ", arg);
 							} else {
 								throw new IllegalArgumentException("Expected an int not an " 
-									~ _arguments[argPtr].toString());
+									~ arguments[argPtr].toString());
 							}
 							break;
 						}
@@ -170,49 +174,49 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 					case 'd': {// signed integer
 						debug writeln(__FILE__,__LINE__,": integer");
 						immutable(T)[] tmp;
-						if(_arguments[argPtr] == typeid(int)) {
-							int value = va_arg!(int)(_argptr);
+						if(arguments[argPtr] == typeid(int)) {
+							int value = va_arg!(int)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,int)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(uint)) {
-							uint value = va_arg!(uint)(_argptr);
+						} else if(arguments[argPtr] == typeid(uint)) {
+							uint value = va_arg!(uint)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,uint)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(ubyte)) {
-							ubyte value = va_arg!(ubyte)(_argptr);
+						} else if(arguments[argPtr] == typeid(ubyte)) {
+							ubyte value = va_arg!(ubyte)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,ubyte)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(byte)) {
-							byte value = va_arg!(byte)(_argptr);
+						} else if(arguments[argPtr] == typeid(byte)) {
+							byte value = va_arg!(byte)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,byte)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(ushort)) {
-							ushort value = va_arg!(ushort)(_argptr);
+						} else if(arguments[argPtr] == typeid(ushort)) {
+							ushort value = va_arg!(ushort)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,ushort)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(short)) {
-							short value = va_arg!(short)(_argptr);
+						} else if(arguments[argPtr] == typeid(short)) {
+							short value = va_arg!(short)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,short)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(ulong)) {
-							ulong value = va_arg!(ulong)(_argptr);
+						} else if(arguments[argPtr] == typeid(ulong)) {
+							ulong value = va_arg!(ulong)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,ulong)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(long)) {
-							long value = va_arg!(long)(_argptr);
+						} else if(arguments[argPtr] == typeid(long)) {
+							long value = va_arg!(long)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,long)(value, base, alwaysSign, title);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
 							throw new FormatError("an int was expected but value was a " 
-								~ (_arguments[argPtr].toString()));
+								~ (arguments[argPtr].toString()));
 						}
 						argPtr++;
 
@@ -266,26 +270,26 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...)
 						break;
 					case 'f': // double as decimal
 						debug writeln(__FILE__,__LINE__,": float ", precision, " ", padding, " ",
-							_arguments[argPtr].toString(), _argptr);
+							arguments[argPtr].toString(), arg);
 						immutable(T)[] tmp;
-						if(_arguments[argPtr] == typeid(float)) {
-							float value = va_arg!(float)(_argptr);
+						if(arguments[argPtr] == typeid(float)) {
+							float value = va_arg!(float)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
 							tmp = floatToString!(T,float)(value, precision, alwaysSign);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(double)) {
-							double value = va_arg!(double)(_argptr);
+						} else if(arguments[argPtr] == typeid(double)) {
+							double value = va_arg!(double)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
 							tmp = floatToString!(T,double)(value, precision, alwaysSign);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
-						} else if(_arguments[argPtr] == typeid(real)) {
-							real value = va_arg!(real)(_argptr);
+						} else if(arguments[argPtr] == typeid(real)) {
+							real value = va_arg!(real)(arg);
 							debug writeln(__FILE__,__LINE__,": ", value," ", precision);
 							tmp = floatToString!(T,real)(value, precision, alwaysSign);
 							debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
 							throw new FormatError("an float was expected but value was a " 
-								~ (_arguments[argPtr].toString()));
+								~ (arguments[argPtr].toString()));
 						}	
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
