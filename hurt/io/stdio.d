@@ -11,5 +11,13 @@ static this() {
 }
 
 public size_t print(...) {
-	return 0;
+	buf.clear();
+	foreach(it;_arguments) {
+		if(it == typeid(byte) || it == typeid(short) || it == typeid(int) 
+				|| it == typeid(long)) {
+			buf.pushBack("%d ");
+		}
+	}
+	//immutable(char)[] toPrint = format(T,S)(
+	return buf.getSize();
 }
