@@ -4,13 +4,17 @@ CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64
 #CFLAGS=-w -gc -I../ -debug -m64
 
 #TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest unit maptest
-TESTS=unit
+TESTS=printtest
 
 all:tests
 
 tests: $(TESTS)
 
 new: clean tests
+
+printtest: printtest.d Makefile
+	$(DC) $(CFLAGS) printtest.d
+	exec ./printtest
 
 filetest: filetest.d Makefile
 	$(DC) $(CFLAGS) filetest.d

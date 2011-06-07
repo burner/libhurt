@@ -12,18 +12,18 @@ static this() {
 }
 
 public size_t print(...) {
-	string str = makeString(_argptr);	
+	string str = makeString(_arguments, _argptr);	
 	return writeC(0, str.ptr, str.length);
 }
 
 public size_t println(...) {
-	string str = makeString(_argptr) ~ "\n";	
+	string str = makeString(_arguments, _argptr) ~ "\n";	
 	return writeC(0, str.ptr, str.length);
 }
 
-public string makeString(...) {
+public string makeString(TypeInfo[] arguments, void* args) {
 	buf.clear();
-	foreach(it;_arguments) {
+	foreach(it;arguments) {
 		if(it == typeid(byte) || it == typeid(short) || it == typeid(int) 
 				|| it == typeid(long)) {
 			buf.pushBack("%d ");
@@ -31,9 +31,10 @@ public string makeString(...) {
 			buf.pushBack("%s ");
 		}
 	}
-	return format!(char,char)(buf.getString(), _argptr);
+	return format!(char,char)(buf.getString(), args);
 }
 
 unittest {
 	print(22,13,5);
+	print("\n\n\n\n");
 }
