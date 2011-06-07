@@ -1,9 +1,9 @@
-import hurt.string.formatter;
 import hurt.container.rbtree;
 import hurt.container.multimap;
+import hurt.io.stdio;
 
-import std.stdio;
+//import std.stdio;
 
 void main() {
-	writeln("all unittest done");	
+	println("all unittest done");	
 }

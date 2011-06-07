@@ -11,6 +11,10 @@ public extern(C) int seekC(int fd, ulong offset, int st);
 public extern(C) int readC(int fd, void *buf, const long count);
 public extern(C) int getErrno();
 
+long write(const int fd, void[] buf) {
+	return writeC(fd, buf.ptr, buf.length);
+}
+
 int open(string name, const uint flags, const uint modevalues) {
 	name ~= '\0';
 	return openC(name.ptr, flags, modevalues);
