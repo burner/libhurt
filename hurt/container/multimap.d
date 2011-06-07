@@ -156,7 +156,7 @@ class Item(T,S) : Node {
 		this.values = c.values;
 	}
 
-	override int opCmp(Object o) const {
+	override int opCmp(Object o) {
 		Item!(T,S) f = cast(Item!(T,S))o;
 		if(this.key > f.key)
 			return 1;
@@ -230,6 +230,10 @@ class MultiMap(T,S) {
 
 	size_t getSize() const {
 		return this.size;
+	}
+
+	bool empty() const {
+		return this.size == 0;
 	}
 
 	T[] keys() {
