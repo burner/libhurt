@@ -1,4 +1,4 @@
-module hurt.stdio.ioflags;
+module hurt.io.ioflags;
 
 enum FileFlags {
 	O_ACCMODE =	 00000003,

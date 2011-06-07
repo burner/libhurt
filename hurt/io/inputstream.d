@@ -1,7 +1,7 @@
-module hurt.stdio.inputstream;
+module hurt.io.inputstream;
 
-import hurt.stdio.file;
-import hurt.stdio.ioflags;
+import hurt.io.file;
+import hurt.io.ioflags;
 
 import hurt.conv.conv;
 import hurt.container.vector;
@@ -76,6 +76,6 @@ class InputStream {
 	}
 
 	void close() {
-		hurt.stdio.file.close(fd);
+		hurt.io.file.close(fd);
 	}
 }

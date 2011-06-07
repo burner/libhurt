@@ -1,5 +1,6 @@
-module hurt.stdio.file;
-import hurt.stdio.ioflags;
+module hurt.io.file;
+
+import hurt.io.ioflags;
 
 public extern(C) long writeC(int fd, const void *buf, size_t count);
 public extern(C) int openC(const char* name, uint flags, uint modevalues);
