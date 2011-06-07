@@ -23,8 +23,8 @@ void main() {
 		962, 455, 418, 977, 2002, 1499, 1500, 992, 2018, 487, 1000, 2471, 2541, 
 		1009, 498, 500, 1016];
 	DLinkedList!(int) l1 = new DLinkedList!(int)();
-	DLinkedList!(int).Iterator!(int) lit = l1.begin();
-	DLinkedList!(int).Iterator!(int) kit = l1.end();
+	Iterator!(int) lit = l1.begin();
+	Iterator!(int) kit = l1.end();
 	assert(!lit.isValid(), "should be valid");
 	assert(!kit.isValid(), "should be valid");
 	foreach(idx,it;t) {
@@ -73,7 +73,7 @@ void main() {
 		l2.pushBack(it);
 	}
 	assert(l2.getSize() == 10);
-	DLinkedList!(int).Iterator!(int) rit = l2.end();
+	Iterator!(int) rit = l2.end();
 	assert(rit.isValid());
 	l2.remove(rit);
 	assert(rit.isValid());
@@ -115,7 +115,7 @@ void main() {
 	DLinkedList!(int) l3 = new DLinkedList!(int)();
 	l3.pushBack(1);
 	assert(l3.getSize() == 1);
-	DLinkedList!(int).Iterator!(int) iit = l3.end();
+	Iterator!(int) iit = l3.end();
 	assert(l3.isEnd(iit));
 	assert(l3.isBegin(iit));
 	iit = l3.insert(iit, 2, true);

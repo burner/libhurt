@@ -2,8 +2,9 @@ module hurt.container.deque;
 
 import std.stdio;
 import hurt.conv.conv;
+import hurt.container.iterator;
 
-class Iterator(T) {
+class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 	private size_t pos;
 	Deque!(T) deque;
 	
@@ -32,14 +33,17 @@ class Iterator(T) {
 	}
 
 	public T opUnary(string s)() if(s == "*") {
-		//writeln("deref ", this.pos, " ", this.deque.getValue(this.pos));
 		return this.deque.getValue(this.pos);
 	}
+
+	public override bool opEquals(Object o) {
+		Iterator!(T) it = cast(Iterator!(T))o;
+		return this.pos == it.pos;
+	}	
 
 	public bool isValid() const {
 		size_t head = this.deque.getHeadPos();
 		size_t tail = this.deque.getTailPos();
-		//writeln("valid ", this.pos, " ",head, " ", tail);
 		if(tail > head) {
 			return this.pos > head && this.pos < tail;
 		} else {
@@ -157,7 +161,7 @@ class Deque(T) {
 	}
 }
 
-void main() {
+unittest {
 	Deque!(int) de = new Deque!(int)();
 	de.pushBack(10);
 	de.pushBack(11);
