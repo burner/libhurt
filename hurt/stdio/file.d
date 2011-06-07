@@ -1,27 +1,14 @@
-module hurt.stdio.stdio;
+module hurt.stdio.file;
 import hurt.stdio.ioflags;
 
-extern(C) long writeC(int fd, const void *buf, size_t count);
-extern(C) int openC(const char* name, uint flags, uint modevalues);
-extern(C) int fsyncC(int fd);
-extern(C) int closeC(int fd);
-extern(C) int getFdSize(int fd);
-extern(C) int seekC(int fd, ulong offset, int st);
-extern(C) int readC(int fd, void *buf, const long count);
-extern(C) int getErrno();
-
-size_t print(const string str) {
-	return writeC(0, str.ptr, str.length);	
-}
-
-size_t println(string str) {
-	str ~= '\n';
-	return writeC(0, str.ptr, str.length);	
-}
-
-size_t write(const int fd, const string str) {
-	return writeC(fd , str.ptr, str.length);	
-}
+public extern(C) long writeC(int fd, const void *buf, size_t count);
+public extern(C) int openC(const char* name, uint flags, uint modevalues);
+public extern(C) int fsyncC(int fd);
+public extern(C) int closeC(int fd);
+public extern(C) int getFdSize(int fd);
+public extern(C) int seekC(int fd, ulong offset, int st);
+public extern(C) int readC(int fd, void *buf, const long count);
+public extern(C) int getErrno();
 
 int open(string name, const uint flags, const uint modevalues) {
 	name ~= '\0';

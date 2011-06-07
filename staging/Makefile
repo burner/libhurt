@@ -1,3 +1,3 @@
 all:
-	dmd -m64 -w -unittest -debug -gc deque.d -L../libhurt.a -I..
-	./deque
+	dmd -m64 -w -unittest -debug -gc tuple.d -L../libhurt.a -I..
+	./tuple
