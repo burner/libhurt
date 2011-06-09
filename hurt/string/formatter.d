@@ -324,6 +324,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 		}
 
 	}
+	writeln(__LINE__," ", ret[0..ptr]);
 	return ret[0..ptr].idup;
 }
 

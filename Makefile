@@ -153,7 +153,7 @@ hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexcepti
 hurt.io.ioflags.o: hurt/io/ioflags.d Makefile
 	$(DC) $(CFLAGS) hurt/io/ioflags.d -ofhurt.io.ioflags.o
 
-hurt.io.stdio.o: hurt/io/stdio.d Makefile
+hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d Makefile
 	$(DC) $(CFLAGS) hurt/io/stdio.d -ofhurt.io.stdio.o
 
 hurt.io.inputstream.o: hurt/io/inputstream.d Makefile
