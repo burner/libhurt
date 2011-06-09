@@ -47,5 +47,5 @@ public string makeString(TypeInfo[] arguments, void* args) {
 
 unittest {
 	println(22,13,5);
-	println("\n\n\n\n");
+	print("\n\n\n\n");
 }

@@ -263,6 +263,14 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 						break parse;
 					}
 					case 's': // string
+						if(arguments[argPtr] == typeid(immutable(char)[])) {
+							immutable(char)[] value = va_arg!(immutable(char)[])(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value);
+							foreach(it; value) {
+								appendWithIdx!(T)(ret, ptr++, it);
+							}
+							argPtr++;
+						}
 						break;
 					case 'e': // double as exponent 1.4e44
 						break;
@@ -324,7 +332,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 		}
 
 	}
-	writeln(__LINE__," ", ret[0..ptr]);
+	//writeln(__LINE__," ", ret[0..ptr]);
 	return ret[0..ptr].idup;
 }
 
