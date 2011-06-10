@@ -14,19 +14,20 @@ static this() {
 }
 
 public size_t print(...) {
-	string str = makeString(_arguments, _argptr);	
+	//writeln(buf.getString());
+	string str = makeString(_arguments, _argptr)[0..$-1];	
 	return writeC(0, str.ptr, str.length);
 }
 
 public size_t println(...) {
-	string str = makeString(_arguments, _argptr) ~ "\n";	
+	//writeln(buf.getString());
+	string str = makeString(_arguments, _argptr)[0..$-1] ~ "\n";	
 	return writeC(0, str.ptr, str.length);
 }
 
 public string makeString(TypeInfo[] arguments, void* args) {
 	buf.clear();
 	foreach(it;arguments) {
-		writeln(__LINE__," ", it);
 		if(it == typeid(ubyte) || it == typeid(ushort) 
 				|| it == typeid(uint) || it == typeid(ulong)) {
 			buf.pushBack("%u ");
@@ -39,13 +40,21 @@ public string makeString(TypeInfo[] arguments, void* args) {
 		} else if(it == typeid(immutable(char)[]) || it == typeid(immutable(wchar)[])
 				|| it == typeid(immutable(dchar)[])) {
 			buf.pushBack("%s ");
+		} else if(is(typeof(it) : Object)) {
+			writeln(45, it);
+			buf.pushBack("%a ");
 		}
 	}
-	writeln(__LINE__," ", buf.getString());
-	return formatString!(char,char)(buf.getString(),arguments, args);
+	return formatString!(char,char)(buf.getString(), arguments, args);
+}
+
+private class Tmp {
+	int i;
 }
 
 unittest {
-	println(22,13,5);
-	print("\n\n\n\n");
+	assert(8 == println(22,13,5));
+	assert(12 == println("hello","world"));
+	assert(5 == println("\n\n\n\n"));
+	println(new Tmp);
 }

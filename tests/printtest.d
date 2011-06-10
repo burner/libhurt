@@ -1,5 +1,6 @@
 import hurt.io.stdio;
 
 void main() {
-	print("hello wordl", 4, "\n");
+	println("hello world", 4);
+	println("hello world", 4);
 }
