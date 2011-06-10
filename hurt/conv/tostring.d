@@ -1,6 +1,7 @@
 module hurt.conv.tostring;
 
 import hurt.conv.numerictochar;
+import hurt.math.mathutil;
 
 import std.stdio;
 
@@ -78,6 +79,19 @@ public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false
 	return dec ~ "." ~ frac;
 }
 
+public immutable(T)[] floatToExponent(T,S)(S src, int round = 4, bool sign = false, bool big = false)
+		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
+			(is(S == float) || is(S == double) || is(S == real))) {
+	int count = 0;
+	while(abs(src) >= 10) {
+		count++;
+		src /= 10;
+	}
+	immutable(T)[] digits = floatToString!(T,S)(src, round, sign);
+	immutable(T)[] expo = integerToString!(T,int)(count);
+	return digits ~ (big ? "E" : "e") ~ expo;
+}
+
 unittest {
 	assert("10.00" == floatToString!(char,double)(10.0, 2), floatToString!(char,double)(10.0, 2));
 	assert("1.20" == floatToString!(char,double)(1.2, 2), floatToString!(char,double)(1.2, 2));
@@ -96,4 +110,6 @@ unittest {
 	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6, true), floatToString!(char,real)(-100.222121, 6, true));
 	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6, true), floatToString!(char,real)(-100.222129, 6, true));
 	assert("+100.222130" == floatToString!(char,float)(100.222129, 6, true), floatToString!(char,float)(100.222129, 6, true));
+	assert("1.0e1" == floatToExponent!(char,float)(10,1,false, false), floatToExponent!(char,float)(10,1,false, false));
+	assert("-1.0e2" == floatToExponent!(char,float)(-100,1,false, false), floatToExponent!(char,float)(-100,1,false, false));
 }
