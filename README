@@ -1,6 +1,35 @@
 libhurt
 
-My own D library. I'm plan to add functions to the lib every time something is
-missing in dc or in my jflex port.
+Custom std library for D2. I'm writing a lexer generator for D2.  Every time I
+normally would use a function of Phobos I create it myself.
 
 The license is GPL.
+
+Features:
+	Container:
+		Bitmap
+		Double Linked List
+		Map
+		MultiMap
+		Set
+		Single Linked List
+		Stack
+		Vector
+
+	Convert:
+		Numbertypes to string
+		string to Numbertypes
+		some Numbertypes to some Numbertypes (sort of a safe cast)
+	
+	io:
+		C File like File
+		print(f)(ln) sort of
+
+	Util:
+		append to array functions
+		find in array functions
+		sort function (only on array so far)
+
+	Math:
+		BigInteger (needed this for some Euler Projects)
+		Min, Max, Abs
