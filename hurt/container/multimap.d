@@ -19,7 +19,7 @@ class Iterator(T,S) : hurt.container.iterator.Iterator!(T) {
 		this.treeIt = it;
 		this.range = range;
 		this.map = map;
-		if(this.treeIt is null) {
+		if(this.treeIt is null || !this.treeIt.isValid()) {
 			return;
 		}
 		if(begin) {
@@ -32,7 +32,7 @@ class Iterator(T,S) : hurt.container.iterator.Iterator!(T) {
 	this(hurt.container.rbtree.Iterator!(Item!(T,S)) it, bool begin = true, bool range = true) {
 		this.treeIt = it;
 		this.range = range;
-		if(this.treeIt is null) {
+		if(this.treeIt is null || !this.treeIt.isValid()) {
 			return;
 		}
 		if(begin) {
@@ -91,7 +91,7 @@ class Iterator(T,S) : hurt.container.iterator.Iterator!(T) {
 	}
 
 	public bool isValid() const {
-		return this.listIt.isValid();
+		return this.listIt !is null && this.listIt.isValid();
 	}
 
 	public override bool opEquals(Object o) {

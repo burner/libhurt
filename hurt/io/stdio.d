@@ -40,7 +40,7 @@ public string makeString(TypeInfo[] arguments, void* args) {
 		} else if(it == typeid(immutable(char)[]) || it == typeid(immutable(wchar)[])
 				|| it == typeid(immutable(dchar)[])) {
 			buf.pushBack("%s ");
-		} else if(is(typeof(it) : Object)) {
+		} else if(is(it == typeof(Object))) {
 			writeln(45, it);
 			buf.pushBack("%a ");
 		}
