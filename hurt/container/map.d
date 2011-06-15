@@ -35,6 +35,10 @@ class MapItem(T,S) : Node {
 		else
 			return 0;
 	}
+
+	public S opUnary(string s)() if(s == "*") {
+		return this.data;
+	}
 }
 
 class Map(T,S) {
@@ -60,6 +64,7 @@ class Map(T,S) {
 			this.map.insert(found);
 			return found;
 		} else {
+			found.data = data;
 			return found;
 		}
 	}

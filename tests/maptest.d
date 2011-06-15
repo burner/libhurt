@@ -26,6 +26,11 @@ void main() {
 
 	sort!(int)(k, function(in int a, in int b) { return a < b; });
 
+	string old = *map.find(31);
+	map.insert(31, "666");
+	assert((*map.find(31)) == "666");
+	map.insert(31, old);
+
 
 	size_t idx = 0;
 	foreach(key, value; map) {
