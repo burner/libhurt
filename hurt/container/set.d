@@ -1,121 +1,101 @@
-module hurt.container.set;
+module hurt.container.map;
 
-import hurt.conv.conv;
+import hurt.container.rbtree;
 
 import std.stdio;
 
-public class Set(T) {
-	T[T] array;
+class SetItem(T) : Node {
+	T key;
 
-	this(Set!(T) toCopy) {
-		foreach(it;toCopy.values()) {
-			this.insert(it);
-		}
-	}
-
-	this() {
+	this() {}
 	
+	this(T key) {
+		this.key = key;
 	}
 
-	size_t getSize() const {
-		return this.array.length;
-	}
-	
-	bool insert(T value) {
-		if(value in this.array) {
-			return false;
-		} else {
-			this.array[value] = value;
-			return true;
-		}
+	override bool opEquals(Object o) {
+		SetItem!(T) f = cast(SetItem!(T))o;
+		return this.key == f.key;
 	}
 
-	T get(T value) {
-		if(value in this.array) {
-			assert(0);
-		} else {
-			return this.array[value];
-		}
+	override void set(Node toSet) {
+		SetItem!(T) c = cast(SetItem!(T))toSet;
+		this.key = c.key;
 	}
 
-	bool remove(T value) {
-		if(value in this.array) {
-			this.array.remove(value);
-			return true;
-		} else {
-			return false;
-		}
+	override int opCmp(Object o) {
+		SetItem!(T) f = cast(SetItem!(T))o;
+		T fHash = f.key;
+		T thisHash = this.key;
+		if(thisHash > fHash)
+			return 1;
+		else if(thisHash < fHash)
+			return -1;
+		else
+			return 0;
 	}
 
-	bool contains(T value) const {
-		if(value in this.array) {
-			return true;
-		} else {
-			return false;
-		}
+	public S opUnary(string s)() if(s == "*") {
+		return this.data;
 	}
-
-	T[] values() {
-		return this.array.values();
-	}
-
-	const(T[]) constValues() const {
-		const T[] tmp = this.array.values();
-		return tmp;
-	}
-
-	Set!(T) dup() {
-		Set!(T) ret = new Set!(T)(this);
-		return ret;
-	}
-
-	override bool opEquals(Object o) const {
-		Set!(T) f = cast(Set!(T))o;
-		foreach(it; f.values()) {
-			if(!this.contains(it)) {
-				return false;
-			}	
-		}
-		return f.values().length == this.array.length;
-	}
-
-	bool empty() const {
-		return this.array.length == 0;
-	}	
 }
 
-unittest {
-	Set!(int) intTest = new Set!(int)();
-	Set!(int) intTestCopy = intTest.dup();
-	assert(intTest == intTestCopy, "should be the same");
-	int[] t = [123,13,5345,752,12,3,1,654,22];
-	foreach(idx,it;t) {
-		assert(intTest.insert(it));
-		foreach(jt;t[0..idx]) {
-			assert(intTest.contains(jt));
-		}
-		intTestCopy = intTest.dup();
-		assert(intTest == intTestCopy, "should be the same");
-		foreach(jt;t[idx+1..$]) {
-			assert(!intTest.contains(jt));
-		}
+class Set(T) {
+	RBTree!(SetItem!(T)) map;
+
+	SetItem!(T) finder;
+
+	this() {
+		this.map = new RBTree!(SetItem!(T))();
+		this.finder = new SetItem!(T)();
 	}
-	foreach(idx,it;t) {
-		assert(!intTest.insert(it), conv!(int,string)(it));
-		assert(intTest.contains(it), conv!(int,string)(it));
-		intTestCopy = intTest.dup();
-		assert(intTest == intTestCopy, "should be the same");
+
+	SetItem!(T) find(T key) {
+		this.finder.key = key;
+		SetItem!(T) found = cast(SetItem!(T))this.map.find(this.finder);
+		return found;
 	}
-	foreach(idx,it;t) {
-		assert(intTest.remove(it), conv!(int,string)(it));
-		assert(!intTest.contains(it), conv!(int,string)(it));
-		foreach(jt;t[0..idx]) {
-			assert(!intTest.contains(jt));
+
+	SetItem!(T) insert(T key) {
+		SetItem!(T) found = this.find(key);
+		if(found is null) {
+			found = new SetItem!(T)(key);
+			this.map.insert(found);
 		}
-		foreach(jt;t[idx+1..$]) {
-			assert(intTest.contains(jt));
+		return found;
+	}
+
+	Iterator!(SetItem!(T)) begin() {
+		return this.map.begin();
+	}
+
+	Iterator!(SetItem!(T)) end() {
+		return this.map.end();
+	}
+
+	bool contains(T key) {
+		this.finder.key = key;
+		return this.map.findIt(this.finder).isValid();
+	}
+
+	int opApply(scope int delegate(ref T) dg) {
+		Iterator!(SetItem!(T)) it = this.begin();
+		while(it.isValid()) {
+			T key = cast(T)(*it).key;
+			if(int r = dg(key)) {
+				return r;
+			}
+			it++;
 		}
-		intTestCopy = intTest.dup();
-		assert(intTest == intTestCopy, "should be the same");
+		return 0;
+	}
+
+	bool remove(T key) {
+		this.finder.key = key;
+		return this.map.remove(this.finder);
+	}
+	
+	size_t getSize() const {
+		return map.getSize();
 	}
 }

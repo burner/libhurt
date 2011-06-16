@@ -1,10 +1,10 @@
 DC=dmd
-CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 
-#CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 -unittest
+#CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 
+CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 -unittest
 #CFLAGS=-w -gc -I../ -debug -m64
 
 #TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest unit maptest
-TESTS=maptest
+TESTS=settest
 
 all:tests
 
@@ -23,6 +23,10 @@ filetest: filetest.d Makefile
 maptest: maptest.d Makefile
 	$(DC) $(CFLAGS) maptest.d
 	exec ./maptest
+
+settest: settest.d Makefile
+	$(DC) $(CFLAGS) settest.d
+	exec ./settest
 
 rbtreetest: rbtreetest.d Makefile
 	$(DC) $(CFLAGS) rbtreetest.d

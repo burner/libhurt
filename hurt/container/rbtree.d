@@ -51,6 +51,8 @@ public class Iterator(T) {
 	this(Node root, bool begin) {
 		this.current = root;
 		//this.treeRoot = root;
+		if(this.current is null)
+			return;
 		while(this.current.getLink(!begin) !is null) {
 			this.current = this.current.getLink(!begin);
 		}
