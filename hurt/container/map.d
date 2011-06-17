@@ -41,7 +41,7 @@ class MapItem(T,S) : Node {
 	}
 }
 
-class Map(T,S) {
+public class Map(T,S) {
 	RBTree!(MapItem!(T,S)) map;
 
 	MapItem!(T,S) finder;

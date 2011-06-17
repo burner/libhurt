@@ -1,4 +1,4 @@
-module hurt.container.map;
+module hurt.container.set;
 
 import hurt.container.rbtree;
 
@@ -35,8 +35,8 @@ class SetItem(T) : Node {
 			return 0;
 	}
 
-	public S opUnary(string s)() if(s == "*") {
-		return this.data;
+	public T opUnary(string s)() if(s == "*") {
+		return this.key;
 	}
 }
 
@@ -97,5 +97,29 @@ class Set(T) {
 	
 	size_t getSize() const {
 		return map.getSize();
+	}
+
+	bool empty() const {
+		return map.getSize() == 0;
+	}
+
+	Set!(T) dup() {
+		Set!(T) ret = new Set!(T);
+		foreach(it; this) {
+			ret.insert(it);	
+		}
+		return ret;
+	}
+
+	override bool opEquals(Object o) {
+		Set!(T) t = cast(Set!(T))o;
+		auto it = this.begin();
+		while(it.isValid()) {
+			if(!t.contains(**it)) {
+				return false;
+			}
+			it++;
+		}
+		return t.getSize() == this.getSize();
 	}
 }

@@ -416,7 +416,7 @@ class RBTree(T : Node) {
 	}
 }
 
-class Map(T,S) : Node {
+private class Map(T,S) : Node {
 	T key;
 	S data;
 	
@@ -449,7 +449,7 @@ class Map(T,S) : Node {
 	}
 }
 
-class ISet : Node {
+private class ISet : Node {
 	int data;
 	
 	this(int data) {
