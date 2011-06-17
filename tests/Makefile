@@ -24,8 +24,8 @@ maptest: maptest.d Makefile
 	$(DC) $(CFLAGS) maptest.d
 	exec ./maptest
 
-settest: settest.d Makefile
-	$(DC) $(CFLAGS) settest.d
+settest: settest.d oldset.d Makefile
+	$(DC) $(CFLAGS) settest.d oldset.d -ofsettest
 	exec ./settest
 
 rbtreetest: rbtreetest.d Makefile
