@@ -51,6 +51,53 @@ bool same(OldSet!(int) old, Set!(int) ne) {
 }
 
 void main() {
+	Set!(int) a = new Set!(int);
+	a.insert(0);
+	assert(a.contains(0));
+	a.insert(13);
+	assert(a.contains(0) && a.contains(13));
+	a.insert(11);
+	assert(a.contains(0) && a.contains(13) && a.contains(11));
+	int[] st1 = [0,1,2,3,4,5,6,7,8,9,10];
+	Set!(int) st = new Set!(int);
+	foreach(idx,it;st1) {
+		st.insert(it);
+		foreach(jt;st1[0..idx]) {
+			assert(st.contains(jt));
+		}
+		foreach(jt;st1[idx+1..$]) {
+			assert(!st.contains(jt));
+		}
+	}
+	foreach(idx,it;st1) {
+		st.remove(it);
+		foreach(jt;st1[0..idx]) {
+			assert(!st.contains(jt));
+		}
+		foreach(jt;st1[idx+1..$]) {
+			assert(st.contains(jt));
+		}
+	}
+	int[] st2 = [10,9,8,7,6,5,4,3,2,1,0];
+	Set!(int) stt = new Set!(int);
+	foreach(idx,it;st2) {
+		stt.insert(it);
+		foreach(jt;st2[0..idx]) {
+			assert(stt.contains(jt));
+		}
+		foreach(jt;st2[idx+1..$]) {
+			assert(!stt.contains(jt));
+		}
+	}
+	foreach(idx,it;st2) {
+		stt.remove(it);
+		foreach(jt;st2[0..idx]) {
+			assert(!stt.contains(jt));
+		}
+		foreach(jt;st2[idx+1..$]) {
+			assert(stt.contains(jt));
+		}
+	}
 	OldSet!(int) intTest = new OldSet!(int)();
 	OldSet!(int) intTestCopy = intTest.dup();
 	Set!(int) intTestNew = new Set!(int);
@@ -110,7 +157,8 @@ void main() {
 		intTestNewCopy = intTestNew.dup();
 		assert(intTest == intTestCopy, "should be the same");
 		assert(intTestNew == intTestNewCopy, "should be the same");
-		assert(same(intTestCopy, intTestNewCopy), "shoule hold the same values");
+		assert(same(intTestCopy, intTestNewCopy), 
+			"shoule hold the same values");
 	}
 	writeln("set compare test done");
 }

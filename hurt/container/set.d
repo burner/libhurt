@@ -75,8 +75,8 @@ class Set(T) {
 
 	bool contains(T key) {
 		this.finder.key = key;
-		Iterator!(SetItem!(T)) it = this.map.findIt(this.finder);
-		return it.isValid();
+		Node it = this.map.find(this.finder);
+		return it !is null;
 	}
 
 	int opApply(scope int delegate(ref T) dg) {

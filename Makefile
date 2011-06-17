@@ -60,7 +60,7 @@ hurt.container.stack.o: hurt/container/stack.d Makefile
 hurt.container.rbtree.o: hurt/container/rbtree.d Makefile
 	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
 
-hurt.container.map.o: hurt/container/map.d Makefile
+hurt.container.map.o: hurt/container/map.d hurt/container/rbtree.d Makefile
 	$(DC) $(CFLAGS) hurt/container/map.d -ofhurt.container.map.o
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
@@ -69,10 +69,10 @@ hurt.container.dlst.o: hurt/container/dlst.d Makefile
 hurt.container.list.o: hurt/container/list.d Makefile
 	$(DC) $(CFLAGS) hurt/container/list.d -ofhurt.container.list.o
 
-hurt.container.set.o: hurt/container/set.d Makefile
+hurt.container.set.o: hurt/container/set.d hurt/container/rbtree.d Makefile
 	$(DC) $(CFLAGS) hurt/container/set.d -ofhurt.container.set.o
 
-hurt.container.multimap.o: hurt/container/multimap.d Makefile
+hurt.container.multimap.o: hurt/container/multimap.d hurt/container/rbtree.d hurt/container/dlst.d hurt/container/iterator.d hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/container/multimap.d -ofhurt.container.multimap.o
 
 hurt.container.bitmap.o: hurt/container/bitmap.d Makefile
@@ -153,7 +153,7 @@ hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexcepti
 hurt.io.ioflags.o: hurt/io/ioflags.d Makefile
 	$(DC) $(CFLAGS) hurt/io/ioflags.d -ofhurt.io.ioflags.o
 
-hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d Makefile
+hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d hurt/conv/conv.d Makefile
 	$(DC) $(CFLAGS) hurt/io/stdio.d -ofhurt.io.stdio.o
 
 hurt.io.inputstream.o: hurt/io/inputstream.d Makefile
