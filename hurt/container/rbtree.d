@@ -487,7 +487,7 @@ unittest {
 	int[] t = [ 0, 31, 32, 105, 526, 531, 1027, 1036, 1048, 1282, 1452, 1540,
 		1541, 1546, 1547, 1554, 1563, 2575, 2576, 2585, 2590];
 	RBTree!(ISet) rbt2 = new RBTree!(ISet)();
-	int times = 20;
+	size_t times = 20;
 	int[] rn = new int[times];
 	foreach(idx,ref it; rn) {
 		it = t[idx];
@@ -531,4 +531,97 @@ unittest {
 	RBTree!(Map!(int,string)) map = new RBTree!(Map!(int,string));
 	map.insert(new Map!(int,string)(44,"fourtyfour"));
 	assert(map.find(new Map!(int,string)(44, null)));
+
+	int[] t2 = [0,1,2,3,4,5,6,7,8,9,10];
+	RBTree!(ISet) rbt22 = new RBTree!(ISet)();
+	times = t2.length;
+	rn = new int[times];
+	foreach(idx,ref iit; rn) {
+		iit = t2[idx];
+	}
+
+	st = getMilli();
+	for(int i = 0; i < times; i++) {
+		int tmp = rn[i];
+		rbt22.insert(new ISet(tmp));
+		rbt22.validate();
+	}
+	rbt22.validate();
+	//writeln("bottom up insert ", getMilli()-st);
+	foreach(idx, it; rbt22) {
+		assert(it.data == rn[idx], conv!(int,string)(it.data) ~ " : " ~ conv!(int,string)(rn[idx]));
+	}
+	it = rbt22.begin();
+	count = 0;
+	while(it.isValid()) {
+		it++;
+		count++;
+	}
+	assert(count == rbt22.getSize());
+	jt = rbt22.end();
+	ptr = t2.length-1;
+	while(jt.isValid()) {
+		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
+		assert(ptr >= 0 && ptr < rn.length, conv!(size_t,string)(ptr) ~ " " 
+			~ conv!(size_t,string)(rn.length));
+		assert((*jt).data == rn[ptr],conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
+		jt--;
+		ptr--;
+	}
+		
+	st = getMilli();
+	for(int i = 0; i < times; i++) {
+		rbt22.remove(new ISet(rn[i]));
+		rbt22.validate();
+	}
+	//writeln("bottom up remove ", getMilli()-st);
+	assert(rbt22.getSize() == 0);
+
+	int[] t3 = [10,9,8,7,6,5,4,3,2,1];
+	RBTree!(ISet) rbt222 = new RBTree!(ISet)();
+	times = t3.length;
+	rn = new int[times];
+	foreach(idx,ref iit; rn) {
+		iit = t3[idx];
+	}
+
+	st = getMilli();
+	for(int i = 0; i < times; i++) {
+		int tmp = rn[i];
+		rbt222.insert(new ISet(tmp));
+		rbt222.validate();
+	}
+	rbt222.validate();
+	//writeln("bottom up insert ", getMilli()-st);
+	foreach(idx, it; rbt222) {
+		assert(it.data == rn[$-idx-1], conv!(int,string)(it.data) ~ " : " 
+			~ conv!(int,string)(rn[$-1-idx]));
+	}
+	it = rbt222.begin();
+	count = 0;
+	while(it.isValid()) {
+		it++;
+		count++;
+	}
+	assert(count == rbt222.getSize());
+	jt = rbt222.end();
+	ptr = t3.length-1;
+	while(jt.isValid()) {
+		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
+		assert(ptr >= 0 && ptr < rn.length, conv!(size_t,string)(ptr) ~ " " 
+			~ conv!(size_t,string)(rn.length));
+		assert((*jt).data == rn[$-1-ptr],conv!(int,string)((*jt).data) ~ " : " 
+			~ conv!(int,string)(rn[$-1-ptr]));
+		jt--;
+		ptr--;
+	}
+		
+	st = getMilli();
+	for(int i = 0; i < times; i++) {
+		rbt222.remove(new ISet(rn[i]));
+		rbt222.validate();
+	}
+	//writeln("bottom up remove ", getMilli()-st);
+	assert(rbt222.getSize() == 0);
+	writeln("rbtree test passed");
 }
