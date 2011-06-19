@@ -48,7 +48,7 @@ test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 hurt.algo.sorting.o: hurt/algo/sorting.d Makefile
 	$(DC) $(CFLAGS) hurt/algo/sorting.d -ofhurt.algo.sorting.o
 
-hurt.container.vector.o: hurt/container/vector.d Makefile
+hurt.container.vector.o: hurt/container/vector.d hurt/container/vector.d Makefile
 	$(DC) $(CFLAGS) hurt/container/vector.d -ofhurt.container.vector.o
 
 hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
@@ -57,7 +57,7 @@ hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
 hurt.container.stack.o: hurt/container/stack.d Makefile
 	$(DC) $(CFLAGS) hurt/container/stack.d -ofhurt.container.stack.o
 
-hurt.container.rbtree.o: hurt/container/rbtree.d Makefile
+hurt.container.rbtree.o: hurt/container/rbtree.d hurt/conv/conv.d Makefile
 	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
 
 hurt.container.map.o: hurt/container/map.d hurt/container/rbtree.d Makefile
@@ -75,7 +75,7 @@ hurt.container.set.o: hurt/container/set.d hurt/container/rbtree.d Makefile
 hurt.container.multimap.o: hurt/container/multimap.d hurt/container/rbtree.d hurt/container/dlst.d hurt/container/iterator.d hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/container/multimap.d -ofhurt.container.multimap.o
 
-hurt.container.bitmap.o: hurt/container/bitmap.d Makefile
+hurt.container.bitmap.o: hurt/container/bitmap.d hurt/conv/conv.d Makefile
 	$(DC) $(CFLAGS) hurt/container/bitmap.d -ofhurt.container.bitmap.o
 
 hurt.container.deque.o: hurt/container/deque.d Makefile
@@ -162,5 +162,5 @@ hurt.io.inputstream.o: hurt/io/inputstream.d Makefile
 hurt.io.posix.o: hurt/io/posix.c Makefile
 	gcc $(CCFLAGS) hurt/io/posix.c -o hurt.io.posix.o
 
-hurt.io.file.o:hurt/io/file.d Makefile
+hurt.io.file.o:hurt/io/file.d hurt/io/ioflags.d hurt/io/posix.c Makefile
 	$(DC) $(CFLAGS) hurt/io/file.d -ofhurt.io.file.o
