@@ -48,7 +48,7 @@ test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 hurt.algo.sorting.o: hurt/algo/sorting.d Makefile
 	$(DC) $(CFLAGS) hurt/algo/sorting.d -ofhurt.algo.sorting.o
 
-hurt.container.vector.o: hurt/container/vector.d hurt/container/vector.d Makefile
+hurt.container.vector.o: hurt/container/vector.d Makefile
 	$(DC) $(CFLAGS) hurt/container/vector.d -ofhurt.container.vector.o
 
 hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
@@ -57,10 +57,10 @@ hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
 hurt.container.stack.o: hurt/container/stack.d Makefile
 	$(DC) $(CFLAGS) hurt/container/stack.d -ofhurt.container.stack.o
 
-hurt.container.rbtree.o: hurt/container/rbtree.d hurt/conv/conv.d Makefile
+hurt.container.rbtree.o: hurt/container/rbtree.d hurt.conv.conv.o Makefile
 	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
 
-hurt.container.map.o: hurt/container/map.d hurt/container/rbtree.d Makefile
+hurt.container.map.o: hurt/container/map.d hurt.container.rbtree.o Makefile
 	$(DC) $(CFLAGS) hurt/container/map.d -ofhurt.container.map.o
 
 hurt.container.dlst.o: hurt/container/dlst.d Makefile
@@ -69,13 +69,13 @@ hurt.container.dlst.o: hurt/container/dlst.d Makefile
 hurt.container.list.o: hurt/container/list.d Makefile
 	$(DC) $(CFLAGS) hurt/container/list.d -ofhurt.container.list.o
 
-hurt.container.set.o: hurt/container/set.d hurt/container/rbtree.d Makefile
+hurt.container.set.o: hurt/container/set.d hurt.container.rbtree.o Makefile
 	$(DC) $(CFLAGS) hurt/container/set.d -ofhurt.container.set.o
 
-hurt.container.multimap.o: hurt/container/multimap.d hurt/container/rbtree.d hurt/container/dlst.d hurt/container/iterator.d hurt/util/array.d Makefile
+hurt.container.multimap.o: hurt/container/multimap.d hurt.container.rbtree.o hurt.container.dlst.o hurt/container/iterator.d hurt.util.array.o Makefile
 	$(DC) $(CFLAGS) hurt/container/multimap.d -ofhurt.container.multimap.o
 
-hurt.container.bitmap.o: hurt/container/bitmap.d hurt/conv/conv.d Makefile
+hurt.container.bitmap.o: hurt/container/bitmap.d hurt.conv.conv.o Makefile
 	$(DC) $(CFLAGS) hurt/container/bitmap.d -ofhurt.container.bitmap.o
 
 hurt.container.deque.o: hurt/container/deque.d Makefile
@@ -99,7 +99,7 @@ hurt.string.formatter.o: hurt/string/formatter.d Makefile
 hurt.util.array.o: hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/util/array.d -ofhurt.util.array.o
 
-hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt/algo/sorting.d hurt/container/dlst.d Makefile
+hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt.algo.sorting.o hurt.container.dlst.o Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
 
 hurt.util.random.o: hurt/util/random.d Makefile
@@ -123,10 +123,10 @@ hurt.conv.chartonumeric.o: hurt/conv/chartonumeric.d Makefile
 hurt.conv.convutil.o: hurt/conv/convutil.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/convutil.d -ofhurt.conv.convutil.o
 
-hurt.conv.tointeger.o: hurt/conv/tointeger.d hurt/conv/convutil.d hurt/conv/chartonumeric.d Makefile
+hurt.conv.tointeger.o: hurt/conv/tointeger.d hurt.conv.convutil.o hurt.conv.chartonumeric.o Makefile
 	$(DC) $(CFLAGS) hurt/conv/tointeger.d -ofhurt.conv.tointeger.o
 
-hurt.conv.tostring.o: hurt/conv/tostring.d hurt/conv/tostring.d Makefile
+hurt.conv.tostring.o: hurt/conv/tostring.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/tostring.d -ofhurt.conv.tostring.o
 
 hurt.conv.numerictochar.o: hurt/conv/numerictochar.d Makefile
@@ -153,7 +153,7 @@ hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexcepti
 hurt.io.ioflags.o: hurt/io/ioflags.d Makefile
 	$(DC) $(CFLAGS) hurt/io/ioflags.d -ofhurt.io.ioflags.o
 
-hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d hurt/conv/conv.d Makefile
+hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d hurt.conv.conv.o Makefile
 	$(DC) $(CFLAGS) hurt/io/stdio.d -ofhurt.io.stdio.o
 
 hurt.io.inputstream.o: hurt/io/inputstream.d Makefile
@@ -162,5 +162,5 @@ hurt.io.inputstream.o: hurt/io/inputstream.d Makefile
 hurt.io.posix.o: hurt/io/posix.c Makefile
 	gcc $(CCFLAGS) hurt/io/posix.c -o hurt.io.posix.o
 
-hurt.io.file.o:hurt/io/file.d hurt/io/ioflags.d hurt/io/posix.c Makefile
+hurt.io.file.o:hurt/io/file.d hurt.io.ioflags.o hurt.io.posix.o Makefile
 	$(DC) $(CFLAGS) hurt/io/file.d -ofhurt.io.file.o
