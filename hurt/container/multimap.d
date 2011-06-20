@@ -156,6 +156,11 @@ class Item(T,S) : Node {
 		this.values = c.values;
 	}
 
+	override bool compare(const Node n) {
+		Item!(T,S) i = cast(Item!(T,S))n;
+		return this.key < i.key;
+	}
+
 	override int opCmp(Object o) {
 		Item!(T,S) f = cast(Item!(T,S))o;
 		if(this.key > f.key)
