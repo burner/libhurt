@@ -50,93 +50,120 @@ bool same(OldSet!(int) old, Set!(int) ne) {
 	return true;
 }
 
+bool containsFor(Set!(int) a) {
+	foreach(it; a) {
+		if(!a.contains(it)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void main() {
 	Set!(int) a = new Set!(int);
 	a.insert(0);
 	assert(a.contains(0));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(13);
 	assert(a.contains(0));
 	assert(a.contains(13));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(11);
 	assert(a.contains(0)); 
 	assert(a.contains(13));
 	assert(a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.clear();
 	a.insert(0);
 	assert(a.contains(0));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(11);
 	assert(a.contains(0) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(13);
 	assert(a.contains(0) && a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	assert(containsFor(a));
 	a.clear();
 	a.insert(11);
 	assert(a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(0);
 	assert(a.contains(0) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(13);
 	assert(a.contains(0) && a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	assert(containsFor(a));
 	a.clear();
 	a.insert(11);
 	assert(a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(13);
 	assert(a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(0);
 	assert(a.contains(0) && a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	assert(containsFor(a));
 	a.clear();
 	a.insert(13);
 	assert(a.contains(13));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(11);
 	assert(a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(0);
 	assert(a.contains(0) && a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	assert(containsFor(a));
 	a.clear();
 	a.insert(13);
 	assert(a.contains(13));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(0);
 	assert(a.contains(13) && a.contains(0));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
+	assert(containsFor(a));
 	a.insert(11);
 	assert(a.contains(0) && a.contains(13) && a.contains(11));
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	assert(containsFor(a));
 
 
 	int[] st1 = [0,1,2,3,4,5,6,7,8,9,10];
@@ -145,6 +172,7 @@ void main() {
 	foreach(idx,it;st1) {
 		st.insert(it);
 		sto.insert(it);
+		assert(containsFor(st));
 		assert(st.contains(**st.end()));
 		assert(st.contains(**st.begin()));
 		assert(same(sto, st), "shoule hold the same values");
@@ -158,6 +186,7 @@ void main() {
 	foreach(idx,it;st1) {
 		st.remove(it);
 		sto.remove(it);
+		assert(containsFor(st));
 		assert(same(sto, st), "shoule hold the same values");
 		foreach(jt;st1[0..idx]) {
 			assert(!st.contains(jt));
@@ -172,6 +201,7 @@ void main() {
 	foreach(idx,it;st2) {
 		stt.insert(it);
 		stto.insert(it);
+		assert(containsFor(stt));
 		assert(stt.contains(**stt.end()));
 		assert(stt.contains(**stt.begin()));
 		assert(same(stto, stt), "shoule hold the same values");
@@ -185,6 +215,7 @@ void main() {
 	foreach(idx,it;st2) {
 		stt.remove(it);
 		stto.remove(it);
+		assert(containsFor(stt));
 		assert(same(stto, stt), "shoule hold the same values");
 		foreach(jt;st2[0..idx]) {
 			assert(!stt.contains(jt));
@@ -207,6 +238,7 @@ void main() {
 		assert(intTest.insert(it));
 		assert(it == *intTestNew.insert(it));
 		assert(same(intTest, intTestNew), "shoule hold the same values");
+		assert(containsFor(intTestNew));
 		foreach(jt;t[0..idx]) {
 			assert(intTest.contains(jt));
 			assert(intTestNew.contains(jt));
@@ -217,6 +249,7 @@ void main() {
 		intTestNewCopy = intTestNew.dup();
 		assert(intTest == intTestCopy, "should be the same");
 		assert(intTestNew == intTestNewCopy, "should be the same");
+		assert(containsFor(intTestNewCopy));
 		foreach(jt;t[idx+1..$]) {
 			assert(!intTest.contains(jt));
 			assert(!intTestNew.contains(jt));
@@ -322,6 +355,7 @@ void main() {
 	Set!(int) big = new Set!(int)();
 	foreach(idx,it; lots) {
 		big.insert(it);
+		assert(containsFor(big));
 		assert(big.contains(**big.end()));
 		assert(big.contains(**big.begin()));
 		foreach(jt; lots[0..idx]) {
