@@ -387,10 +387,10 @@ class RBTree(T : Node) {
 				writeln("Parent not correct ", parent.toString(), " ",root.toString());
 			}
 			if(root.getLink(false) !is null) {
-				assert(root.getLink(false).getParent() is root);
+				assert(root.getLink(false).getPar() is root);
 			}
 			if(root.getLink(true) !is null) {
-				assert(root.getLink(true).getParent() is root);
+				assert(root.getLink(true).getPar() is root);
 			}
 			Node ln = root.getLink(false);
 			Node rn = root.getLink(true);

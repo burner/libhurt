@@ -81,6 +81,62 @@ void main() {
 	assert(a.contains(**a.end()));
 	assert(a.contains(**a.begin()));
 	assert(a.getSize() == 3);
+	a.clear();
+	a.insert(11);
+	assert(a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(0);
+	assert(a.contains(0) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(13);
+	assert(a.contains(0) && a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	assert(a.getSize() == 3);
+	a.clear();
+	a.insert(11);
+	assert(a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(13);
+	assert(a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(0);
+	assert(a.contains(0) && a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	assert(a.getSize() == 3);
+	a.clear();
+	a.insert(13);
+	assert(a.contains(13));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(11);
+	assert(a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(0);
+	assert(a.contains(0) && a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	assert(a.getSize() == 3);
+	a.clear();
+	a.insert(13);
+	assert(a.contains(13));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(0);
+	assert(a.contains(13) && a.contains(0));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	a.insert(11);
+	assert(a.contains(0) && a.contains(13) && a.contains(11));
+	assert(a.contains(**a.end()));
+	assert(a.contains(**a.begin()));
+	assert(a.getSize() == 3);
 
 
 	int[] st1 = [0,1,2,3,4,5,6,7,8,9,10];
@@ -275,5 +331,6 @@ void main() {
 			assert(!big.contains(jt));
 		}
 	}
+
 	writeln("set compare test done");
 }

@@ -32,9 +32,11 @@ class Node(T) {
 		bool left = true;
 		bool right = true;
 		if(this.link[0] !is null) {
+			assert(this.link[0].parent is this);
 			left = this.link[0].validate(false, this);
 		}
 		if(this.link[1] !is null) {
+			assert(this.link[1].parent is this);
 			right = this.link[1].validate(false, this);
 		}
 		return left && right;
@@ -84,7 +86,7 @@ class BinarySearchTree(T) {
 	}
 
 	private static bool compare(const Node!(T) a, const Node!(T) b) {
-		return a.toHash() > b.toHash();
+		return a.toHash() < b.toHash();
 	}
 	 
 	T inOrder(Node!(T) ptr) const {
@@ -167,7 +169,8 @@ class BinarySearchTree(T) {
 	 
 	bool remove(const T item) {
 	    bool lr = 1;
-	    Node!(T) curr = this.root, prev;
+	    Node!(T) curr = this.root; 
+		Node!(T) prev;
 	 
 	    if(!search(item, curr, prev, lr))
 	        return false;
@@ -180,6 +183,7 @@ class BinarySearchTree(T) {
 	    	    if(curr is this.root) {
 					writeln(__LINE__);
 	    	        this.root = curr.link[(s > 1)];
+					this.root.parent = null;
 	    	    } else {
 					writeln(__LINE__);
 	    	        prev.link[lr] = curr.link[(s > 1)];
