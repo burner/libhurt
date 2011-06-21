@@ -24,6 +24,11 @@ class MapItem(T,S) : Node {
 		this.data = c.data;
 	}
 
+	override bool compare(const Node n) {
+		MapItem!(T,S) i = cast(MapItem!(T,S))n;
+		return this.key < i.key;
+	}
+
 	override int opCmp(Object o) {
 		MapItem!(T,S) f = cast(MapItem!(T,S))o;
 		T fHash = f.key;

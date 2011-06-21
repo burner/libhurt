@@ -23,20 +23,29 @@ class SetItem(T) : Node {
 		this.key = c.key;
 	}
 
+	override bool compare(const Node n) {
+		SetItem!(T) i = cast(SetItem!(T))n;
+		return this.key < i.key;
+	}
+
 	override int opCmp(Object o) {
 		SetItem!(T) f = cast(SetItem!(T))o;
-		T fHash = f.key;
-		T thisHash = this.key;
-		if(thisHash > fHash)
+		if(this.key < f.key) {
 			return 1;
-		else if(thisHash < fHash)
+		} else if(this.key > f.key) {
 			return -1;
-		else
+		} else {
 			return 0;
+		}
 	}
 
 	public T opUnary(string s)() if(s == "*") {
 		return this.key;
+	}
+
+	public override string toString() {
+		writeln(__FILE__,__LINE__,": ", this.key);
+		return "SetItem";
 	}
 }
 
@@ -75,8 +84,8 @@ class Set(T) {
 
 	bool contains(T key) {
 		this.finder.key = key;
-		Iterator!(SetItem!(T)) it = this.map.findIt(this.finder);
-		return it.isValid();
+		SetItem!(T) it = cast(SetItem!(T))this.map.find(this.finder);
+		return it !is null;
 	}
 
 	int opApply(scope int delegate(ref T) dg) {
@@ -110,6 +119,10 @@ class Set(T) {
 			ret.insert(it);	
 		}
 		return ret;
+	}
+
+	void clear() {
+		this.map = new RBTree!(SetItem!(T))();
 	}
 
 	override bool opEquals(Object o) {

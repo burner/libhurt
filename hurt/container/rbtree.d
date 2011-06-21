@@ -35,7 +35,9 @@ abstract class Node {
 		this.link[dir] = node;
 	}
 
-	public override int opCmp(Object o);
+	public bool compare(const Node n);
+
+	//public override int opCmp(Object o);
 	public override bool opEquals(Object o);
 	public void set(Node);
 }
@@ -149,7 +151,8 @@ class RBTree(T : Node) {
 			root.setPar(parent);
 			this.size++;
 		} else if(data != root) {
-			bool dir = root < data;
+			bool dir = root.compare(data);
+			//bool dir = root < data;
 			root.setLink(dir, insertRecursive(root.getLink(dir), data, root));
 			if(root.getLink(dir) !is null) {
 				root.getLink(dir).setPar(root);
@@ -215,7 +218,8 @@ class RBTree(T : Node) {
 				}
 			}
 
-			dir = root < data;
+			//dir = root < data;
+			dir = root.compare(data);
 			root.setLink(dir, removeRecursive(root.getLink(dir), data, done));
 			if(root.getLink(dir) !is null) {
 				root.getLink(dir).setPar(root);
@@ -289,7 +293,8 @@ class RBTree(T : Node) {
 			if(it == data) {
 				return it;
 			} else {
-				bool dir = it < data;
+				//bool dir = it < data;
+				bool dir = it.compare(data);
 				it = it.getLink(dir);
 			}
 		}
@@ -302,7 +307,8 @@ class RBTree(T : Node) {
 			if(it == data) {
 				return new Iterator!(T)(it);
 			} else {
-				bool dir = it < data;
+				//bool dir = it < data;
+				bool dir = it.compare(data);
 				it = it.getLink(dir);
 			}
 		}
@@ -442,6 +448,11 @@ private class Map(T,S) : Node {
 		this.data = c.data;
 	}
 
+	override bool compare(const Node n) {
+		Map!(T,S) i = cast(Map!(T,S))n;
+		return this.key < i.key;
+	}
+
 	override int opCmp(Object o) {
 		Map!(T,S) f = cast(Map!(T,S))o;
 		int fHash = f.key;
@@ -470,6 +481,11 @@ private class ISet : Node {
 	override void set(Node toSet) {
 		ISet c = cast(ISet)toSet;
 		this.data = c.data;
+	}
+
+	override bool compare(const Node n) {
+		ISet i = cast(ISet)n;
+		return this.data < i.data;
 	}
 
 	override int opCmp(Object o) {
