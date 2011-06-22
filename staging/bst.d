@@ -174,31 +174,66 @@ class BinarySearchTree(T) {
 	 
 	    if(!search(item, curr, prev, lr))
 	        return false;
-		int s = subNode(curr);
-		writeln(__LINE__,": ", s);
-	    switch(s) {
-	    	case 0:
-	    	case 1:
-	    	case 2:
-	    	    if(curr is this.root) {
-					writeln(__LINE__);
-	    	        this.root = curr.link[(s > 1)];
-					this.root.parent = null;
-	    	    } else {
-					writeln(__LINE__);
-	    	        prev.link[lr] = curr.link[(s > 1)];
-					if(prev !is null && prev.link[lr] !is null) {
-						prev.link[lr].parent = prev;
-					}
-				}
-	    	    break;
-	    	case 3:
-	    	    curr.key = inOrder(curr);
-			default:
-	    }
-	    count--;
-		writeln(__LINE__);
-	    return true;
+		if(curr.link[0] is null && curr.link[1] is null) {
+			if(prev.link[0] is curr) {
+				prev.link[0] = null;
+				return true;
+			} else if(prev.link[1] is curr) {
+				prev.link[1] = null;
+				return true;
+			} else {
+				assert(0, "must be one of them");
+			}
+		}
+		if(curr.link[0] !is null && curr.link[1] is null) {
+			if(prev.link[0] is curr) {
+				prev.link[0] = curr.link[0];
+				prev.link[0].parent = prev;
+				return true;
+			} else if(prev.link[1] is curr) {
+				prev.link[1] = curr.link[0];
+				prev.link[1].parent = prev;
+				return true;
+			} else {
+				assert(0, "must be one of them");
+			}
+		}
+		if(curr.link[0] is null && curr.link[1] !is null) {
+			if(prev.link[0] is curr) {
+				prev.link[0] = curr.link[1];
+				prev.link[0].parent = prev;
+				return true;
+			} else if(prev.link[1] is curr) {
+				prev.link[1] = curr.link[1];
+				prev.link[1].parent = prev;
+				return true;
+			} else {
+				assert(0, "must be one of them");
+			}
+		}
+		if(curr.link[0] !is null && curr.link[1] !is null) {
+			Node!(T) nCur = curr.link[1];
+			while(nCur.link[0] !is null) {
+				nCur = nCur.link[0];
+			}
+			if(prev.link[0] is curr) {
+				prev.link[0] = nCur;
+				prev.link[0].link[0] = curr.link[0];
+				prev.link[0].link[1] = curr.link[1];
+				prev.link[0].link[0].parent = prev.link[0];
+				prev.link[0].link[1].parent = prev.link[0];
+			} else if(prev.link[1] is curr) {
+				prev.link[1] = nCur;
+				prev.link[1].link[0] = curr.link[0];
+				prev.link[1].link[1] = curr.link[1];
+				prev.link[1].link[0].parent = prev.link[1];
+				prev.link[1].link[1].parent = prev.link[1];
+			}
+			nCur = nCur.parent;
+			nCur.link[0] = null;
+			return true;
+		}
+		assert(0, "should be one of the cases");
 	}
 	 
 	Node!(T) search(const T item) {
