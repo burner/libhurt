@@ -1,9 +1,5 @@
 import std.stdio;
 
-interface Data {
-	int toHash() const;
-}
-
 class Node(T) {
     // By value storage of the data
     T data;
@@ -58,15 +54,15 @@ class Node(T) {
 }
  
 class BinarySearchTree(T) { 
-	Node!(T) root;
-	size_t count;
+	private Node!(T) root;
+	private size_t count;
 
-	bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , ref bool lr) 
+	private bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , ref bool lr) 
 			const {
 	    while (curr !is null) {
 	        if(item == curr.data)
 		    return true;
-	        lr = (item > curr.data);
+	        lr = curr.data < item;
 	        prev = curr;
 	        curr = curr.link[lr];
 	    }
@@ -189,29 +185,52 @@ class BinarySearchTree(T) {
 	}
 }
 
-void main() {
-	int[] lots = [2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147, 3321, 3532, 3009,
-	1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740, 2476, 3297, 487, 1397,
-	973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130, 756, 210, 170, 3510, 987];
-	BinarySearchTree!(int) a = new BinarySearchTree!(int)();
-	foreach(idx, it; lots) {
-		a.insert(it);
-		assert(a.validate());
-		assert(a.getSize() == idx+1);
-		foreach(jt; lots[0..idx+1]) {
-			assert(a.search(jt) !is null);
+bool compare(T)(BinarySearchTree!(T) t, T[T] s) {
+	if(t.getSize() != s.length) {
+		writeln(__LINE__, " size wrong");
+		return false;
+	}
+	foreach(it; s.values) {
+		if(t.search(it) is null) {
+			writeln(__LINE__, " size wrong");
+			return false;
 		}
 	}
-	writeln("insert done");
-	foreach(idx, it; lots) {
-		a.remove(it);
-		assert(a.getSize() == lots.length-idx-1);
-		assert(a.validate());
-		foreach(jt; lots[0..idx]) {
-			assert(a.search(jt) is null);
+	return true;
+}
+
+void main() {
+	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
+	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
+	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
+	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
+	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
+	foreach(lots; lot) {
+		BinarySearchTree!(int) a = new BinarySearchTree!(int)();
+		int[int] at;
+		foreach(idx, it; lots) {
+			a.insert(it);
+			at[it] = it;
+			assert(compare!(int)(a,at));
+			assert(a.validate());
+			assert(a.getSize() == idx+1);
+			foreach(jt; lots[0..idx+1]) {
+				assert(a.search(jt) !is null);
+			}
 		}
-		foreach(jt; lots[idx+1..$]) {
-			assert(a.search(jt) !is null);
+		foreach(idx, it; lots) {
+			a.remove(it);
+			at.remove(it);
+			assert(compare!(int)(a,at));
+			assert(a.getSize() == lots.length-idx-1);
+			assert(a.validate());
+			foreach(jt; lots[0..idx]) {
+				assert(a.search(jt) is null);
+			}
+			foreach(jt; lots[idx+1..$]) {
+				assert(a.search(jt) !is null);
+			}
 		}
 	}
 	writeln("bst test done");

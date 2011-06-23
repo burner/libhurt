@@ -1,3 +1,3 @@
 all:
-	dmd -m64 -w -unittest -debug -gc bst.d -L../libhurt.a -I..
-	./bst
+	dmd -m64 -w -unittest -debug -gc rbtree.d -L../libhurt.a -I..
+	./rbtree
