@@ -1,8 +1,12 @@
 import std.stdio;
 
+interface Data {
+	int toHash() const;
+}
+
 class Node(T) {
     // By value storage of the data
-    T key;
+    T data;
  
     // Combine the two branches into an array to optimize the logic
     Node!(T) link[2];
@@ -25,7 +29,7 @@ class Node(T) {
 				return false;
 			}
 			if(this.parent !is par) {
-				writeln(__FILE__,__LINE__,": parent is wrong ", parent.key, " ",par.key);
+				writeln(__FILE__,__LINE__,": parent is wrong ", parent.data, " ",par.data);
 				return false;
 			}
 		}
@@ -43,7 +47,7 @@ class Node(T) {
 	}
 
 	void print() const {
-		writeln(key);
+		writeln(this.data);
 		if(this.link[0] !is null) {
 			this.link[0].print();
 		}
@@ -51,11 +55,6 @@ class Node(T) {
 			this.link[1].print();
 		}
 	}
-
-	public override int toHash() const {
-		return this.key;
-	}
-
 }
  
 class BinarySearchTree(T) { 
@@ -72,26 +71,17 @@ class BinarySearchTree(T) {
 	bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , ref bool lr) 
 			const {
 	    while (curr !is null) {
-	        if(item == curr.key)
+	        if(item == curr.data)
 		    return true;
-	        lr = (item > curr.key);
+	        lr = (item > curr.data);
 	        prev = curr;
 	        curr = curr.link[lr];
 	    }
 	    return false;
 	}
 
-	private static bool equal(const Node!(T) a, const Node!(T) b) {
-		return a.toHash() == b.toHash();
-	}
-
-	private static bool compare(const Node!(T) a, const Node!(T) b) {
-		return a.toHash() < b.toHash();
-	}
-	 
 	T inOrder(Node!(T) ptr) const {
 	    bool lr = true;
-	    T temp;
 	    Node!(T) prev = ptr;
 	 
 	    ptr = ptr.link[1];
@@ -100,8 +90,7 @@ class BinarySearchTree(T) {
 	        ptr = ptr.link[lr = false];
 	    }
 	    prev.link[lr] = ptr.link[true];
-	    temp = ptr.key;
-	    return temp;
+	    return ptr.data;
 	}
 	 
 	int subNode(Node!(T) ptr) const {
@@ -151,7 +140,7 @@ class BinarySearchTree(T) {
 	bool insert(const T item) {
 	    if(this.root is null) {
 	        this.root = new Node!(T);
-	        this.root.key = item;
+	        this.root.data = item;
 	        this.count++;
 	        return true;
 	    }
@@ -161,79 +150,40 @@ class BinarySearchTree(T) {
 	    if(search(item, curr, prev, lr))
 	        return false;
 	    prev.link[lr] = new Node!(T)();
-	    prev.link[lr].key = item;
-	    prev.link[lr].parent = prev;
+	    prev.link[lr].data = item;
+		if(prev !is null) {
+	    	prev.link[lr].parent = prev;
+		}
 	    this.count++;
 	    return true;
 	}
 	 
 	bool remove(const T item) {
-	    bool lr = 1;
-	    Node!(T) curr = this.root; 
-		Node!(T) prev;
-	 
-	    if(!search(item, curr, prev, lr))
-	        return false;
-		if(curr.link[0] is null && curr.link[1] is null) {
-			if(prev.link[0] is curr) {
-				prev.link[0] = null;
-				return true;
-			} else if(prev.link[1] is curr) {
-				prev.link[1] = null;
-				return true;
-			} else {
-				assert(0, "must be one of them");
-			}
-		}
-		if(curr.link[0] !is null && curr.link[1] is null) {
-			if(prev.link[0] is curr) {
-				prev.link[0] = curr.link[0];
-				prev.link[0].parent = prev;
-				return true;
-			} else if(prev.link[1] is curr) {
-				prev.link[1] = curr.link[0];
-				prev.link[1].parent = prev;
-				return true;
-			} else {
-				assert(0, "must be one of them");
-			}
-		}
-		if(curr.link[0] is null && curr.link[1] !is null) {
-			if(prev.link[0] is curr) {
-				prev.link[0] = curr.link[1];
-				prev.link[0].parent = prev;
-				return true;
-			} else if(prev.link[1] is curr) {
-				prev.link[1] = curr.link[1];
-				prev.link[1].parent = prev;
-				return true;
-			} else {
-				assert(0, "must be one of them");
-			}
-		}
-		if(curr.link[0] !is null && curr.link[1] !is null) {
-			Node!(T) nCur = curr.link[1];
-			while(nCur.link[0] !is null) {
-				nCur = nCur.link[0];
-			}
-			if(prev.link[0] is curr) {
-				prev.link[0] = nCur;
-				prev.link[0].link[0] = curr.link[0];
-				prev.link[0].link[1] = curr.link[1];
-				prev.link[0].link[0].parent = prev.link[0];
-				prev.link[0].link[1].parent = prev.link[0];
-			} else if(prev.link[1] is curr) {
-				prev.link[1] = nCur;
-				prev.link[1].link[0] = curr.link[0];
-				prev.link[1].link[1] = curr.link[1];
-				prev.link[1].link[0].parent = prev.link[1];
-				prev.link[1].link[1].parent = prev.link[1];
-			}
-			nCur = nCur.parent;
-			nCur.link[0] = null;
-			return true;
-		}
-		assert(0, "should be one of the cases");
+		bool lr = 1;
+    	Node!(T) curr = this.root, prev;
+ 
+    	if(!search(item, curr, prev, lr))
+    		return false;
+		int s = subNode(curr);
+    	switch(s) {
+    		case 0:
+    		case 1:
+    		case 2:
+    			if(curr is root) {
+    				this.root = curr.link[(s > 1)];
+    			} else {
+    				prev.link[lr] = curr.link[(s > 1)];
+					prev.link[lr].parent = prev;
+				}
+    			break;
+    		case 3:
+    		    curr.data = this.inOrder(curr);
+				break;
+			default:
+				assert(0);
+    	}
+    	count--;
+    	return true;
 	}
 	 
 	Node!(T) search(const T item) {
@@ -249,11 +199,11 @@ class BinarySearchTree(T) {
 	}
 	 
 	T min() {
-	    return minmax(root, 0).key;
+	    return minmax(root, 0).data;
 	}
 	 
 	T max() {
-	    return minmax(root, 1).key;
+	    return minmax(root, 1).data;
 	}
 	 
 	size_t getSize() const {
@@ -265,6 +215,8 @@ class BinarySearchTree(T) {
 	}
 	
 	bool validate() const {
+		if(this.root is null) 
+			return true;
 		return this.root.validate(true);
 	}
 
@@ -274,6 +226,13 @@ class BinarySearchTree(T) {
 }
 
 void main() {
+	BinarySearchTree!(int) b = new BinarySearchTree!(int)();
+	b.insert(5);
+	assert(b.validate());
+	assert(b.search(5));
+	assert(b.validate());
+	assert(b.remove(5));
+	assert(b.validate());
 	int[] lots = [2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147, 3321, 3532, 3009,
 	1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740, 2476, 3297, 487, 1397,
 	973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130, 756, 210, 170, 3510, 987];
@@ -286,7 +245,7 @@ void main() {
 		}
 	}
 	writeln("insert done");
-	foreach(idx, it; lots) {
+	foreach_reverse(idx, it; lots) {
 		a.remove(it);
 		assert(a.validate());
 		foreach(jt; lots[0..idx+1]) {
