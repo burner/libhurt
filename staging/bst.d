@@ -61,13 +61,6 @@ class BinarySearchTree(T) {
 	Node!(T) root;
 	size_t count;
 
-	void clear(Node!(T) ptr) {
-	    if(ptr !is null) {
-	        clear(ptr.link[0]);
-	        clear(ptr.link[1]);
-	    }
-	}
-	 
 	bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , ref bool lr) 
 			const {
 	    while (curr !is null) {
@@ -80,55 +73,12 @@ class BinarySearchTree(T) {
 	    return false;
 	}
 
-	T inOrder(Node!(T) ptr) const {
-	    bool lr = true;
-	    Node!(T) prev = ptr;
-	 
-	    ptr = ptr.link[1];
-	    while (ptr.link[0] !is null) {
-	        prev = ptr;
-	        ptr = ptr.link[lr = false];
-	    }
-	    prev.link[lr] = ptr.link[true];
-	    return ptr.data;
-	}
-	 
-	int subNode(Node!(T) ptr) const {
-	    if(ptr.link[true] !is null) {
-	        if(ptr.link[false] !is null)
-	            return 3;
-	        else
-	            return 2;
-	    } else if(ptr.link[false] !is null)
-	        return 1;
-	    else
-	        return 0;
-	}
-	 
-	int height(const Node!(T) ptr) const {
-	    if(ptr is null)
-	        return 0;
-	 
-	    int lt = height(ptr.link[false]), rt = height(ptr.link[true]);
-	 
-	    if(lt < rt)
-	        return rt + 1;
-	    return lt + 1;
-	}
-	 
-	Node!(T) minmax(Node!(T) ptr, in bool lr) const {
-	    while (ptr.link[lr] !is null)
-	        ptr = ptr.link[lr];
-	    return ptr;
-	}
-	 
 	this() {
 	    this.root = null;
 	    count = 0;
 	}
 	 
 	void clear() {
-	    this.clear(this.root);
 	    this.root = null;
 	    this.count = 0;
 	}
@@ -223,21 +173,9 @@ class BinarySearchTree(T) {
 			return null;
 		}
 	}
-	 
-	T min() {
-	    return minmax(root, 0).data;
-	}
-	 
-	T max() {
-	    return minmax(root, 1).data;
-	}
-	 
+
 	size_t getSize() const {
 	    return count;
-	}
-	 
-	int height() const {
-	    return height(root);
 	}
 	
 	bool validate() const {
@@ -259,6 +197,7 @@ void main() {
 	foreach(idx, it; lots) {
 		a.insert(it);
 		assert(a.validate());
+		assert(a.getSize() == idx+1);
 		foreach(jt; lots[0..idx+1]) {
 			assert(a.search(jt) !is null);
 		}
@@ -266,6 +205,7 @@ void main() {
 	writeln("insert done");
 	foreach(idx, it; lots) {
 		a.remove(it);
+		assert(a.getSize() == lots.length-idx-1);
 		assert(a.validate());
 		foreach(jt; lots[0..idx]) {
 			assert(a.search(jt) is null);
