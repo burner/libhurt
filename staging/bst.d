@@ -159,29 +159,55 @@ class BinarySearchTree(T) {
 	}
 	 
 	bool remove(const T item) {
-		bool lr = 1;
-    	Node!(T) curr = this.root, prev;
- 
-    	if(!search(item, curr, prev, lr))
-    		return false;
-		int s = subNode(curr);
-    	switch(s) {
-    		case 0:
-    		case 1:
-    		case 2:
-    			if(curr is root) {
-    				this.root = curr.link[(s > 1)];
-    			} else {
-    				prev.link[lr] = curr.link[(s > 1)];
-					prev.link[lr].parent = prev;
+		if(this.root !is null ) {
+			Node!(T) p = null, succ;
+			Node!(T) it = this.root;
+			bool dir;
+
+			while(true) {
+				if(it is null )
+					return false;
+				else if(it.data == item)
+					break;
+
+				dir = it.data < item;
+				p = it;
+				it = it.link[dir];
+			}
+
+			if(it.link[0] !is null && it.link[1] !is null ) {
+				p = it;
+				succ = it.link[1];
+
+				while(succ.link[0] !is null ) {
+					p = succ;
+					succ = succ.link[0];
 				}
-    			break;
-    		case 3:
-    		    curr.data = this.inOrder(curr);
-				break;
-			default:
-				assert(0);
-    	}
+
+				it.data = succ.data;
+				bool which = p.link[1] is succ;
+				p.link[which] = succ.link[1];
+				if(p.link[which] !is null) {
+					p.link[which].parent = p;
+				}
+			} else {
+				dir = it.link[0] is null;
+
+				if(p is null) {
+					this.root = it.link[dir];
+					if(this.root !is null) {
+						this.root.parent = null;
+					}
+				} else {
+					bool which = p.link[1] is it;
+					p.link[which] = it.link[dir];
+					if(p.link[which] !is null) {
+						p.link[which].parent = p;
+					}
+				}
+			}
+		}
+
     	count--;
     	return true;
 	}
@@ -226,13 +252,6 @@ class BinarySearchTree(T) {
 }
 
 void main() {
-	BinarySearchTree!(int) b = new BinarySearchTree!(int)();
-	b.insert(5);
-	assert(b.validate());
-	assert(b.search(5));
-	assert(b.validate());
-	assert(b.remove(5));
-	assert(b.validate());
 	int[] lots = [2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147, 3321, 3532, 3009,
 	1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740, 2476, 3297, 487, 1397,
 	973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130, 756, 210, 170, 3510, 987];
@@ -245,11 +264,14 @@ void main() {
 		}
 	}
 	writeln("insert done");
-	foreach_reverse(idx, it; lots) {
+	foreach(idx, it; lots) {
 		a.remove(it);
 		assert(a.validate());
-		foreach(jt; lots[0..idx+1]) {
+		foreach(jt; lots[0..idx]) {
 			assert(a.search(jt) is null);
+		}
+		foreach(jt; lots[idx+1..$]) {
+			assert(a.search(jt) !is null);
 		}
 	}
 	writeln("bst test done");

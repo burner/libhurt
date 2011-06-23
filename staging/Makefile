@@ -1,3 +1,3 @@
 all:
-	dmd -m64 -w -unittest -debug -gc binarysearchtree.d -L../libhurt.a -I..
-	./binarysearchtree
+	dmd -m64 -w -unittest -debug -gc bst.d -L../libhurt.a -I..
+	./bst
