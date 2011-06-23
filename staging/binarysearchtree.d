@@ -43,8 +43,9 @@ class Node(T) {
 		return left && right;
 	}
 
+	*/
 	void print() const {
-		writeln(key);
+		writeln(data);
 		if(this.link[0] !is null) {
 			this.link[0].print();
 		}
@@ -52,7 +53,7 @@ class Node(T) {
 			this.link[1].print();
 		}
 	}
-
+	/*
 	public override int toHash() const {
 		return this.key;
 	}*/
@@ -68,7 +69,6 @@ class BinarySearchTree(T) {
 		}
 		Node!(T) node = this.search(data);
 		if(node is null) {
-			writeln(node);
 			node = new Node!(T)(data);
 		}
 	}
@@ -95,7 +95,6 @@ class BinarySearchTree(T) {
 			node = node.link[1];
 			old = null;
 		} else if(node.link[1] is null) {
-			writeln(__LINE__);
 			node = node.link[0];
 			old = null;
 		} else {
@@ -106,6 +105,10 @@ class BinarySearchTree(T) {
 			swap(pred, node);
 			remove(pred);
 		}
+	}
+
+	void print() const {
+		this.root.print();
 	}
 
 	private void swap(Node!(T) a, Node!(T) b) {
@@ -123,4 +126,16 @@ void main() {
 	assert(af is a.root);
 	a.remove(af);
 	assert(af is null);
+	int[] lots = [2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147, 3321, 3532, 3009,
+	1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740, 2476, 3297, 487, 1397,
+	973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130, 756, 210, 170, 3510, 987];
+	BinarySearchTree!(int) b = new BinarySearchTree!(int)();
+	foreach(idx, it; lots) {
+		writeln(__LINE__, " ",it);
+		b.insert(it);
+		b.print();
+		foreach(jt; lots[0..idx]) {
+			assert(b.search(jt) !is null);
+		}
+	}
 }
