@@ -12,6 +12,7 @@ class Node(T) {
 
 	this(T data) {
 		this.data = data;
+		this.red = true;
 	}
 }
 
@@ -46,14 +47,16 @@ class RBTree(T) {
 	}
 
 	private static validate(const Node!(T) node, const Node!(T) parent) {
-		int lh = 0;
-		int rh = 0;
 		if(node is null) {
 			return 1;
 		} else {
 			if(node.parent !is parent) {
 				writeln("parent violation");
 			}
+			if(node.link[0] !is null)
+				assert(node.link[0].parent is node);
+			if(node.link[1] !is null)
+				assert(node.link[1].parent is node);
 			const Node!(T) ln = node.link[0];
 			const Node!(T) rn = node.link[1];
 
@@ -63,8 +66,8 @@ class RBTree(T) {
 					return 0;
 				}
 			}
-			lh = validate(ln, node);
-			rh = validate(rn, node);
+			int lh = validate(ln, node);
+			int rh = validate(rn, node);
 			
 			if((ln !is null && ln.data >= node.data)
 					|| (rn !is null && rn.data <= node.data)) {
@@ -73,7 +76,7 @@ class RBTree(T) {
 			}
 
 			if(lh != 0 && rh != 0 && lh != rh) {
-				writeln("Black violation");
+				writeln("Black violation ", lh, " ", rh);
 				return 0;
 			}
 
@@ -107,6 +110,121 @@ class RBTree(T) {
 		}
 	}
 
+	/*private static Node!(T) insertR(Node!(T) node, T data) {
+		if(node is null) {
+			node = new Node!(T)(data);
+		} else if(data != node.data) {	
+			bool dir = node.data < data;
+			node.link[dir] = insertR(node.link[dir], data);	
+			if(node.link[dir] !is null)
+				node.link[dir].parent = node;
+
+			if(isRed(node.link[dir])) {
+				if(isRed(node.link[!dir])) {
+					node.red = true;
+					node.link[0].red = false;
+					node.link[1].red = false;
+				} else {
+					if(isRed(node.link[dir].link[dir])) {
+						node = singleRotate(node, !dir);
+					} else if(isRed(node.link[dir].link[!dir])) {
+						node = doubleRotate(node, !dir);
+					}
+				}
+			}
+		}
+		return node;
+	}
+
+	bool insert(T data) {
+		this.root = insertR(this.root, data);
+		if(this.root !is null)
+			this.root.parent = null;
+		this.root.red = false;
+		return true;
+	}
+
+	bool remove(T data) {
+		bool done = false;
+		this.root = removeR(this.root, data, done);
+		if(this.root !is null)
+			this.root.red = true;
+		return done;
+	}
+
+	private static Node!(T) removeR(Node!(T) node, T data, ref bool done) {
+		if(node is null)
+			done = true;
+		else {
+			bool dir;
+			if(node.data == data) {
+				if(node.link[0] is null || node.link[1] is null) {
+					Node!(T) save = node.link[node.link[0] is null];	
+
+					if(isRed(node))
+						done = true;
+					else if(isRed(save)) {
+						save.red = false;
+						done = true;
+					}
+					return save;
+				} else {
+					Node!(T) heir = node.link[0];
+					while(heir.link[1] !is null)
+						heir = heir.link[1];
+
+					node.data = heir.data;
+					data = heir.data;
+				}
+			}
+			dir = node.data < data;
+			node.link[dir] = removeR(node.link[dir], data, done);
+
+			if(!done)
+				node = removeBalance(node, dir, done);
+		}
+		return node;
+	}
+
+	private static removeBalance(Node!(T) node, bool dir, ref bool done) {
+		Node!(T) p = node;
+		Node!(T) s = node.link[!dir];
+		if(isRed(s)) {
+			node = singleRotate(node, dir);
+			s = p.link[!dir];
+		}
+		
+		if(s !is null) {
+			if(!isRed(s.link[0]) && !isRed(s.link[1])) {
+				if(isRed(p))
+					done = true;
+				p.red = false;
+				s.red = true;
+			} else {
+				bool save = p.red;
+				bool newRoot = (node is p);
+				
+				if(isRed(s.link[!dir]))
+					p = singleRotate(p, dir);
+				else
+					p = doubleRotate(p, dir);
+
+				p.red = save;
+				p.link[0].red = false;
+				p.link[1].red = false;
+
+				if(newRoot)
+					node = p;
+				else
+					node.link[dir] = p;
+
+				done = true;
+			}
+		}
+		return node;
+	}*/
+	
+	
 	bool insert(T data) {
 		if(this.root is null) {
 			this.root = new Node!(T)(data);
@@ -175,6 +293,7 @@ class RBTree(T) {
 		this.root.red = false;				
 		return true;
 	}
+	
 
 	void remove(T data) {
 		if(this.root !is null) {
@@ -201,7 +320,8 @@ class RBTree(T) {
 					if(isRed(q.link[!dir])) {
 						//p = p.link[last] = singleRotate(q, dir);
 						p.link[last] = singleRotate(q, dir);
-						p.link[last].parent = p;
+						if(p.link[last] !is null)
+							p.link[last].parent = p;
 						p = p.link[last];
 					} else if(!isRed(q.link[!dir])) {
 						Node!(T) s = p.link[!last];
@@ -215,10 +335,12 @@ class RBTree(T) {
 								int dir2 = g.link[1] is p;
 								if(isRed(s.link[last])) {
 									g.link[dir2] = doubleRotate(p,last);
-									g.link[dir2].parent = g;
+									if(g.link[dir2] !is null)
+										g.link[dir2].parent = g;
 								} else if(isRed(s.link[!last])) {
 									g.link[dir2] = singleRotate(p, last);
-									g.link[dir2].parent = g;
+									if(g.link[dir2] !is null)
+										g.link[dir2].parent = g;
 								}
 
 								q.red = g.link[dir2].red = 1;
@@ -234,7 +356,8 @@ class RBTree(T) {
 				bool to = p.link[1] is q;
 				//p.link[p.link[1] is q] = q.link[q.link[0] is null];
 				p.link[to] = q.link[q.link[0] is null];
-				p.link[to].parent = p;
+				if(p.link[to] !is null)
+					p.link[to].parent = p;
 			}
 
 			this.root = head.link[1];
@@ -266,24 +389,26 @@ void main() {
 		RBTree!(int) a = new RBTree!(int)();
 		int[int] at;
 		foreach(idx, it; lots) {
-			writeln(__LINE__," ",it);
 			a.insert(it);
 			foreach(jt; lots[0..idx+1]) {
 				assert(a.search(jt));
 			}
 			at[it] = it;
-			//assert(a.validate());
+			assert(a.validate());
 			assert(compare!(int)(a, at));
 		}
 		writeln("insert done");
 		foreach(idx, it; lots) {
-			writeln(__LINE__," ",it);
 			a.remove(it);
+			at.remove(it);
+			assert(a.validate());
+			assert(compare!(int)(a, at));
 			foreach(jt; lots[0..idx+1]) {
 				assert(!a.search(jt));
 			}
-			at.remove(it);
-			assert(compare!(int)(a, at));
+			foreach(jt; lots[idx+1..$]) {
+				assert(a.search(jt));
+			}
 		}
 	}
 }
