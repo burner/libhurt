@@ -25,7 +25,13 @@ class RBTree(T) {
 	private static singleRotate(Node!(T) node, bool dir) {
 		Node!(T) save = node.link[!dir];
 		node.link[!dir] = save.link[dir];
+		if(node.link[!dir] !is null) {
+			node.link[!dir].parent = node;
+		}
 		save.link[dir] = node;
+		if(save.link[dir] !is null) {
+			save.link[dir].parent = save;
+		}
 		node.red = true;
 		save.red = false;
 		return save;
@@ -33,6 +39,9 @@ class RBTree(T) {
 
 	private static doubleRotate(Node!(T) node, bool dir) {
 		node.link[!dir] = singleRotate(node.link[!dir], !dir);
+		if(node.link[!dir] !is null) {
+			node.link[!dir].parent = node;	
+		}
 		return singleRotate(node, dir);
 	}
 
@@ -42,6 +51,9 @@ class RBTree(T) {
 		if(node is null) {
 			return 1;
 		} else {
+			if(node.parent !is parent) {
+				writeln("parent violation");
+			}
 			const Node!(T) ln = node.link[0];
 			const Node!(T) rn = node.link[1];
 
@@ -74,6 +86,10 @@ class RBTree(T) {
 
 	public bool validate() const {
 		return validate(this.root, null) != 0;	
+	}
+
+	this() {
+		this.root = null;
 	}
 
 	public Node!(T) search(const T data) {
@@ -111,17 +127,32 @@ class RBTree(T) {
 					p.link[dir] = q = new Node!(T)(data);
 					if(q is null)
 						return false;
+					else
+						q.parent = p;
 				} else if(isRed(q.link[0]) && isRed(q.link[1])) {
 					q.red = true;
-					q.link[0].red = 0;
-					q.link[1].red = 0;
+					q.link[0].red = false;
+					q.link[1].red = false;
+					if(q.link[0] !is null) {
+						q.link[0].parent = q;
+					}
+					if(q.link[1] !is null) {
+						q.link[1].parent = q;
+					}
 				}
 				if(isRed(q) && isRed(p)) {
 					bool dir2 = t.link[1] is g;
-					if(q is p.link[last])
+					if(q is p.link[last]) {
 						t.link[dir2] = singleRotate(g,!last);
-					else
+						if(t.link[dir2] !is null) {
+							t.link[dir2].parent = t;
+						}
+					} else {
 						t.link[dir2] = doubleRotate(g,!last);
+						if(t.link[dir2] !is null) {
+							t.link[dir2].parent = t;
+						}
+					}
 				}
 
 				if(q.data == data)
@@ -137,6 +168,9 @@ class RBTree(T) {
 				q = q.link[dir];
 			}
 			this.root = head.link[1];
+			if(this.root !is null) {
+				this.root.parent = null;
+			}
 		}
 		this.root.red = false;				
 		return true;
@@ -158,14 +192,18 @@ class RBTree(T) {
 				g = p;
 				p = q;
 				q = q.link[dir];
+				dir = q.data < data;
 
 				if(q.data == data)
 					f = q;
 
 				if(!isRed(q) && !isRed(q.link[dir])) {
-					if(isRed(q.link[!dir]))
-						p = p.link[last] = singleRotate(q, dir);
-					else if(!isRed(q.link[!dir])) {
+					if(isRed(q.link[!dir])) {
+						//p = p.link[last] = singleRotate(q, dir);
+						p.link[last] = singleRotate(q, dir);
+						p.link[last].parent = p;
+						p = p.link[last];
+					} else if(!isRed(q.link[!dir])) {
 						Node!(T) s = p.link[!last];
 
 						if(s !is null) {
@@ -175,10 +213,13 @@ class RBTree(T) {
 								q.red = true;
 							} else {
 								int dir2 = g.link[1] is p;
-								if(isRed(s.link[last]))
+								if(isRed(s.link[last])) {
 									g.link[dir2] = doubleRotate(p,last);
-								else if(isRed(s.link[!last]))
+									g.link[dir2].parent = g;
+								} else if(isRed(s.link[!last])) {
 									g.link[dir2] = singleRotate(p, last);
+									g.link[dir2].parent = g;
+								}
 
 								q.red = g.link[dir2].red = 1;
 								g.link[dir2].link[0].red = 0;
@@ -190,7 +231,10 @@ class RBTree(T) {
 			}
 			if(f !is null) {
 				f.data = q.data;
-				p.link[p.link[1] is q] = q.link[q.link[0] is null];
+				bool to = p.link[1] is q;
+				//p.link[p.link[1] is q] = q.link[q.link[0] is null];
+				p.link[to] = q.link[q.link[0] is null];
+				p.link[to].parent = p;
 			}
 
 			this.root = head.link[1];
@@ -217,18 +261,23 @@ void main() {
 	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
+	
 	foreach(lots; lot) {
 		RBTree!(int) a = new RBTree!(int)();
 		int[int] at;
 		foreach(idx, it; lots) {
+			writeln(__LINE__," ",it);
 			a.insert(it);
 			foreach(jt; lots[0..idx+1]) {
 				assert(a.search(jt));
 			}
 			at[it] = it;
+			//assert(a.validate());
 			assert(compare!(int)(a, at));
 		}
+		writeln("insert done");
 		foreach(idx, it; lots) {
+			writeln(__LINE__," ",it);
 			a.remove(it);
 			foreach(jt; lots[0..idx+1]) {
 				assert(!a.search(jt));
