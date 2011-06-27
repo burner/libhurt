@@ -14,6 +14,11 @@ class Node(T) {
 		this.data = data;
 		this.red = true;
 	}
+
+	public override bool opEquals(Object o) const {
+		Node!(T) n = cast(Node!(T))o;
+		return this.data == n.data;
+	}
 }
 
 class RBTree(T) {
@@ -51,12 +56,14 @@ class RBTree(T) {
 			return 1;
 		} else {
 			if(node.parent !is parent) {
-				writeln("parent violation");
+				writeln("parent violation ", node.parent is null, " ",
+					parent is null);
 			}
 			if(node.link[0] !is null)
 				assert(node.link[0].parent is node);
 			if(node.link[1] !is null)
 				assert(node.link[1].parent is node);
+
 			const Node!(T) ln = node.link[0];
 			const Node!(T) rn = node.link[1];
 
@@ -143,12 +150,14 @@ class RBTree(T) {
 		this.root.red = false;
 		return true;
 	}
-
+*/
 	bool remove(T data) {
 		bool done = false;
 		this.root = removeR(this.root, data, done);
-		if(this.root !is null)
-			this.root.red = true;
+		if(this.root !is null) {
+			this.root.red = false;
+			this.root.parent = null;
+		}
 		return done;
 	}
 
@@ -179,6 +188,9 @@ class RBTree(T) {
 			}
 			dir = node.data < data;
 			node.link[dir] = removeR(node.link[dir], data, done);
+			if(node.link[dir] !is null) {
+				node.link[dir].parent = node;
+			}
 
 			if(!done)
 				node = removeBalance(node, dir, done);
@@ -202,7 +214,7 @@ class RBTree(T) {
 				s.red = true;
 			} else {
 				bool save = p.red;
-				bool newRoot = (node is p);
+				bool newRoot = (node == p);
 				
 				if(isRed(s.link[!dir]))
 					p = singleRotate(p, dir);
@@ -215,14 +227,18 @@ class RBTree(T) {
 
 				if(newRoot)
 					node = p;
-				else
+				else {
 					node.link[dir] = p;
+					if(node.link[dir] !is null) {
+						node.link[dir].parent = node;
+					}
+				}
 
 				done = true;
 			}
 		}
 		return node;
-	}*/
+	}
 	
 	
 	bool insert(T data) {
@@ -294,7 +310,7 @@ class RBTree(T) {
 		return true;
 	}
 	
-
+/*
 	void remove(T data) {
 		if(this.root !is null) {
 			Node!(T) head = new Node!(T)();
@@ -364,7 +380,7 @@ class RBTree(T) {
 			if(this.root !is null)
 				this.root.red = false;
 		}
-	}
+	}*/
 }
 
 bool compare(T)(RBTree!(T) t, T[T] s) {
