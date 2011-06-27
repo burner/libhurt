@@ -60,9 +60,15 @@ class RBTree(T) {
 					parent is null);
 			}
 			if(node.link[0] !is null)
-				assert(node.link[0].parent is node);
+				if(node.link[0].parent is node) {
+					writeln("parent ");
+
+				}
 			if(node.link[1] !is null)
-				assert(node.link[1].parent is node);
+				if(node.link[1].parent is node) {
+					writeln("parent ");
+
+				}
 
 			const Node!(T) ln = node.link[0];
 			const Node!(T) rn = node.link[1];
@@ -150,7 +156,7 @@ class RBTree(T) {
 		this.root.red = false;
 		return true;
 	}
-*/
+
 	bool remove(T data) {
 		bool done = false;
 		this.root = removeR(this.root, data, done);
@@ -238,7 +244,7 @@ class RBTree(T) {
 			}
 		}
 		return node;
-	}
+	}*/
 	
 	
 	bool insert(T data) {
@@ -310,7 +316,7 @@ class RBTree(T) {
 		return true;
 	}
 	
-/*
+
 	void remove(T data) {
 		if(this.root !is null) {
 			Node!(T) head = new Node!(T)();
@@ -324,8 +330,7 @@ class RBTree(T) {
 
 			while(q.link[dir] !is null) {
 				bool last = dir;
-				g = p;
-				p = q;
+				g = p, p = q;
 				q = q.link[dir];
 				dir = q.data < data;
 
@@ -336,9 +341,12 @@ class RBTree(T) {
 					if(isRed(q.link[!dir])) {
 						//p = p.link[last] = singleRotate(q, dir);
 						p.link[last] = singleRotate(q, dir);
-						if(p.link[last] !is null)
+						if(p.link[last] !is null) {
 							p.link[last].parent = p;
+						}
+						Node!(T) oldPar = p.parent;
 						p = p.link[last];
+						p.parent = oldPar;
 					} else if(!isRed(q.link[!dir])) {
 						Node!(T) s = p.link[!last];
 
@@ -348,7 +356,7 @@ class RBTree(T) {
 								s.red = true;
 								q.red = true;
 							} else {
-								int dir2 = g.link[1] is p;
+								int dir2 = g.link[1] == p;
 								if(isRed(s.link[last])) {
 									g.link[dir2] = doubleRotate(p,last);
 									if(g.link[dir2] !is null)
@@ -377,10 +385,12 @@ class RBTree(T) {
 			}
 
 			this.root = head.link[1];
-			if(this.root !is null)
+			if(this.root !is null) {
+				this.root.parent = null;
 				this.root.red = false;
+			}
 		}
-	}*/
+	}
 }
 
 bool compare(T)(RBTree!(T) t, T[T] s) {
