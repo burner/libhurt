@@ -1,6 +1,7 @@
+module bst;
 import std.stdio;
 
-class Node(T) {
+private class Node(T) {
     // By value storage of the data
     T data;
  
@@ -199,7 +200,7 @@ bool compare(T)(BinarySearchTree!(T) t, T[T] s) {
 	return true;
 }
 
-void main() {
+/*void main() {
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
@@ -234,4 +235,4 @@ void main() {
 		}
 	}
 	writeln("bst test done");
-}
+}*/

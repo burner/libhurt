@@ -1,6 +1,8 @@
+module rbtree;
+
 import std.stdio;
 
-class Node(T) {
+private class Node(T) {
 	bool red;
 	T data;
 	Node!(T) link[2];
@@ -60,13 +62,13 @@ class RBTree(T) {
 					parent is null);
 			}
 			if(node.link[0] !is null)
-				if(node.link[0].parent is node) {
-					writeln("parent ");
+				if(node.link[0].parent !is node) {
+					writeln("parent violation link wrong");
 
 				}
 			if(node.link[1] !is null)
-				if(node.link[1].parent is node) {
-					writeln("parent ");
+				if(node.link[1].parent !is node) {
+					writeln("parent violation link wrong");
 
 				}
 
@@ -155,7 +157,7 @@ class RBTree(T) {
 			this.root.parent = null;
 		this.root.red = false;
 		return true;
-	}
+	}*/
 
 	bool remove(T data) {
 		bool done = false;
@@ -244,7 +246,7 @@ class RBTree(T) {
 			}
 		}
 		return node;
-	}*/
+	}
 	
 	
 	bool insert(T data) {
@@ -316,8 +318,7 @@ class RBTree(T) {
 		return true;
 	}
 	
-
-	void remove(T data) {
+	/*void remove(T data) {
 		if(this.root !is null) {
 			Node!(T) head = new Node!(T)();
 			Node!(T) q, p, g;
@@ -390,7 +391,7 @@ class RBTree(T) {
 				this.root.red = false;
 			}
 		}
-	}
+	}*/
 }
 
 bool compare(T)(RBTree!(T) t, T[T] s) {
@@ -403,7 +404,7 @@ bool compare(T)(RBTree!(T) t, T[T] s) {
 	return true;
 }
 
-void main() {
+/*void main() {
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
@@ -437,4 +438,4 @@ void main() {
 			}
 		}
 	}
-}
+}*/
