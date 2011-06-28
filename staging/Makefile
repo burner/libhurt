@@ -1,3 +1,3 @@
 all:
-	dmd -m64 -w -unittest -debug -gc treetest.d rbtree.d bst.d -L../libhurt.a -I.. -oftreetest
-	./treetest
+	dmd -m64 -w -O hashtable.d -L../libhurt.a -I.. -ofhashtable
+	./hashtable
