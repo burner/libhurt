@@ -16,14 +16,15 @@ class HashTable(T) {
 	private bool duplication;
 
 	static size_t defaultHashFunc(T data) {
-		return cast(size_t)data;
+		size_t ret = cast(size_t)data;
+		return ret;
 	}
-
 
 	this(bool duplication = true, 
 			size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.duplication = duplication;
 		this.hashFunc = hashFunc;
+		this.table = new Node!(T)[16];
 	}
 
 	Node!(T) search(const T data) {
@@ -35,6 +36,23 @@ class HashTable(T) {
 			it = it.next;
 		}
 		return it;
+	}
+
+	bool remove(const T data) {
+		size_t hash = this.hashFunc(data) % this.table.length;
+		Node!(T) it = this.table[hash];
+		if(it.data == data) {
+			this.table[hash] = it.next;
+			return true;
+		}
+		while(it.next !is null) {
+			if(it.next.data == data) {
+				it.next = it.next.next;
+				return true;
+			}
+			it = it.next;
+		}
+		return false;
 	}
 
 	private void grow() {
@@ -69,11 +87,13 @@ class HashTable(T) {
 				return false;
 			}
 		}
-		if(this.size + 1 > this.table.length*0.7) {
+		size_t filllevel = cast(size_t)(this.table.length*0.7);
+		if(this.size + 1 > filllevel) {
 			this.grow();
 		}
 		size_t hash = this.hashFunc(data) % table.length;
 		insert(this.table, hash, new Node!(T)(data));
+		this.size++;
 		return true;
 	}
 }
@@ -87,7 +107,19 @@ void main() {
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 	foreach(it; lot) {
 		HashTable!(int) ht = new HashTable!(int)(false);
-		foreach(jt; it)
+		foreach(idx,jt; it) {
 			assert(ht.insert(jt));
+			foreach(kt; it[0..idx])
+				assert(ht.search(kt));
+			foreach(kt; it[idx+1..$])
+				assert(!ht.search(kt));
+		}
+		foreach(idx,jt; it) {
+			assert(ht.remove(jt));
+			foreach(kt; it[0..idx])
+				assert(!ht.search(kt));
+			foreach(kt; it[idx+1..$])
+				assert(ht.search(kt));
+		}
 	}
 }
