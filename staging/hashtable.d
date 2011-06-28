@@ -1,3 +1,4 @@
+module hashtable;
 import std.stdio;
 
 class HashTable(T) {
@@ -97,7 +98,7 @@ class HashTable(T) {
 		return true;
 	}
 }
-
+/*
 void main() {
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
@@ -122,4 +123,4 @@ void main() {
 				assert(ht.search(kt));
 		}
 	}
-}
+}*/
