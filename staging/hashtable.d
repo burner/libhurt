@@ -5,9 +5,11 @@ class HashTable(T) {
 	class Node(T) {
 		Node!(T) next;
 		T data;
+		int count;
 
 		this(T data) {
 			this.data = data;
+			this.count = 0;
 		}
 	}
 
@@ -75,10 +77,18 @@ class HashTable(T) {
 		this.table = nTable;
 	}
 
-	private static void insert(Node!(T)[] t, size_t hash, Node!(T) node) {
+	private static bool insert(Node!(T)[] t, size_t hash, Node!(T) node) {
 		Node!(T) old = t[hash];
 		t[hash] = node;
 		t[hash].next = old;
+		if(old !is null) {
+			t[hash].count = old.count+1;
+		}
+		if(t[hash].count > 10) {
+			return true;	
+		} else {
+			return false;
+		}
 	}
 
 	bool insert(T data) {
@@ -93,8 +103,11 @@ class HashTable(T) {
 			this.grow();
 		}
 		size_t hash = this.hashFunc(data) % table.length;
-		insert(this.table, hash, new Node!(T)(data));
+		bool needRegrow = insert(this.table, hash, new Node!(T)(data));
 		this.size++;
+		if(needRegrow)
+			this.grow();
+		
 		return true;
 	}
 }
