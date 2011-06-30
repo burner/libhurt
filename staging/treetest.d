@@ -92,21 +92,21 @@ void main() {
 	}
 	writeln("insert");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%6d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d: %5d %5d %5d %5d", num[i].length,
 			times[0][0][i]/iteration, times[1][0][i]/iteration,
 			times[2][0][i]/iteration,times[3][0][i]/iteration);
 	}
 
 	writeln("\nsearch");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%6d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d: %5d %5d %5d %5d", num[i].length,
 			times[0][1][i]/iteration, times[1][1][i]/iteration,
 			times[2][1][i]/iteration,times[3][1][i]/iteration);
 	}
 
 	writeln("\nremove");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%6d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d: %5d %5d %5d %5d", num[i].length,
 			times[0][2][i]/iteration, times[1][2][i]/iteration,
 			times[2][2][i]/iteration,times[3][2][i]/iteration);
 	}
