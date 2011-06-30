@@ -14,34 +14,42 @@ bool compare(T)(RBTree!(T) rb, HashTable!(T) ht, BinarySearchTree!(T) bst,
 	bool ret = true;
 	foreach(it;dht.values()) {
 		ret = bst.search(it) ? true : false;	
-		ret = rb.search(it) ? true : false;	
-		ret = ht.search(it) ? true : false;	
-		if(!ret)
+		ret = ret && rb.search(it) ? true : false;	
+		ret = ret && ht.search(it) ? true : false;	
+		if(!ret) {
+			writeln(__LINE__);
 			return false;
+		}
 	}
 
 	foreach(it;rb.values()) {
 		ret = bst.search(it) ? true : false;	
-		ret = it in dht ? true : false;	
-		ret = ht.search(it) ? true : false;	
-		if(!ret)
+		ret = ret && it in dht ? true : false;	
+		ret = ret && ht.search(it) ? true : false;	
+		if(!ret) {
+			writeln(__LINE__);
 			return false;
+		}
 	}
 			
 	foreach(it;ht.values()) {
 		ret = bst.search(it) ? true : false;	
-		ret = it in dht ? true : false;	
-		ret = rb.search(it) ? true : false;	
-		if(!ret)
+		ret = ret && it in dht ? true : false;	
+		ret = ret && rb.search(it) ? true : false;	
+		if(!ret) {
+			writeln(__LINE__);
 			return false;
+		}
 	}
 			
 	foreach(it;bst.values()) {
 		ret = ht.search(it) ? true : false;	
-		ret = it in dht ? true : false;	
-		ret = rb.search(it) ? true : false;	
-		if(!ret)
+		ret = ret && it in dht ? true : false;	
+		ret = ret && rb.search(it) ? true : false;	
+		if(!ret) {
+			writeln(__LINE__);
 			return false;
+		}
 	}
 			
 	return true;
