@@ -4,6 +4,56 @@ import isr;
 
 import std.stdio;
 
+private class Iterator(T) {
+	Node!(T) current;
+
+	this(Node!(T) current) {
+		this.current = current;
+	}
+
+	void opUnary(string s)() if(s == "++") {
+		Node!(T) y;
+		if(null !is (y = this.current.link[true])) {
+			while(y.link[false] !is null) {
+				y = y.link[false];
+			}
+			this.current = y;
+		} else {
+			y = this.current.parent;
+			while(y !is null && this.current is y.link[true]) {
+				this.current = y;
+				y = y.parent;
+			}
+			this.current = y;
+		}
+	}	
+
+	void opUnary(string s)() if(s == "--") {
+		Node!(T) y;
+		if(null !is (y = this.current.link[false])) {
+			while(y.link[true] !is null) {
+				y = y.link[true];
+			}
+			this.current = y;
+		} else {
+			y = this.current.parent;
+			while(y !is null && this.current is y.link[false]) {
+				this.current = y;
+				y = y.parent;
+			}
+			this.current = y;
+		}
+	}
+
+	bool isValid() const {
+		return this.current is null;
+	}
+
+	T opUnary(string s)() if(s == "*") {
+		return this.current.data;
+	}
+}
+
 private class Node(T) : ISRNode!(T) {
     // By value storage of the data
     T data;
@@ -86,6 +136,21 @@ class BinarySearchTree(T) : ISR!(T) {
 	bool isEmpty() const {
 	    return this.root is null;
 	}
+
+	Iterator!(T) begin() {
+		Node!(T) be = this.root;
+		while(be.link[0] !is null)
+			be = be.link[0];
+		return new Iterator!(T)(be);
+	}
+
+	Iterator!(T) end() {
+		Node!(T) end = this.root;
+		while(end.link[1] !is null)
+			end = end.link[1];
+		return new Iterator!(T)(end);
+	}
+
 	 
 	bool insert(T item) {
 	    if(this.root is null) {
@@ -176,6 +241,12 @@ class BinarySearchTree(T) : ISR!(T) {
 
 	T[] values() {
 		T[] ret = new T[this.count];
+		size_t ptr = 0;
+		auto it = this.begin();
+		while(it.isValid()) {
+			ret[ptr++] = *it;
+			it++;
+		}
 		return ret;	
 	}
 

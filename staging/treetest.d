@@ -19,8 +19,32 @@ bool compare(T)(RBTree!(T) rb, HashTable!(T) ht, BinarySearchTree!(T) bst,
 		if(!ret)
 			return false;
 	}
-			
 
+	foreach(it;rb.values()) {
+		ret = bst.search(it) ? true : false;	
+		ret = it in dht ? true : false;	
+		ret = ht.search(it) ? true : false;	
+		if(!ret)
+			return false;
+	}
+			
+	foreach(it;ht.values()) {
+		ret = bst.search(it) ? true : false;	
+		ret = it in dht ? true : false;	
+		ret = rb.search(it) ? true : false;	
+		if(!ret)
+			return false;
+	}
+			
+	foreach(it;bst.values()) {
+		ret = ht.search(it) ? true : false;	
+		ret = it in dht ? true : false;	
+		ret = rb.search(it) ? true : false;	
+		if(!ret)
+			return false;
+	}
+			
+	return true;
 }
 
 void main() {
@@ -62,6 +86,8 @@ void main() {
 			foreach(jt; it)
 				ht.insert(jt);
 			times[3][0][idx] += getMilli() - start;
+
+			assert(compare!(int)(rb, ht, bst, das));
 
 			start = getMilli();
 			foreach(jt; it)
