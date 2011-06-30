@@ -7,7 +7,7 @@ import hurt.util.datetime;
 import std.stdio;
 
 void main() {
-	int dim = 14;
+	int dim = 16;
 	int[][] num = new int[][dim];
 	int startSize = 32;
 	foreach(ref it; num) {
@@ -66,6 +66,7 @@ void main() {
 				assert(ht.search(jt));
 			times[3][1][idx] += getMilli() - start;
 
+
 			start = getMilli();
 			foreach(jt; it)
 				bst.remove(jt);
@@ -85,6 +86,8 @@ void main() {
 			foreach(jt; it)
 				ht.remove(jt);	
 			times[3][2][idx] += getMilli() - start;
+
+			writeln(it.length);
 		}
 	}
 	writeln("insert");
