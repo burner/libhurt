@@ -1,7 +1,10 @@
 module bst;
+
+import isr;
+
 import std.stdio;
 
-private class Node(T) {
+private class Node(T) : ISRNode!(T) {
     // By value storage of the data
     T data;
  
@@ -54,7 +57,7 @@ private class Node(T) {
 	}
 }
  
-class BinarySearchTree(T) { 
+class BinarySearchTree(T) : ISR!(T) { 
 	private Node!(T) root;
 	private size_t count;
 
@@ -84,7 +87,7 @@ class BinarySearchTree(T) {
 	    return this.root is null;
 	}
 	 
-	bool insert(const T item) {
+	bool insert(T item) {
 	    if(this.root is null) {
 	        this.root = new Node!(T);
 	        this.root.data = item;
@@ -105,7 +108,7 @@ class BinarySearchTree(T) {
 	    return true;
 	}
 	 
-	bool remove(const T item) {
+	bool remove(T item) {
 		if(this.root !is null ) {
 			Node!(T) p = null, succ;
 			Node!(T) it = this.root;
@@ -169,6 +172,11 @@ class BinarySearchTree(T) {
 		} else {
 			return null;
 		}
+	}
+
+	T[] values() {
+		T[] ret = new T[this.count];
+		return ret;	
 	}
 
 	size_t getSize() const {

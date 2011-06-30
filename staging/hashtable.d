@@ -1,15 +1,22 @@
 module hashtable;
+
+import isr;
+
 import std.stdio;
 
 import hurt.conv.conv;
 
-class HashTable(T) {
-	class Node(T) {
+class HashTable(T) : ISR!(T) {
+	class Node(T) : ISRNode!(T) {
 		Node!(T) next;
 		T data;
 
 		this(T data) {
 			this.data = data;
+		}
+
+		T opUnary(string s)() if(s == "*") {
+			return this.data;
 		}
 	}
 
@@ -35,6 +42,18 @@ class HashTable(T) {
 		}
 	}
 
+	T[] values() {
+		T[] ret = new T[this.size];
+		size_t ptr = 0;
+		foreach(it; this.table) {
+			while(it !is null) {
+				ret[ptr++] = it.data;
+				it = it.next;
+			}
+		}
+		return ret;
+	}
+
 	this(bool duplication = true, 
 			size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.duplication = duplication;
@@ -53,7 +72,7 @@ class HashTable(T) {
 		return it;
 	}
 
-	bool remove(const T data) {
+	bool remove(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		Node!(T) it = this.table[hash];
 		if(it.data == data) {
@@ -148,7 +167,7 @@ unittest {
 		}
 		assert(ht.getSize() == 0, conv!(size_t,string)(ht.getSize()));
 	}
-string[] words = [
+	string[] words = [
 "abbreviation","abbreviations","abettor","abettors","abilities","ability"
 "abrasion","abrasions","abrasive","abrasives","absence","absences","abuse"
 "abuser","abusers","abuses","acceleration","accelerations","acceptance"

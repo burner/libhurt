@@ -6,6 +6,23 @@ import hurt.util.datetime;
 
 import std.stdio;
 
+bool compare(T)(RBTree!(T) rb, HashTable!(T) ht, BinarySearchTree!(T) bst, 
+		T[T] dht) {
+	assert(bst.getSize() == rb.getSize() 
+		&& ht.getSize() == dht.length
+		&& bst.getSize() == ht.getSize());
+	bool ret = true;
+	foreach(it;dht.values()) {
+		ret = bst.search(it) ? true : false;	
+		ret = rb.search(it) ? true : false;	
+		ret = ht.search(it) ? true : false;	
+		if(!ret)
+			return false;
+	}
+			
+
+}
+
 void main() {
 	int dim = 14;
 	int[][] num = new int[][dim];
@@ -45,7 +62,7 @@ void main() {
 			foreach(jt; it)
 				ht.insert(jt);
 			times[3][0][idx] += getMilli() - start;
-			
+
 			start = getMilli();
 			foreach(jt; it)
 				assert(bst.search(jt));
