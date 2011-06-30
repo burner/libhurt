@@ -1,6 +1,8 @@
 module hashtable;
 import std.stdio;
 
+import hurt.conv.conv;
+
 class HashTable(T) {
 	class Node(T) {
 		Node!(T) next;
@@ -56,11 +58,13 @@ class HashTable(T) {
 		Node!(T) it = this.table[hash];
 		if(it.data == data) {
 			this.table[hash] = it.next;
+			this.size--;
 			return true;
 		}
 		while(it.next !is null) {
 			if(it.next.data == data) {
 				it.next = it.next.next;
+				this.size--;
 				return true;
 			}
 			it = it.next;
@@ -110,6 +114,10 @@ class HashTable(T) {
 		
 		return true;
 	}
+
+	public size_t getSize() const {
+		return this.size;
+	}
 }
 
 unittest {
@@ -121,8 +129,10 @@ unittest {
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 	foreach(it; lot) {
 		HashTable!(int) ht = new HashTable!(int)(false);
+		assert(ht.getSize() == 0);
 		foreach(idx,jt; it) {
 			assert(ht.insert(jt));
+			assert(ht.getSize() == idx+1);
 			foreach(kt; it[0..idx])
 				assert(ht.search(kt));
 			foreach(kt; it[idx+1..$])
@@ -130,11 +140,13 @@ unittest {
 		}
 		foreach(idx,jt; it) {
 			assert(ht.remove(jt));
+			assert(ht.getSize() + idx + 1 == it.length);
 			foreach(kt; it[0..idx])
 				assert(!ht.search(kt));
 			foreach(kt; it[idx+1..$])
 				assert(ht.search(kt));
 		}
+		assert(ht.getSize() == 0, conv!(size_t,string)(ht.getSize()));
 	}
 string[] words = [
 "abbreviation","abbreviations","abettor","abettors","abilities","ability"
@@ -872,7 +884,6 @@ string[] words = [
 "cost","cut","drunk","felt","forecast","ground","hit","lent","offset","set"
 "shed","shot","slit","thought","wound"];
 
-	writeln(__LINE__);
 	HashTable!(string) st = new HashTable!(string)(false);
 	st.insert("foo");
 	assert(st.search("foo"));

@@ -25,6 +25,7 @@ private class Node(T) {
 
 class RBTree(T) {
 	private Node!(T) root;
+	private size_t size;
 
 	private static isRed(const Node!(T) n) {
 		return n !is null && n.red;
@@ -108,6 +109,7 @@ class RBTree(T) {
 
 	this() {
 		this.root = null;
+		this.size = 0;
 	}
 
 	public Node!(T) search(const T data) {
@@ -161,26 +163,30 @@ class RBTree(T) {
 
 	bool remove(T data) {
 		bool done = false;
-		this.root = removeR(this.root, data, done);
+		bool succes = false;
+		this.root = removeR(this.root, data, done, succes);
 		if(this.root !is null) {
 			this.root.red = false;
 			this.root.parent = null;
 		}
-		return done;
+		if(succes)
+			this.size--;
+		return succes;
 	}
 
-	private static Node!(T) removeR(Node!(T) node, T data, ref bool done) {
+	private static Node!(T) removeR(Node!(T) node, T data, ref bool done, ref bool succes) {
 		if(node is null)
 			done = true;
 		else {
 			bool dir;
 			if(node.data == data) {
+				succes = true;
 				if(node.link[0] is null || node.link[1] is null) {
 					Node!(T) save = node.link[node.link[0] is null];	
 
-					if(isRed(node))
+					if(isRed(node)) {
 						done = true;
-					else if(isRed(save)) {
+					} else if(isRed(save)) {
 						save.red = false;
 						done = true;
 					}
@@ -195,7 +201,7 @@ class RBTree(T) {
 				}
 			}
 			dir = node.data < data;
-			node.link[dir] = removeR(node.link[dir], data, done);
+			node.link[dir] = removeR(node.link[dir], data, done, succes);
 			if(node.link[dir] !is null) {
 				node.link[dir].parent = node;
 			}
@@ -254,6 +260,7 @@ class RBTree(T) {
 			this.root = new Node!(T)(data);
 			if(this.root is null) 
 				return false;
+			this.size++;
 		} else {
 			scope Node!(T) head = new Node!(T)();
 			Node!(T) g, t;
@@ -269,8 +276,10 @@ class RBTree(T) {
 					p.link[dir] = q = new Node!(T)(data);
 					if(q is null)
 						return false;
-					else
+					else {
 						q.parent = p;
+						this.size++;
+					}
 				} else if(isRed(q.link[0]) && isRed(q.link[1])) {
 					q.red = true;
 					q.link[0].red = false;
@@ -316,6 +325,10 @@ class RBTree(T) {
 		}
 		this.root.red = false;				
 		return true;
+	}
+
+	public size_t getSize() const {
+		return this.size;
 	}
 	
 	/*void remove(T data) {
@@ -404,7 +417,7 @@ bool compare(T)(RBTree!(T) t, T[T] s) {
 	return true;
 }
 
-/*void main() {
+unittest {
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
@@ -416,7 +429,8 @@ bool compare(T)(RBTree!(T) t, T[T] s) {
 		RBTree!(int) a = new RBTree!(int)();
 		int[int] at;
 		foreach(idx, it; lots) {
-			a.insert(it);
+			assert(a.insert(it));
+			assert(a.getSize() == idx+1);
 			foreach(jt; lots[0..idx+1]) {
 				assert(a.search(jt));
 			}
@@ -424,9 +438,9 @@ bool compare(T)(RBTree!(T) t, T[T] s) {
 			assert(a.validate());
 			assert(compare!(int)(a, at));
 		}
-		writeln("insert done");
 		foreach(idx, it; lots) {
-			a.remove(it);
+			assert(a.remove(it));
+			assert(a.getSize() + idx + 1 == lots.length);
 			at.remove(it);
 			assert(a.validate());
 			assert(compare!(int)(a, at));
@@ -438,4 +452,4 @@ bool compare(T)(RBTree!(T) t, T[T] s) {
 			}
 		}
 	}
-}*/
+}

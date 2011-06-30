@@ -7,7 +7,7 @@ import hurt.util.datetime;
 import std.stdio;
 
 void main() {
-	int dim = 16;
+	int dim = 14;
 	int[][] num = new int[][dim];
 	int startSize = 32;
 	foreach(ref it; num) {
