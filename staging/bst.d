@@ -46,7 +46,7 @@ private class Iterator(T) {
 	}
 
 	bool isValid() const {
-		return this.current is null;
+		return this.current !is null;
 	}
 
 	T opUnary(string s)() if(s == "*") {
@@ -240,6 +240,8 @@ class BinarySearchTree(T) : ISR!(T) {
 	}
 
 	T[] values() {
+		if(this.count == 0)
+			return null;
 		T[] ret = new T[this.count];
 		size_t ptr = 0;
 		auto it = this.begin();

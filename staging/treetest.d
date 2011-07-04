@@ -141,7 +141,7 @@ void main() {
 			writeln(it.length);
 		}
 	}
-	writeln("insert");
+	writefln("%7s: %5d %5d %5d %5d","insert", "bst", "rbtree", "d", "hm");
 	for(int i = 0; i < dim; i++) {	
 		writefln("%7d: %5d %5d %5d %5d", num[i].length,
 			times[0][0][i]/iteration, times[1][0][i]/iteration,

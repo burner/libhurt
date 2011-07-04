@@ -4,9 +4,11 @@ import isr;
 
 import std.stdio;
 
+import hurt.conv.conv;
+
 
 private class Iterator(T) {
-	Node!(T) current;
+	private Node!(T) current;
 
 	this(Node!(T) current) {
 		this.current = current;
@@ -47,7 +49,7 @@ private class Iterator(T) {
 	}
 
 	bool isValid() const {
-		return this.current is null;
+		return this.current !is null;
 	}
 
 	T opUnary(string s)() if(s == "*") {
@@ -109,9 +111,14 @@ class RBTree(T) : ISR!(T) {
 
 	Iterator!(T) begin() {
 		Node!(T) be = this.root;
-		while(be.link[0] !is null)
+		int count = 0;
+		while(be.link[0] !is null) {
 			be = be.link[0];
-		return new Iterator!(T)(be);
+			count++;
+		}
+		auto it =  new Iterator!(T)(be);
+		//writeln(__LINE__," ",count, " ", be is null, " ", it is null, " ", it.isValid(), " ", *it);
+		return it;	
 	}
 
 	Iterator!(T) end() {
@@ -175,13 +182,20 @@ class RBTree(T) : ISR!(T) {
 	}
 
 	T[] values() {
+		if(this.size == 0) {
+			return null;
+		}
 		T[] ret = new T[this.size];
 		size_t ptr = 0;
-		auto it = this.begin();
+		Iterator!(T) it = this.begin();
+		//writeln(__LINE__," ", it.isValid());
 		while(it.isValid()) {
+			//writeln(ptr, " ", *it);
 			ret[ptr++] = *it;
 			it++;
 		}
+		assert(ptr == ret.length, conv!(size_t,string)(ptr) ~ " " ~
+			conv!(size_t, string)(ret.length));
 		return ret;
 	}
 
@@ -515,7 +529,11 @@ unittest {
 			at[it] = it;
 			assert(a.validate());
 			assert(compare!(int)(a, at));
+			foreach(jt; a.values()) {
+				assert(a.search(jt));
+			}
 		}
+		//writeln(__LINE__);
 		foreach(idx, it; lots) {
 			assert(a.remove(it));
 			assert(a.getSize() + idx + 1 == lots.length);
@@ -528,6 +546,12 @@ unittest {
 			foreach(jt; lots[idx+1..$]) {
 				assert(a.search(jt));
 			}
+			int[] values = a.values();
+			//writeln(__LINE__," ", values);
+			foreach(jt; values) {
+				assert(a.search(jt));
+			}
 		}
+		//writeln(__LINE__);
 	}
 }
