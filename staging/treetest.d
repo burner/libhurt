@@ -141,23 +141,23 @@ void main() {
 			writeln(it.length);
 		}
 	}
-	writefln("%7s: %5d %5d %5d %5d","insert", "bst", "rbtree", "d", "hm");
+	writefln("%7s: %5s %5s %5s %5s","insert", "bst", "rbtree", "d", "hm");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%7d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d:  %5d %5d %5d %5d", num[i].length,
 			times[0][0][i]/iteration, times[1][0][i]/iteration,
 			times[2][0][i]/iteration,times[3][0][i]/iteration);
 	}
 
-	writeln("\nsearch");
+	writefln("\n%7s: %5s %5s %5s %5s","search", "bst", "rbtree", "d", "hm");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%7d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d: %5d  %5d %5d %5d", num[i].length,
 			times[0][1][i]/iteration, times[1][1][i]/iteration,
 			times[2][1][i]/iteration,times[3][1][i]/iteration);
 	}
 
-	writeln("\nremove");
+	writefln("\n%7s: %5s %5s %5s %5s","remove", "bst", "rbtree", "d", "hm");
 	for(int i = 0; i < dim; i++) {	
-		writefln("%7d: %5d %5d %5d %5d", num[i].length,
+		writefln("%7d: %5d  %5d %5d %5d", num[i].length,
 			times[0][2][i]/iteration, times[1][2][i]/iteration,
 			times[2][2][i]/iteration,times[3][2][i]/iteration);
 	}
