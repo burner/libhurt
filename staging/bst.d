@@ -4,53 +4,53 @@ import isr;
 
 import std.stdio;
 
-private class Iterator(T) {
-	Node!(T) current;
+private class Iterator(T) : ISRIterator!(T) {
+	Node!(T) data;
 
 	this(Node!(T) current) {
-		this.current = current;
+		this.data = current;
 	}
 
 	void opUnary(string s)() if(s == "++") {
 		Node!(T) y;
-		if(null !is (y = this.current.link[true])) {
+		if(null !is (y = this.data.link[true])) {
 			while(y.link[false] !is null) {
 				y = y.link[false];
 			}
-			this.current = y;
+			this.data = y;
 		} else {
-			y = this.current.parent;
-			while(y !is null && this.current is y.link[true]) {
-				this.current = y;
+			y = this.data.parent;
+			while(y !is null && this.data is y.link[true]) {
+				this.data = y;
 				y = y.parent;
 			}
-			this.current = y;
+			this.data = y;
 		}
 	}	
 
 	void opUnary(string s)() if(s == "--") {
 		Node!(T) y;
-		if(null !is (y = this.current.link[false])) {
+		if(null !is (y = this.data.link[false])) {
 			while(y.link[true] !is null) {
 				y = y.link[true];
 			}
 			this.current = y;
 		} else {
-			y = this.current.parent;
-			while(y !is null && this.current is y.link[false]) {
-				this.current = y;
+			y = this.data.parent;
+			while(y !is null && this.data is y.link[false]) {
+				this.data = y;
 				y = y.parent;
 			}
-			this.current = y;
+			this.data = y;
 		}
 	}
 
-	bool isValid() const {
-		return this.current !is null;
+	T opUnary(string s)() if(s == "*") {
+		return this.data.getData();
 	}
 
-	T opUnary(string s)() if(s == "*") {
-		return this.current.data;
+	bool isValid() const {
+		return this.data !is null;
 	}
 }
 
@@ -248,7 +248,7 @@ class BinarySearchTree(T) : ISR!(T) {
 			return null;
 		T[] ret = new T[this.count];
 		size_t ptr = 0;
-		auto it = this.begin();
+		Iterator!(T) it = this.begin();
 		while(it.isValid()) {
 			ret[ptr++] = *it;
 			it++;

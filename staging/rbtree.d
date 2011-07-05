@@ -7,7 +7,7 @@ import std.stdio;
 import hurt.conv.conv;
 
 
-private class Iterator(T) {
+private class Iterator(T) : ISRIterator!(T) {
 	private Node!(T) current;
 
 	this(Node!(T) current) {

@@ -5,6 +5,38 @@ import isr;
 import std.stdio;
 
 import hurt.conv.conv;
+
+class Iterator(T) : ISRIterator!(T) {
+	private size_t idx; 
+	private Node!(T) curNode;
+	private HashTable!(T) table;
+
+	this(HashTable!(T) table, size_t idx, Node!(T) curNode) {
+		this.table = table;
+		this.idx = idx;
+		this.curNode = curNode;
+	}
+
+	public void opUnary(string s)() if(s == "++") {
+
+	}
+
+	public void opUnary(string s)() if(s == "--") {
+
+	}
+
+	public T opUnary(string s)() if(s == "*") {
+		if(this.isValid())
+			return this.curNode.getData();
+		else
+			assert(0, "Iterator was not valid");
+	}
+
+	public bool isValid() const {
+		return this.curNode !is null;
+	}
+}
+
 class Node(T) : ISRNode!(T) {
 	Node!(T) next;
 	T data;
@@ -52,6 +84,20 @@ class HashTable(T) : ISR!(T) {
 			}
 		}
 		return ret;
+	}
+
+	Iterator!(T) begin() {
+		size_t idx = 0;
+		while(this.table[idx] is null && idx < this.table.length)
+			idx++;
+		return new Iterator!(T)(this, idx, this.table[idx]);
+	}
+
+	Iterator!(T) end() {
+		size_t idx = this.table.length-1;
+		while(this.table[idx] is null && idx >= 0)
+			idx--;
+		return new Iterator!(T)(this, idx, this.table[idx]);
 	}
 
 	this(bool duplication = true, 
@@ -108,6 +154,14 @@ class HashTable(T) : ISR!(T) {
 			}
 		}
 		this.table = nTable;
+	}
+
+	package Node!(T) getNode(size_t idx) {
+		if(idx < this.table.length) {
+			return this.table[idx];
+		} else {
+			return null;
+		}
 	}
 
 	private static void insert(Node!(T)[] t, size_t hash, Node!(T) node) {
