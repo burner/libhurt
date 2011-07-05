@@ -5,21 +5,21 @@ import isr;
 import std.stdio;
 
 import hurt.conv.conv;
+class Node(T) : ISRNode!(T) {
+	Node!(T) next;
+	T data;
 
-class HashTable(T) : ISR!(T) {
-	class Node(T) : ISRNode!(T) {
-		Node!(T) next;
-		T data;
-
-		this(T data) {
-			this.data = data;
-		}
-
-		T opUnary(string s)() if(s == "*") {
-			return this.data;
-		}
+	this(T data) {
+		this.data = data;
 	}
 
+	T getData() {
+		return this.data;
+	}
+}
+
+
+class HashTable(T) : ISR!(T) {
 	private Node!(T)[] table;
 	private size_t function(T data) hashFunc;
 	private size_t size;

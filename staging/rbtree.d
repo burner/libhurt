@@ -72,10 +72,9 @@ private class Node(T) : ISRNode!(T) {
 		this.red = true;
 	}
 
-	/*public override bool opEquals(Object o) const {
-		Node!(T) n = cast(Node!(T))o;
-		return this.data == n.data;
-	}*/
+	T getData() {
+		return this.data;
+	}
 }
 
 class RBTree(T) : ISR!(T) {

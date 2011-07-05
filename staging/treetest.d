@@ -56,7 +56,7 @@ bool compare(T)(RBTree!(T) rb, HashTable!(T) ht, BinarySearchTree!(T) bst,
 }
 
 void main() {
-	int dim = 14;
+	int dim = 11;
 	int[][] num = new int[][dim];
 	int startSize = 32;
 	foreach(ref it; num) {

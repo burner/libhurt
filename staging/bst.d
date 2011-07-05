@@ -72,6 +72,10 @@ private class Node(T) : ISRNode!(T) {
         this.link[1] = null;
     }
 
+	T getData() {
+		return this.data;
+	}
+
 	bool validate(bool root, const Node!(T) par = null) const {
 		if(!root) {
 			if(this.parent is null) {
