@@ -46,6 +46,7 @@ class Iterator(T) : ISRIterator!(T) {
 
 class Node(T) : ISRNode!(T) {
 	Node!(T) next;
+	Node!(T) prev;
 	T data;
 
 	this(T data) {
@@ -130,6 +131,9 @@ class HashTable(T) : ISR!(T) {
 		Node!(T) it = this.table[hash];
 		if(it.data == data) {
 			this.table[hash] = it.next;
+			if(this.table[hash] !is null) {
+				this.table[hash].prev = null;
+			}
 			this.size--;
 			return true;
 		}
@@ -179,6 +183,9 @@ class HashTable(T) : ISR!(T) {
 		Node!(T) old = t[hash];
 		t[hash] = node;
 		t[hash].next = old;
+		if(old !is null) {
+			old.prev = t[hash];
+		}
 	}
 
 	bool insert(T data) {
