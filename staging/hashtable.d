@@ -136,6 +136,9 @@ class HashTable(T) : ISR!(T) {
 		while(it.next !is null) {
 			if(it.next.data == data) {
 				it.next = it.next.next;
+				if(it.next !is null) {
+					it.next.prev = it;
+				}
 				this.size--;
 				return true;
 			}
