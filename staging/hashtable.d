@@ -21,7 +21,8 @@ class Iterator(T) : ISRIterator!(T) {
 		Node!(T) next = this.curNode.next;
 		if(next is null) {
 			size_t tableSize = this.table.getTableSize();
-			while((this.idx+=1) < tableSize && next is null) {
+			while(this.idx+1 < tableSize && next is null) {
+				this.idx++;
 				next = this.table.getNode(this.idx);
 			}
 		}
@@ -29,7 +30,15 @@ class Iterator(T) : ISRIterator!(T) {
 	}
 
 	public void opUnary(string s)() if(s == "--") {
-
+		Node!(T) next = this.curNode.next;
+		if(next is null) {
+			size_t tableSize = this.table.getTableSize();
+			while(this.idx+1 < tableSize && next is null) {
+				this.idx++;
+				next = this.table.getNode(this.idx);
+			}
+		}
+		this.curNode = next;
 	}
 
 	public T opUnary(string s)() if(s == "*") {
@@ -96,7 +105,7 @@ class HashTable(T) : ISR!(T) {
 
 	Iterator!(T) begin() {
 		size_t idx = 0;
-		while(this.table[idx] is null && idx < this.table.length)
+		while(idx+1 < this.table.length && this.table[idx] is null)
 			idx++;
 		return new Iterator!(T)(this, idx, this.table[idx]);
 	}
@@ -227,7 +236,7 @@ unittest {
 		foreach(idx,jt; it) {
 			assert(ht.insert(jt));
 			assert(ht.getSize() == idx+1);
-			foreach(kt; it[0..idx])
+			foreach(kt; it[0..idx+1])
 				assert(ht.search(kt));
 			foreach(kt; it[idx+1..$])
 				assert(!ht.search(kt));
@@ -480,21 +489,42 @@ unittest {
 "shed","shot","slit","thought","wound"];
 
 	HashTable!(string) st = new HashTable!(string)(false);
-	st.insert("foo");
-	assert(st.search("foo"));
 	foreach(idx,word;words) {
 		st.insert(word);
-		foreach(kt; words[0..idx])
+		foreach(kt; words[0..idx+1]) {
 			assert(st.search(kt));
+		}
 		foreach(kt; words[idx+1..$])
 			assert(!st.search(kt));
+		assert(idx+1 == st.getSize(), conv!(size_t,string)(idx+1) ~
+			" " ~ conv!(size_t,string)(st.getSize()));
+		
+		Iterator!(string) it = st.begin();
+		size_t cnt = 0;
+		while(it.isValid()) {
+			assert(st.search(*it));
+			it++;
+			cnt++;
+		}
+		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
+			" " ~ conv!(size_t,string)(st.getSize()));
 	}
+
 	foreach(idx,jt; words) {
 		assert(st.remove(jt));
 		foreach(kt; words[0..idx])
 			assert(!st.search(kt));
 		foreach(kt; words[idx+1..$])
 			assert(st.search(kt));
+
+		Iterator!(string) it = st.begin();
+		size_t cnt = 0;
+		while(it.isValid()) {
+			assert(st.search(*it));
+			it++;
+			cnt++;
+		}
+		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
+			" " ~ conv!(size_t,string)(st.getSize()));
 	}
-	
 }
