@@ -30,13 +30,8 @@ class Iterator(T) : ISRIterator!(T) {
 	}
 
 	public void opUnary(string s)() if(s == "--") {
-		Node!(T) next = this.curNode.next;
+		Node!(T) next = this.curNode.prev;
 		if(next is null) {
-			size_t tableSize = this.table.getTableSize();
-			while(this.idx+1 < tableSize && next is null) {
-				this.idx++;
-				next = this.table.getNode(this.idx);
-			}
 		}
 		this.curNode = next;
 	}
