@@ -30,10 +30,21 @@ class Iterator(T) : ISRIterator!(T) {
 	}
 
 	public void opUnary(string s)() if(s == "--") {
-		Node!(T) next = this.curNode.prev;
-		if(next is null) {
+		Node!(T) prev = this.curNode.prev;
+		//writeln(__LINE__," ",prev is null, " ",this.idx);
+		if(prev is null) {
+			while(this.idx != size_t.max && prev is null) {
+				this.idx--;
+				prev = this.table.getNode(idx);	
+				if(prev !is null) {
+					while(prev.next !is null)
+						prev = prev.next;
+				}
+			}
+
 		}
-		this.curNode = next;
+		this.curNode = prev;
+		//writeln(__LINE__," ",this.curNode is null, " ",this.idx);
 	}
 
 	public T opUnary(string s)() if(s == "*") {
@@ -109,7 +120,11 @@ class HashTable(T) : ISR!(T) {
 		size_t idx = this.table.length-1;
 		while(this.table[idx] is null && idx >= 0)
 			idx--;
-		return new Iterator!(T)(this, idx, this.table[idx]);
+		Node!(T) end = this.table[idx];
+		while(end.next !is null)
+			end = end.next;
+		
+		return new Iterator!(T)(this, idx, end);
 	}
 
 	this(bool duplication = true, 
@@ -190,6 +205,7 @@ class HashTable(T) : ISR!(T) {
 		Node!(T) old = t[hash];
 		t[hash] = node;
 		t[hash].next = old;
+		t[hash].prev = null;
 		if(old !is null) {
 			old.prev = t[hash];
 		}
@@ -499,6 +515,18 @@ unittest {
 		while(it.isValid()) {
 			assert(st.search(*it));
 			it++;
+			cnt++;
+		}
+		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
+			" " ~ conv!(size_t,string)(st.getSize()));
+
+		it = st.end();
+		cnt = 0;
+		//writeln();
+		while(it.isValid()) {
+			//writeln(*it);
+			assert(st.search(*it));
+			it--;
 			cnt++;
 		}
 		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
