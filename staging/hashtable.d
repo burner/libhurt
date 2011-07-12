@@ -118,8 +118,14 @@ class HashTable(T) : ISR!(T) {
 
 	Iterator!(T) end() {
 		size_t idx = this.table.length-1;
-		while(this.table[idx] is null && idx >= 0)
+		writeln(idx, " ", this.table.length);
+		if(this.table.length == 0)
+			return new Iterator!(T)(this,0,null);
+		while(idx >= 0 && this.table.length > idx && this.table[idx] is null)
 			idx--;
+		if(idx >= this.table.length) 
+			return new Iterator!(T)(this,0,null);
+
 		Node!(T) end = this.table[idx];
 		while(end.next !is null)
 			end = end.next;
@@ -545,6 +551,16 @@ unittest {
 		while(it.isValid()) {
 			assert(st.search(*it));
 			it++;
+			cnt++;
+		}
+		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
+			" " ~ conv!(size_t,string)(st.getSize()));
+
+		it = st.end();
+		cnt = 0;
+		while(it.isValid()) {
+			assert(st.search(*it));
+			it--;
 			cnt++;
 		}
 		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
