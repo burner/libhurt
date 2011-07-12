@@ -110,6 +110,8 @@ class RBTree(T) : ISR!(T) {
 
 	Iterator!(T) begin() {
 		Node!(T) be = this.root;
+		if(be is null)
+			return new Iterator!(T)(null);
 		int count = 0;
 		while(be.link[0] !is null) {
 			be = be.link[0];
@@ -122,6 +124,8 @@ class RBTree(T) : ISR!(T) {
 
 	Iterator!(T) end() {
 		Node!(T) end = this.root;
+		if(end is null)
+			return new Iterator!(T)(null);
 		while(end.link[1] !is null)
 			end = end.link[1];
 		return new Iterator!(T)(end);
@@ -571,6 +575,25 @@ unittest {
 			foreach(jt; values) {
 				assert(a.search(jt));
 			}
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			/*ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));*/
 		}
 		//writeln(__LINE__);
 	}
