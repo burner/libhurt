@@ -118,7 +118,6 @@ class HashTable(T) : ISR!(T) {
 
 	Iterator!(T) end() {
 		size_t idx = this.table.length-1;
-		writeln(idx, " ", this.table.length);
 		if(this.table.length == 0)
 			return new Iterator!(T)(this,0,null);
 		while(idx >= 0 && this.table.length > idx && this.table[idx] is null)

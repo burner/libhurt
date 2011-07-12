@@ -531,6 +531,27 @@ unittest {
 			foreach(jt; a.values()) {
 				assert(a.search(jt));
 			}
+
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
 		}
 		//writeln(__LINE__);
 		foreach(idx, it; lots) {
