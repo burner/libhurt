@@ -150,6 +150,19 @@ class HashTable(T) : ISR!(T) {
 		return it;
 	}
 
+	public bool remove(Iterator!(T) it, bool dir = true) {
+		if(it.isValid()) {
+			T value = *it;
+			if(dir)
+				it++;
+			else
+				it--;
+			return this.remove(value);
+		} else {
+			return false;
+		}
+	}
+
 	bool remove(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		Node!(T) it = this.table[hash];
@@ -564,5 +577,29 @@ unittest {
 		}
 		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
 			" " ~ conv!(size_t,string)(st.getSize()));
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		HashTable!(int) itT = new HashTable!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.begin();
+		while(be.isValid())
+			assert(itT.remove(be, true));
+		assert(itT.getSize() == 0);
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		HashTable!(int) itT = new HashTable!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.end();
+		while(be.isValid())
+			assert(itT.remove(be, false));
+		assert(itT.getSize() == 0);
 	}
 }

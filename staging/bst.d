@@ -145,13 +145,21 @@ class BinarySearchTree(T) : ISR!(T) {
 
 	Iterator!(T) begin() {
 		Node!(T) be = this.root;
-		while(be.link[0] !is null)
+		if(be is null)
+			return new Iterator!(T)(null);
+		int count = 0;
+		while(be.link[0] !is null) {
 			be = be.link[0];
-		return new Iterator!(T)(be);
+			count++;
+		}
+		auto it =  new Iterator!(T)(be);
+		return it;	
 	}
 
 	Iterator!(T) end() {
 		Node!(T) end = this.root;
+		if(end is null)
+			return new Iterator!(T)(null);
 		while(end.link[1] !is null)
 			end = end.link[1];
 		return new Iterator!(T)(end);
@@ -344,7 +352,7 @@ unittest {
 				" " ~ conv!(size_t,string)(a.getSize()));
 
 		}
-		writeln(__LINE__);
+		//writeln(__LINE__);
 		foreach(idx, it; lots) {
 			assert(a.remove(it));
 			assert(a.getSize() + idx + 1 == lots.length);
@@ -362,6 +370,7 @@ unittest {
 			foreach(jt; values) {
 				assert(a.search(jt));
 			}
+			
 			Iterator!(int) ait = a.begin();
 			size_t cnt = 0;
 			while(ait.isValid()) {
@@ -384,7 +393,6 @@ unittest {
 		}
 		//writeln(__LINE__);
 	}
-	writeln(__LINE__);
 
 	for(int i = 0; i < lot[0].length; i++) {
 		BinarySearchTree!(int) itT = new BinarySearchTree!(int)();
