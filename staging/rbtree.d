@@ -211,7 +211,7 @@ class RBTree(T) : ISR!(T) {
 		return search(this.root, data);
 	}
 
-	public Node!(T) search(Node!(T) node ,const T data) {
+	private Node!(T) search(Node!(T) node ,const T data) {
 		if(node is null)
 			return null;
 		else if(node.data == data)
@@ -256,7 +256,20 @@ class RBTree(T) : ISR!(T) {
 		return true;
 	}*/
 
-	bool remove(T data) {
+	public bool remove(Iterator!(T) it, bool dir = true) {
+		if(it.isValid()) {
+			T value = *it;
+			if(dir)
+				it++;
+			else
+				it--;
+			return this.remove(value);
+		} else {
+			return false;
+		}
+	}
+
+	public bool remove(T data) {
 		bool done = false;
 		bool succes = false;
 		this.root = removeR(this.root, data, done, succes);
@@ -269,7 +282,8 @@ class RBTree(T) : ISR!(T) {
 		return succes;
 	}
 
-	private static Node!(T) removeR(Node!(T) node, T data, ref bool done, ref bool succes) {
+	private static Node!(T) removeR(Node!(T) node, T data, ref bool done, 
+			ref bool succes) {
 		if(node is null)
 			done = true;
 		else {
@@ -585,7 +599,7 @@ unittest {
 			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
 				" " ~ conv!(size_t,string)(a.getSize()));
 
-			/*ait = a.end();
+			ait = a.end();
 			cnt = 0;
 			while(ait.isValid()) {
 				assert(a.search(*ait));
@@ -593,8 +607,32 @@ unittest {
 				cnt++;
 			}
 			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
-				" " ~ conv!(size_t,string)(a.getSize()));*/
+				" " ~ conv!(size_t,string)(a.getSize()));
 		}
 		//writeln(__LINE__);
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		RBTree!(int) itT = new RBTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.begin();
+		while(be.isValid())
+			assert(itT.remove(be, true));
+		assert(itT.getSize() == 0);
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		RBTree!(int) itT = new RBTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.end();
+		while(be.isValid())
+			assert(itT.remove(be, false));
+		assert(itT.getSize() == 0);
 	}
 }

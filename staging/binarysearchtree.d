@@ -118,24 +118,113 @@ class BinarySearchTree(T) {
 	}
 }
 
-void main() {
-	auto a = new BinarySearchTree!(int)();
-	a.insert(1);
-	assert(a.search(1));
-	Node!(int) af = a.search(1);
-	assert(af is a.root);
-	a.remove(af);
-	assert(af is null);
-	int[] lots = [2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147, 3321, 3532, 3009,
-	1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740, 2476, 3297, 487, 1397,
-	973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130, 756, 210, 170, 3510, 987];
-	BinarySearchTree!(int) b = new BinarySearchTree!(int)();
-	foreach(idx, it; lots) {
-		writeln(__LINE__, " ",it);
-		b.insert(it);
-		b.print();
-		foreach(jt; lots[0..idx]) {
-			assert(b.search(jt) !is null);
+unittest {
+	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
+	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
+	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
+	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
+	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
+	
+	foreach(lots; lot) {
+		BinarySearchTree!(int) a = new BinarySearchTree!(int)();
+		int[int] at;
+		foreach(idx, it; lots) {
+			assert(a.insert(it));
+			assert(a.getSize() == idx+1);
+			foreach(jt; lots[0..idx+1]) {
+				assert(a.search(jt));
+			}
+			at[it] = it;
+			assert(a.validate());
+			assert(compare!(int)(a, at));
+			foreach(jt; a.values()) {
+				assert(a.search(jt));
+			}
+
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
 		}
+		//writeln(__LINE__);
+		foreach(idx, it; lots) {
+			assert(a.remove(it));
+			assert(a.getSize() + idx + 1 == lots.length);
+			at.remove(it);
+			assert(a.validate());
+			assert(compare!(int)(a, at));
+			foreach(jt; lots[0..idx+1]) {
+				assert(!a.search(jt));
+			}
+			foreach(jt; lots[idx+1..$]) {
+				assert(a.search(jt));
+			}
+			int[] values = a.values();
+			//writeln(__LINE__," ", values);
+			foreach(jt; values) {
+				assert(a.search(jt));
+			}
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+		}
+		//writeln(__LINE__);
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		BinarySearchTree!(int) itT = new BinarySearchTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.begin();
+		while(be.isValid())
+			assert(itT.remove(be, true));
+		assert(itT.getSize() == 0);
+	}
+
+	for(int i = 0; i < lot[0].length; i++) {
+		BinarySearchTree!(int) itT = new BinarySearchTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.end();
+		while(be.isValid())
+			assert(itT.remove(be, false));
+		assert(itT.getSize() == 0);
 	}
 }
