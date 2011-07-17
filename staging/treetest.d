@@ -56,7 +56,7 @@ bool compare(T)(RBTree!(T) rb, HashTable!(T) ht, BinarySearchTree!(T) bst,
 }
 
 void main() {
-	int dim = 11;
+	int dim = 15;
 	int[][] num = new int[][dim];
 	int startSize = 32;
 	foreach(ref it; num) {
@@ -66,7 +66,7 @@ void main() {
 		}
 	}
 
-	int iteration = 3;
+	int iteration = 4;
 	long[][][] times = new long[][][](4,3,dim);
 	long start;
 	for(int i = 0; i < iteration; i++) {

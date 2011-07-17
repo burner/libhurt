@@ -171,4 +171,10 @@ abstract class Tree(T) : ISR!(T) {
 	bool isEmpty() const {
 	    return this.root is null;
 	}
+
+	this() {
+		this.root = null;
+		this.size = 0;
+	}
+
 }

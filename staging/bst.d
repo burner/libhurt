@@ -6,118 +6,8 @@ import tree;
 import hurt.conv.conv;
 
 import std.stdio;
-/*
-private class Iterator(T) : ISRIterator!(T) {
-	Node!(T) data;
-
-	this(Node!(T) current) {
-		this.data = current;
-	}
-
-	void opUnary(string s)() if(s == "++") {
-		Node!(T) y;
-		if(null !is (y = this.data.link[true])) {
-			while(y.link[false] !is null) {
-				y = y.link[false];
-			}
-			this.data = y;
-		} else {
-			y = this.data.parent;
-			while(y !is null && this.data is y.link[true]) {
-				this.data = y;
-				y = y.parent;
-			}
-			this.data = y;
-		}
-	}	
-
-	void opUnary(string s)() if(s == "--") {
-		Node!(T) y;
-		if(null !is (y = this.data.link[false])) {
-			while(y.link[true] !is null) {
-				y = y.link[true];
-			}
-			this.data = y;
-		} else {
-			y = this.data.parent;
-			while(y !is null && this.data is y.link[false]) {
-				this.data = y;
-				y = y.parent;
-			}
-			this.data = y;
-		}
-	}
-
-	T opUnary(string s)() if(s == "*") {
-		return this.data.getData();
-	}
-
-	bool isValid() const {
-		return this.data !is null;
-	}
-}
-
-private class Node(T) : ISRNode!(T) {
-    // By value storage of the data
-    T data;
- 
-    // Combine the two branches into an array to optimize the logic
-    Node!(T) link[2];
-	Node!(T) parent;
- 
-    // Null the branches so we don't have to do it in the implementation
-    this() {
-		this.parent = null;
-        // Left branch
-        this.link[0] = null;
- 
-        // Right branch
-        this.link[1] = null;
-    }
-
-	T getData() {
-		return this.data;
-	}
-
-	bool validate(bool root, const Node!(T) par = null) const {
-		if(!root) {
-			if(this.parent is null) {
-				writeln(__FILE__,__LINE__,": parent is null");
-				return false;
-			}
-			if(this.parent !is par) {
-				writeln(__FILE__,__LINE__,": parent is wrong ", parent.data, " ",par.data);
-				return false;
-			}
-		}
-		bool left = true;
-		bool right = true;
-		if(this.link[0] !is null) {
-			assert(this.link[0].parent is this);
-			left = this.link[0].validate(false, this);
-		}
-		if(this.link[1] !is null) {
-			assert(this.link[1].parent is this);
-			right = this.link[1].validate(false, this);
-		}
-		return left && right;
-	}
-
-	void print() const {
-		writeln(this.data);
-		if(this.link[0] !is null) {
-			this.link[0].print();
-		}
-		if(this.link[1] !is null) {
-			this.link[1].print();
-		}
-	}
-}*/
  
 class BinarySearchTree(T) : Tree!(T) { 
-	//private Node!(T) root;
-	//private size_t count;
-
 	private bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , 
 			ref bool lr) const {
 	    while (curr !is null) {
@@ -129,43 +19,6 @@ class BinarySearchTree(T) : Tree!(T) {
 	    }
 	    return false;
 	}
-
-	this() {
-	    this.root = null;
-	    size = 0;
-	}
-	/*
-	void clear() {
-	    this.root = null;
-	    this.count = 0;
-	}
-	 
-	bool isEmpty() const {
-	    return this.root is null;
-	}
-
-	Iterator!(T) begin() {
-		Node!(T) be = this.root;
-		if(be is null)
-			return new Iterator!(T)(null);
-		int count = 0;
-		while(be.link[0] !is null) {
-			be = be.link[0];
-			count++;
-		}
-		auto it =  new Iterator!(T)(be);
-		return it;	
-	}
-
-	Iterator!(T) end() {
-		Node!(T) end = this.root;
-		if(end is null)
-			return new Iterator!(T)(null);
-		while(end.link[1] !is null)
-			end = end.link[1];
-		return new Iterator!(T)(end);
-	}
-	*/
 	 
 	bool insert(T item) {
 	    if(this.root is null) {
@@ -266,23 +119,6 @@ class BinarySearchTree(T) : Tree!(T) {
 			return null;
 		}
 	}
-/*
-	T[] values() {
-		if(this.count == 0)
-			return null;
-		T[] ret = new T[this.count];
-		size_t ptr = 0;
-		Iterator!(T) it = this.begin();
-		while(it.isValid()) {
-			ret[ptr++] = *it;
-			it++;
-		}
-		return ret;	
-	}
-
-	size_t getSize() const {
-	    return count;
-	}*/
 	
 	bool validate() const {
 		if(this.root is null) 
