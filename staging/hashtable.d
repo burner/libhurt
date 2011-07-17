@@ -17,7 +17,8 @@ class Iterator(T) : ISRIterator!(T) {
 		this.curNode = curNode;
 	}
 
-	public void opUnary(string s)() if(s == "++") {
+	//public void opUnary(string s)() if(s == "++") {
+	override void increment() {
 		Node!(T) next = this.curNode.next;
 		if(next is null) {
 			size_t tableSize = this.table.getTableSize();
@@ -29,7 +30,8 @@ class Iterator(T) : ISRIterator!(T) {
 		this.curNode = next;
 	}
 
-	public void opUnary(string s)() if(s == "--") {
+	//public void opUnary(string s)() if(s == "--") {
+	override void decrement() {
 		Node!(T) prev = this.curNode.prev;
 		//writeln(__LINE__," ",prev is null, " ",this.idx);
 		if(prev is null) {
@@ -47,14 +49,15 @@ class Iterator(T) : ISRIterator!(T) {
 		//writeln(__LINE__," ",this.curNode is null, " ",this.idx);
 	}
 
-	public T opUnary(string s)() if(s == "*") {
+	//public T opUnary(string s)() if(s == "*") {
+	override T getData() {
 		if(this.isValid())
 			return this.curNode.getData();
 		else
 			assert(0, "Iterator was not valid");
 	}
 
-	public bool isValid() const {
+	public override bool isValid() const {
 		return this.curNode !is null;
 	}
 }
@@ -132,7 +135,7 @@ class HashTable(T) : ISR!(T) {
 		return new Iterator!(T)(this, idx, end);
 	}
 
-	this(bool duplication = true, 
+	this(bool duplication = false, 
 			size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.duplication = duplication;
 		this.hashFunc = hashFunc;
@@ -249,6 +252,10 @@ class HashTable(T) : ISR!(T) {
 
 	public size_t getSize() const {
 		return this.size;
+	}
+
+	public bool isEmpty() const {
+		return this.size == 0;
 	}
 }
 

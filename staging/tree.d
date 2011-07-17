@@ -13,7 +13,8 @@ public class Iterator(T) : ISRIterator!(T) {
 		this.current = current;
 	}
 
-	void opUnary(string s)() if(s == "++") {
+	//void opUnary(string s)() if(s == "++") {
+	override void increment() {
 		Node!(T) y;
 		if(null !is (y = this.current.link[true])) {
 			while(y.link[false] !is null) {
@@ -30,7 +31,12 @@ public class Iterator(T) : ISRIterator!(T) {
 		}
 	}	
 
-	void opUnary(string s)() if(s == "--") {
+	override T getData() {
+		return this.current.getData();
+	}
+
+	//void opUnary(string s)() if(s == "--") {
+	override void decrement() {
 		Node!(T) y;
 		if(null !is (y = this.current.link[false])) {
 			while(y.link[true] !is null) {
@@ -47,13 +53,13 @@ public class Iterator(T) : ISRIterator!(T) {
 		}
 	}
 
-	bool isValid() const {
+	override bool isValid() const {
 		return this.current !is null;
 	}
 
-	T opUnary(string s)() if(s == "*") {
+	/*T opUnary(string s)() if(s == "*") {
 		return this.current.data;
-	}
+	}*/
 }
 
 public class Node(T) : ISRNode!(T) {
