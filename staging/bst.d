@@ -1,11 +1,12 @@
 module bst;
 
 import isr;
+import tree;
 
 import hurt.conv.conv;
 
 import std.stdio;
-
+/*
 private class Iterator(T) : ISRIterator!(T) {
 	Node!(T) data;
 
@@ -111,11 +112,11 @@ private class Node(T) : ISRNode!(T) {
 			this.link[1].print();
 		}
 	}
-}
+}*/
  
-class BinarySearchTree(T) : ISR!(T) { 
-	private Node!(T) root;
-	private size_t count;
+class BinarySearchTree(T) : Tree!(T) { 
+	//private Node!(T) root;
+	//private size_t count;
 
 	private bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , 
 			ref bool lr) const {
@@ -131,9 +132,9 @@ class BinarySearchTree(T) : ISR!(T) {
 
 	this() {
 	    this.root = null;
-	    count = 0;
+	    size = 0;
 	}
-	 
+	/*
 	void clear() {
 	    this.root = null;
 	    this.count = 0;
@@ -164,13 +165,13 @@ class BinarySearchTree(T) : ISR!(T) {
 			end = end.link[1];
 		return new Iterator!(T)(end);
 	}
-
+	*/
 	 
 	bool insert(T item) {
 	    if(this.root is null) {
 	        this.root = new Node!(T);
 	        this.root.data = item;
-	        this.count++;
+	        this.size++;
 	        return true;
 	    }
 	    bool lr;
@@ -183,7 +184,7 @@ class BinarySearchTree(T) : ISR!(T) {
 		if(prev !is null) {
 	    	prev.link[lr].parent = prev;
 		}
-	    this.count++;
+	    this.size++;
 	    return true;
 	}
 
@@ -250,7 +251,7 @@ class BinarySearchTree(T) : ISR!(T) {
 			}
 		}
 
-    	count--;
+    	size--;
     	return true;
 	}
 	 
@@ -265,7 +266,7 @@ class BinarySearchTree(T) : ISR!(T) {
 			return null;
 		}
 	}
-
+/*
 	T[] values() {
 		if(this.count == 0)
 			return null;
@@ -281,7 +282,7 @@ class BinarySearchTree(T) : ISR!(T) {
 
 	size_t getSize() const {
 	    return count;
-	}
+	}*/
 	
 	bool validate() const {
 		if(this.root is null) 

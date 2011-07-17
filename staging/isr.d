@@ -7,11 +7,12 @@ interface ISRNode(T) {
 } 
 
 interface ISR(T) {
-	bool insert(T data);
-	bool remove(T data);
-	ISRIterator!(T) begin();
-	ISRIterator!(T) end();
-	ISRNode!(T) search(const T data);
+	public bool insert(T data);
+	public bool remove(T data);
+	//public bool remove(Iterator!(T) data, bool dir = true);
+	public ISRIterator!(T) begin();
+	public ISRIterator!(T) end();
+	public ISRNode!(T) search(const T data);
 }
 
 interface ISRIterator(T) {

@@ -1,12 +1,13 @@
 module rbtree;
 
 import isr;
+import tree;
 
 import std.stdio;
 
 import hurt.conv.conv;
 
-
+/*
 private class Iterator(T) : ISRIterator!(T) {
 	private Node!(T) current;
 
@@ -56,7 +57,6 @@ private class Iterator(T) : ISRIterator!(T) {
 		return this.current.data;
 	}
 }
-
 private class Node(T) : ISRNode!(T) {
 	bool red;
 	T data;
@@ -76,10 +76,11 @@ private class Node(T) : ISRNode!(T) {
 		return this.data;
 	}
 }
+*/
 
-class RBTree(T) : ISR!(T) {
-	private Node!(T) root;
-	private size_t size;
+class RBTree(T) : Tree!(T) {
+	//private Node!(T) root;
+	//private size_t size;
 
 	private static isRed(const Node!(T) n) {
 		return n !is null && n.red;
@@ -107,7 +108,7 @@ class RBTree(T) : ISR!(T) {
 		}
 		return singleRotate(node, dir);
 	}
-
+/*
 	Iterator!(T) begin() {
 		Node!(T) be = this.root;
 		if(be is null)
@@ -129,7 +130,7 @@ class RBTree(T) : ISR!(T) {
 		while(end.link[1] !is null)
 			end = end.link[1];
 		return new Iterator!(T)(end);
-	}
+	}*/
 
 	private static validate(const Node!(T) node, const Node!(T) parent) {
 		if(node is null) {
@@ -184,6 +185,7 @@ class RBTree(T) : ISR!(T) {
 		return validate(this.root, null) != 0;	
 	}
 
+/*
 	T[] values() {
 		if(this.size == 0) {
 			return null;
@@ -201,6 +203,7 @@ class RBTree(T) : ISR!(T) {
 			conv!(size_t, string)(ret.length));
 		return ret;
 	}
+	*/
 
 	this() {
 		this.root = null;
@@ -254,7 +257,8 @@ class RBTree(T) : ISR!(T) {
 			this.root.parent = null;
 		this.root.red = false;
 		return true;
-	}*/
+	}
+*/
 
 	public bool remove(Iterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
@@ -363,8 +367,7 @@ class RBTree(T) : ISR!(T) {
 		return node;
 	}
 	
-	
-	bool insert(T data) {
+	public bool insert(T data) {
 		if(this.root is null) {
 			this.root = new Node!(T)(data);
 			if(this.root is null) 
@@ -436,9 +439,9 @@ class RBTree(T) : ISR!(T) {
 		return true;
 	}
 
-	public size_t getSize() const {
+	/*public size_t getSize() const {
 		return this.size;
-	}
+	}*/
 	
 	/*void remove(T data) {
 		if(this.root !is null) {
