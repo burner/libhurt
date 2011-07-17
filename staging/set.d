@@ -54,6 +54,15 @@ class Set(T) {
 	public void clear() {
 		this.makeMap();
 	}
+
+	public override bool opEquals(Object o) const {
+		Set!(T) s = cast(Set!(T))o;
+		Iterator!(T) sit = s.begin();
+		while(sit.isValid()) {
+			if(!this.contains(*sit))
+				return false;
+		}
+	}
 }
 
 void main() {
@@ -67,5 +76,8 @@ void main() {
 	assert(!s1.contains(5));
 	s1.insert(5);
 	auto it = s1.begin();
-	it++;
+	while(it.isValid()) {
+		writeln(*it);
+		it++;
+	}
 }
