@@ -261,8 +261,9 @@ class RBTree(T) : Tree!(T) {
 					}
 				}
 
-				if(q.data == data)
+				if(q.data == data) {
 					break;
+				}
 
 				last = dir;
 				dir = q.data < data;
@@ -305,7 +306,7 @@ unittest {
 		RBTree!(int) a = new RBTree!(int)();
 		int[int] at;
 		foreach(idx, it; lots) {
-			assert(a.insert(it));
+			assert(a.insert(it), conv!(int,string)(it));
 			assert(a.getSize() == idx+1);
 			foreach(jt; lots[0..idx+1]) {
 				assert(a.search(jt));

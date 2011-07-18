@@ -6,6 +6,8 @@ import bst;
 import hashtable;
 import tree;
 
+import hurt.conv.conv;
+
 import std.stdio;
 
 class Set(T) {
@@ -55,29 +57,44 @@ class Set(T) {
 		this.makeMap();
 	}
 
-	public override bool opEquals(Object o) const {
+	public Set!(T) dup() {
+		Set!(T) ret = new Set!(T)(this.type);
+		ISRIterator!(T) it = this.begin();
+
+		for(;it.isValid(); it++)
+			ret.insert(*it);
+
+		return ret;
+	}
+
+	public override bool opEquals(Object o) {
 		Set!(T) s = cast(Set!(T))o;
-		Iterator!(T) sit = s.begin();
+		ISRIterator!(T) sit = s.begin();
 		while(sit.isValid()) {
 			if(!this.contains(*sit))
 				return false;
+			sit++;
 		}
+		sit = this.begin();
+		while(sit.isValid()) {
+			if(!s.contains(*sit))
+				return false;
+			sit++;
+		}
+		return this.getSize() == s.getSize();
 	}
 }
 
 void main() {
-	Set!(int) s1 = new Set!(int)(ISRType.RBTree);
-	Set!(int) s2 = new Set!(int)(ISRType.BinarySearchTree);
-	Set!(int) s3 = new Set!(int)(ISRType.HashTable);
-	s1.insert(5);
-	assert(s1.contains(5));
-	s1.insert(5);
-	s1.remove(5);
-	assert(!s1.contains(5));
-	s1.insert(5);
-	auto it = s1.begin();
-	while(it.isValid()) {
-		writeln(*it);
-		it++;
+	Set!(int)[] sa = new Set!(int)[3];
+	sa[0] = new Set!(int)(ISRType.RBTree);
+	sa[1] = new Set!(int)(ISRType.BinarySearchTree);
+	sa[2] = new Set!(int)(ISRType.HashTable);
+	for(int i = 0; i < 3; i++) {
+		assert(sa[i].insert(i), conv!(int,string)(i));
+		assert(sa[i].contains(i), conv!(int,string)(i));
+		assert(sa[i].remove(i), conv!(int,string)(i));
+		assert(!sa[i].contains(i), conv!(int,string)(i));
+		assert(sa[i].insert(i), conv!(int,string)(i));
 	}
 }
