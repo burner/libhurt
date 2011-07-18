@@ -96,5 +96,9 @@ void main() {
 		assert(sa[i].remove(i), conv!(int,string)(i));
 		assert(!sa[i].contains(i), conv!(int,string)(i));
 		assert(sa[i].insert(i), conv!(int,string)(i));
+		sa[i].insert(i), conv!(int,string)(i);
+		assert(sa[i].remove(i), conv!(int,string)(i));
+		assert(!sa[i].contains(i), conv!(int,string)(i));
+		assert(sa[i].insert(i), conv!(int,string)(i));
 	}
 }
