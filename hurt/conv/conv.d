@@ -16,6 +16,8 @@ public pure S conv(T, S)(T t) {
 			return stringToInt!(ulong)(t);
 		} static if( is(S == dstring) ) {
 
+		} static if( is(S == string) ) {
+			return t;
 		}
 
 	// form long to S

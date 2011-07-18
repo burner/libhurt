@@ -86,19 +86,99 @@ class Set(T) {
 }
 
 void main() {
+	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
+	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
+	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
+	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
+	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
+
 	Set!(int)[] sa = new Set!(int)[3];
 	sa[0] = new Set!(int)(ISRType.RBTree);
 	sa[1] = new Set!(int)(ISRType.BinarySearchTree);
 	sa[2] = new Set!(int)(ISRType.HashTable);
-	for(int i = 0; i < 3; i++) {
-		assert(sa[i].insert(i), conv!(int,string)(i));
-		assert(sa[i].contains(i), conv!(int,string)(i));
-		assert(sa[i].remove(i), conv!(int,string)(i));
-		assert(!sa[i].contains(i), conv!(int,string)(i));
-		assert(sa[i].insert(i), conv!(int,string)(i));
-		sa[i].insert(i), conv!(int,string)(i);
-		assert(sa[i].remove(i), conv!(int,string)(i));
-		assert(!sa[i].contains(i), conv!(int,string)(i));
-		assert(sa[i].insert(i), conv!(int,string)(i));
+	foreach(it;lot) {
+		foreach(idx,jt;it) {
+			for(int i = 0; i < 3; i++) {
+				assert(sa[i].insert(jt), conv!(int,string)(jt));
+				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) ~ " " 
+					~ conv!(size_t,string)(sa[i].getSize()));
+				assert(sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].remove(jt), conv!(int,string)(jt));
+				assert(!sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].insert(jt), conv!(int,string)(jt));
+				sa[i].insert(jt), conv!(int,string)(jt);
+				assert(sa[i].remove(jt), conv!(int,string)(jt));
+				assert(!sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].insert(jt), conv!(int,string)(jt));
+				for(int j = 0; j < idx; j++) {
+					assert(sa[i].contains(it[j]));
+				}
+		
+				ISRIterator!(int) sit = sa[i].begin();
+				size_t cnt = 0;
+				while(sit.isValid()) {
+					assert(sa[i].contains(*sit));
+					sit++;
+					cnt++;
+				}
+				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+					" " ~ conv!(size_t,string)(sa[i].getSize()));
+				sit = sa[i].end();
+				cnt = 0;
+				while(sit.isValid()) {
+					assert(sa[i].contains(*sit));
+					sit--;
+					cnt++;
+				}
+				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+					" " ~ conv!(size_t,string)(sa[i].getSize()));
+			}
+			assert(sa[0] == sa[1]);
+			assert(sa[0] == sa[2]);
+			assert(sa[1] == sa[2]);
+		}
+		sa[0].clear();
+		sa[1].clear();
+		sa[2].clear();
+	}
+	foreach(it;lot) {
+		foreach(idx,jt;it) {
+			for(int i = 0; i < 3; i++) {
+				sa[i].insert(jt), conv!(int,string)(jt);
+				assert(sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].remove(jt), conv!(int,string)(jt));
+				assert(!sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].insert(jt), conv!(int,string)(jt));
+				sa[i].insert(jt), conv!(int,string)(jt);
+				assert(sa[i].remove(jt), conv!(int,string)(jt));
+				assert(!sa[i].contains(jt), conv!(int,string)(jt));
+				assert(sa[i].insert(jt), conv!(int,string)(jt));
+				for(int j = 0; j < idx; j++) {
+					assert(sa[i].contains(it[j]));
+				}
+		
+				ISRIterator!(int) sit = sa[i].begin();
+				size_t cnt = 0;
+				while(sit.isValid()) {
+					assert(sa[i].contains(*sit));
+					sit++;
+					cnt++;
+				}
+				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+					" " ~ conv!(size_t,string)(sa[i].getSize()));
+			}
+			assert(sa[0] == sa[1]);
+			assert(sa[0] == sa[2]);
+			assert(sa[1] == sa[2]);
+		}
+		foreach(idx,jt;it) {
+			for(int i = 0; i < 3; i++) {
+				sa[i].remove(jt);
+			}
+			assert(sa[0] == sa[1]);
+			assert(sa[0] == sa[2]);
+			assert(sa[1] == sa[2]);
+		}
 	}
 }

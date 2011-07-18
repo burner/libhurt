@@ -83,7 +83,7 @@ class HashTable(T) : ISR!(T) {
 	private size_t size;
 	private bool duplication;
 
-	static size_t defaultHashFunc(T data) {
+	static size_t defaultHashFunc(const T data) {
 		static if(is(T : long) || is(T : int) || is(T : byte) || is(T : char)) {
 			return cast(size_t)data;
 		} else static if(is(T : long[]) || is(T : int[]) || is(T : byte[])
@@ -142,7 +142,7 @@ class HashTable(T) : ISR!(T) {
 		this.table = new Node!(T)[16];
 	}
 
-	Node!(T) search(const T data) {
+	Node!(T) search(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		Node!(T) it = this.table[hash];
 		while(it !is null) {

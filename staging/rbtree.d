@@ -35,7 +35,7 @@ class RBTree(T) : Tree!(T) {
 		return singleRotate(node, dir);
 	}
 
-	private static validate(const Node!(T) node, const Node!(T) parent) {
+	private static int validate(const Node!(T) node, const Node!(T) parent) {
 		if(node is null) {
 			return 1;
 		} else {
@@ -84,7 +84,7 @@ class RBTree(T) : Tree!(T) {
 		}
 	}
 
-	public bool validate() const {
+	public bool validate() {
 		return validate(this.root, null) != 0;	
 	}
 
