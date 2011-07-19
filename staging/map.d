@@ -14,6 +14,8 @@ class MapItem(T,S) {
 	T key;
 	S data;
 
+	this() {}
+
 	this(T key, S data) {
 		this.key = key;
 		this.data = data;
@@ -57,11 +59,14 @@ class MapItem(T,S) {
 }
 
 class Map(T,S) {
-	ISR!(MapItem!(T,S)) map;
-	ISRType type;
+	private ISR!(MapItem!(T,S)) map;
+	private ISRType type;
+	private MapItem!(T,S) finder;
+
 
 	this(ISRType type=ISRType.RBTree) {
 		this.type = type;
+		this.finder = new MapItem!(T,S)();
 		this.makeMap();
 	}
 
@@ -77,8 +82,25 @@ class Map(T,S) {
 
 	public size_t getSize() const { return this.map.getSize(); }
 	public size_t isEmpty() const { return this.map.isEmpty(); }
+
+	private MapItem!(T,S) find(T key) {
+		this.finder.key = key;
+		return cast(MapItem!(T,S))this.map.search(this.finder);
+	}
+
+	public bool insert(T key, S data) {
+		MapItem!(T,S) fnd = this.find(key);
+		if(fnd !is null) {
+			fnd.data = data;
+			return false;
+		} else {
+			this.map.insert(new MapItem!(T,S)(key,data));
+			return true;
+		}
+	}
 }
 
 void main() {
 	Map!(string,int) m1 = new Map!(string,int)();
+	m1.insert("foo", 1337);
 }

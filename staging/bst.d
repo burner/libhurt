@@ -108,7 +108,7 @@ class BinarySearchTree(T) : Tree!(T) {
     	return true;
 	}
 	 
-	Node!(T) search(const T item) {
+	Node!(T) search(T item) {
 	    bool found;
 	    Node!(T) curr = root, prev;
 	 

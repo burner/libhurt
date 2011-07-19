@@ -18,7 +18,7 @@ interface ISR(T) {
 	//public bool remove(Iterator!(T) data, bool dir = true);
 	public ISRIterator!(T) begin();
 	public ISRIterator!(T) end();
-	public ISRNode!(T) search(const T data);
+	public ISRNode!(T) search(T data);
 	public bool isEmpty() const;
 	public size_t getSize() const;
 }

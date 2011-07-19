@@ -88,7 +88,7 @@ class RBTree(T) : Tree!(T) {
 		return validate(this.root, null) != 0;	
 	}
 
-	public Node!(T) search(const T data) {
+	public Node!(T) search(T data) {
 		return search(this.root, data);
 	}
 
