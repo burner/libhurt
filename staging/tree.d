@@ -80,7 +80,7 @@ public class Node(T) : ISRNode!(T) {
 		this.red = true;
 	}
 
-	T getData() {
+	override T getData() {
 		return this.data;
 	}
 

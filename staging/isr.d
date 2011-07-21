@@ -8,7 +8,7 @@ enum ISRType {
 	HashTable
 }
 
-interface ISRNode(T) {
+abstract class ISRNode(T) {
 	T getData();
 } 
 

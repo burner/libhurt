@@ -71,7 +71,7 @@ class Node(T) : ISRNode!(T) {
 		this.data = data;
 	}
 
-	T getData() {
+	override T getData() {
 		return this.data;
 	}
 }

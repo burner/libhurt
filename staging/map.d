@@ -85,7 +85,12 @@ class Map(T,S) {
 
 	private MapItem!(T,S) find(T key) {
 		this.finder.key = key;
-		return cast(MapItem!(T,S))this.map.search(this.finder);
+		auto jt = this.map.search(this.finder);
+		//return this.map.search(this.finder).getData();
+		if(jt is null)
+			return null;
+
+		return jt.getData();
 	}
 
 	public bool insert(T key, S data) {
@@ -101,6 +106,14 @@ class Map(T,S) {
 }
 
 void main() {
-	Map!(string,int) m1 = new Map!(string,int)();
-	m1.insert("foo", 1337);
+	Map!(string,int)[] sa = new Map!(string,int)[3];
+	sa[0] = new Map!(string,int)(ISRType.RBTree);
+	sa[1] = new Map!(string,int)(ISRType.BinarySearchTree);
+	sa[2] = new Map!(string,int)(ISRType.HashTable);
+	sa[0].insert("foo", 1337);
+	sa[1].insert("foo", 1337);
+	sa[2].insert("foo", 1337);
+	assert(sa[0].find("foo").data == sa[1].find("foo").data);
+	assert(sa[2].find("foo").data == sa[2].find("foo").data);
+	assert(sa[0].find("foo").data == sa[2].find("foo").data);
 }
