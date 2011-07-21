@@ -116,4 +116,10 @@ void main() {
 	assert(sa[0].find("foo").data == sa[1].find("foo").data);
 	assert(sa[2].find("foo").data == sa[2].find("foo").data);
 	assert(sa[0].find("foo").data == sa[2].find("foo").data);
+	sa[0].insert("foo", 1338);
+	sa[1].insert("foo", 1338);
+	sa[2].insert("foo", 1338);
+	assert(sa[0].find("foo").data == sa[1].find("foo").data);
+	assert(sa[2].find("foo").data == sa[2].find("foo").data);
+	assert(sa[0].find("foo").data == sa[2].find("foo").data);
 }
