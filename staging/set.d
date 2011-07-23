@@ -101,8 +101,8 @@ void main() {
 		foreach(idx,jt;it) {
 			for(int i = 0; i < 3; i++) {
 				assert(sa[i].insert(jt), conv!(int,string)(jt));
-				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) ~ " " 
-					~ conv!(size_t,string)(sa[i].getSize()));
+				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
+					~ " " ~ conv!(size_t,string)(sa[i].getSize()));
 				assert(sa[i].contains(jt), conv!(int,string)(jt));
 				assert(sa[i].remove(jt), conv!(int,string)(jt));
 				assert(!sa[i].contains(jt), conv!(int,string)(jt));
