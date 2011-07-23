@@ -286,6 +286,25 @@ void main() {
 					default:
 						assert(0);
 				}
+
+				auto sit = sa[i].begin();
+				size_t cnt = 0;
+				while(sit.isValid()) {
+					assert(sa[i].contains((*sit).key));
+					sit++;
+					cnt++;
+				}
+				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+					" " ~ conv!(size_t,string)(sa[i].getSize()));
+				sit = sa[i].end();
+				cnt = 0;
+				while(sit.isValid()) {
+					assert(sa[i].contains((*sit).key));
+					sit--;
+					cnt++;
+				}
+				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+					" " ~ conv!(size_t,string)(sa[i].getSize()));
 			}
 		}
 		sai[0].clear(); sai[1].clear(); sai[2].clear();
