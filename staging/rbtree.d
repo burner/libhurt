@@ -103,7 +103,7 @@ class RBTree(T) : Tree!(T) {
 		}
 	}
 
-	public bool remove(Iterator!(T) it, bool dir = true) {
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
 			T value = *it;
 			if(dir)

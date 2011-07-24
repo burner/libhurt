@@ -153,7 +153,7 @@ class HashTable(T) : ISR!(T) {
 		return it;
 	}
 
-	public bool remove(Iterator!(T) it, bool dir = true) {
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
 			T value = *it;
 			if(dir)

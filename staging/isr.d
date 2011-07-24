@@ -15,7 +15,7 @@ abstract class ISRNode(T) {
 interface ISR(T) {
 	public bool insert(T data);
 	public bool remove(T data);
-	//public bool remove(Iterator!(T) data, bool dir = true);
+	public bool remove(ISRIterator!(T) data, bool dir = true);
 	public ISRIterator!(T) begin();
 	public ISRIterator!(T) end();
 	public ISRNode!(T) search(T data);

@@ -21,7 +21,7 @@ class MapItem(T,S) {
 		this.data = data;
 	}
 
-	override bool opEquals(Object o) {
+	override bool opEquals(Object o) const {
 		MapItem!(T,S) f = cast(MapItem!(T,S))o;
 		return this.key == f.key;
 	}
@@ -116,6 +116,17 @@ class Map(T,S) {
 		this.map.remove(this.finder);
 	}
 
+	public void remove(ISRIterator!(MapItem!(T,S)) it, bool dir = true) {
+		if(it.isValid()) {
+			MapItem!(T,S) value = *it;
+			if(dir)
+				it++;
+			else
+				it--;
+			this.remove(value.key);
+		}
+	}
+
 	ISRIterator!(MapItem!(T,S)) begin() {
 		return this.map.begin();
 	}
@@ -208,150 +219,339 @@ void main() {
 	assert((*ct.begin()).key == new Compare(44));
 	assert((*ct.begin()).data == "44");
 	sa[0].clear(); sa[1].clear(); sa[2].clear();
-	foreach(it;lot) {
-		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
-				sa[i].insert(conv!(int,string)(jt), jt);
-				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(sa[i].getSize()));
-				assert(sa[i].contains(conv!(int,string)(jt)), 
-					conv!(int,string)(jt));
-				sa[i].remove(conv!(int,string)(jt));
-				assert(!sa[i].contains(conv!(int,string)(jt)), 
-					conv!(int,string)(jt));
-				assert(sa[i].getSize() == idx, conv!(size_t,string)(idx) 
-					~ " " ~ conv!(size_t,string)(sa[i].getSize()));
-				sa[i].insert(conv!(int,string)(jt), jt);
-				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(sa[i].getSize()));
-				assert(sa[i].contains(conv!(int,string)(jt)), 
-					conv!(int,string)(jt));
-				switch(i) {
-					case 0:
-						assert(sa[0] != sa[1] && sa[0] != sa[2] && 
-							sa[1] == sa[2]);
-						break;
-					case 1:
-						assert(sa[0] == sa[1] && sa[0] != sa[2] && 
-							sa[1] != sa[2]);
-						break;
-					case 2:
-						assert(sa[0] == sa[1] && sa[0] == sa[2] && 
-							sa[1] == sa[2]);
-						break;
-					default:
-						assert(0);
+	for(int j = 0; j < 5; j++) {
+		foreach(it;lot) {
+			foreach(idx,jt;it) {
+				for(int i = 0; i < 3; i++) {
+					sa[i].insert(conv!(int,string)(jt), jt);
+					assert(sa[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(sa[i].getSize()));
+					assert(sa[i].contains(conv!(int,string)(jt)), 
+						conv!(int,string)(jt));
+					sa[i].remove(conv!(int,string)(jt));
+					assert(!sa[i].contains(conv!(int,string)(jt)), 
+						conv!(int,string)(jt));
+					assert(sa[i].getSize() == idx, conv!(size_t,string)(idx) 
+						~ " " ~ conv!(size_t,string)(sa[i].getSize()));
+					sa[i].insert(conv!(int,string)(jt), jt);
+					assert(sa[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(sa[i].getSize()));
+					assert(sa[i].contains(conv!(int,string)(jt)), 
+						conv!(int,string)(jt));
+					switch(i) {
+						case 0:
+							assert(sa[0] != sa[1] && sa[0] != sa[2] && 
+								sa[1] == sa[2]);
+							break;
+						case 1:
+							assert(sa[0] == sa[1] && sa[0] != sa[2] && 
+								sa[1] != sa[2]);
+							break;
+						case 2:
+							assert(sa[0] == sa[1] && sa[0] == sa[2] && 
+								sa[1] == sa[2]);
+							break;
+						default:
+							assert(0);
+					}
+	
+					auto sit = sa[i].begin();
+					size_t cnt = 0;
+					while(sit.isValid()) {
+						assert(sa[i].contains((*sit).key));
+						sit++;
+						cnt++;
+					}
+					assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(sa[i].getSize()));
+					sit = sa[i].end();
+					cnt = 0;
+					while(sit.isValid()) {
+						assert(sa[i].contains((*sit).key));
+						sit--;
+						cnt++;
+					}
+					assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(sa[i].getSize()));
 				}
 			}
-		}
-		sa[0].clear(); sa[1].clear(); sa[2].clear();
-		assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2]);
-	}
-
-	Map!(int,int)[] sai = new Map!(int,int)[3];
-	sai[0] = new Map!(int,int)(ISRType.RBTree);
-	sai[1] = new Map!(int,int)(ISRType.BinarySearchTree);
-	sai[2] = new Map!(int,int)(ISRType.HashTable);
-	foreach(it;lot) {
-		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
-				sai[i].insert(jt, jt);
-				assert(sai[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(sai[i].getSize()));
-				assert(sai[i].contains(jt), 
-					conv!(int,string)(jt));
-				sai[i].remove(jt);
-				assert(!sai[i].contains(jt), 
-					conv!(int,string)(jt));
-				assert(sai[i].getSize() == idx, conv!(size_t,string)(idx) 
-					~ " " ~ conv!(size_t,string)(sai[i].getSize()));
-				sai[i].insert(jt, jt);
-				assert(sai[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(sai[i].getSize()));
-				assert(sai[i].contains(jt), 
-					conv!(int,string)(jt));
-				switch(i) {
-					case 0:
-						assert(sai[0] != sai[1] && sai[0] != sai[2] && 
-							sai[1] == sai[2]);
-						break;
-					case 1:
-						assert(sai[0] == sai[1] && sai[0] != sai[2] && 
-							sai[1] != sai[2]);
-						break;
-					case 2:
-						assert(sai[0] == sai[1] && sai[0] == sai[2] && 
-							sai[1] == sai[2]);
-						break;
-					default:
-						assert(0);
+			switch(j) {
+			case 0:
+				sa[0].clear(); sa[1].clear(); sa[2].clear();
+				break;
+			case 1:
+				for(int i = 0; i < 3; i++) {
+					foreach(idx,jt;it) {
+						sa[i].remove(conv!(int,string)(jt));
+						foreach(ht; it[idx+1..$])
+							assert(sa[i].contains(conv!(int,string)(ht)));
+						foreach(ht; it[0..idx])
+							assert(!sa[i].contains(conv!(int,string)(ht)));
+					}
 				}
-
-				auto sit = sa[i].begin();
-				size_t cnt = 0;
-				while(sit.isValid()) {
-					assert(sa[i].contains((*sit).key));
-					sit++;
-					cnt++;
+				break;
+			case 2:
+				for(int i = 0; i < 3; i++) {
+					foreach_reverse(idx,jt;it) {
+						sa[i].remove(conv!(int,string)(jt));
+						foreach(ht; it[idx+1..$])
+							assert(!sa[i].contains(conv!(int,string)(ht)));
+						foreach(ht; it[0..idx])
+							assert(sa[i].contains(conv!(int,string)(ht)));
+					}
 				}
-				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
-					" " ~ conv!(size_t,string)(sa[i].getSize()));
-				sit = sa[i].end();
-				cnt = 0;
-				while(sit.isValid()) {
-					assert(sa[i].contains((*sit).key));
-					sit--;
-					cnt++;
+				break;
+			case 3: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = sa[i].begin();
+					while(gt.isValid()) {
+						sa[i].remove(gt);
+					}
 				}
-				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
-					" " ~ conv!(size_t,string)(sa[i].getSize()));
+				break;
+			} case 4: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = sa[i].end();
+					while(gt.isValid()) {
+						sa[i].remove(gt, false);
+					}
+				}
+				break;
 			}
+			default:
+				assert(0);
+			}
+			assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2]);
+			assert(sa[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
+				conv!(size_t,string)(sa[0].getSize()));
 		}
-		sai[0].clear(); sai[1].clear(); sai[2].clear();
-		assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2]);
-	}
-
-	Map!(Compare,int)[] saj = new Map!(Compare,int)[3];
-	saj[0] = new Map!(Compare,int)(ISRType.RBTree);
-	saj[1] = new Map!(Compare,int)(ISRType.BinarySearchTree);
-	saj[2] = new Map!(Compare,int)(ISRType.HashTable);
-	foreach(it;lot) {
-		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
-				saj[i].insert(new Compare(jt), jt);
-				assert(saj[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(saj[i].getSize()));
-				assert(saj[i].contains(new Compare(jt)), 
-					conv!(int,string)(jt));
-				saj[i].remove(new Compare(jt));
-				assert(!saj[i].contains(new Compare(jt)), 
-					conv!(int,string)(jt));
-				assert(saj[i].getSize() == idx, conv!(size_t,string)(idx) 
-					~ " " ~ conv!(size_t,string)(saj[i].getSize()));
-				saj[i].insert(new Compare(jt), jt);
-				assert(saj[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
-					~ " " ~ conv!(size_t,string)(saj[i].getSize()));
-				assert(saj[i].contains(new Compare(jt)), 
-					conv!(int,string)(jt));
-				switch(i) {
-					case 0:
-						assert(saj[0] != saj[1] && saj[0] != saj[2] && 
-							saj[1] == saj[2]);
-						break;
-					case 1:
-						assert(saj[0] == saj[1] && saj[0] != saj[2] && 
-							saj[1] != saj[2]);
-						break;
-					case 2:
-						assert(saj[0] == saj[1] && saj[0] == saj[2] && 
-							saj[1] == saj[2]);
-						break;
-					default:
-						assert(0);
+	
+		Map!(int,int)[] sai = new Map!(int,int)[3];
+		sai[0] = new Map!(int,int)(ISRType.RBTree);
+		sai[1] = new Map!(int,int)(ISRType.BinarySearchTree);
+		sai[2] = new Map!(int,int)(ISRType.HashTable);
+		foreach(it;lot) {
+			foreach(idx,jt;it) {
+				for(int i = 0; i < 3; i++) {
+					sai[i].insert(jt, jt);
+					assert(sai[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(sai[i].getSize()));
+					assert(sai[i].contains(jt), 
+						conv!(int,string)(jt));
+					sai[i].remove(jt);
+					assert(!sai[i].contains(jt), 
+						conv!(int,string)(jt));
+					assert(sai[i].getSize() == idx, conv!(size_t,string)(idx) 
+						~ " " ~ conv!(size_t,string)(sai[i].getSize()));
+					sai[i].insert(jt, jt);
+					assert(sai[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(sai[i].getSize()));
+					assert(sai[i].contains(jt), 
+						conv!(int,string)(jt));
+					switch(i) {
+						case 0:
+							assert(sai[0] != sai[1] && sai[0] != sai[2] && 
+								sai[1] == sai[2]);
+							break;
+						case 1:
+							assert(sai[0] == sai[1] && sai[0] != sai[2] && 
+								sai[1] != sai[2]);
+							break;
+						case 2:
+							assert(sai[0] == sai[1] && sai[0] == sai[2] && 
+								sai[1] == sai[2]);
+							break;
+						default:
+							assert(0);
+					}
+	
+					auto sit = sa[i].begin();
+					size_t cnt = 0;
+					while(sit.isValid()) {
+						assert(sa[i].contains((*sit).key));
+						sit++;
+						cnt++;
+					}
+					assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(sa[i].getSize()));
+					sit = sa[i].end();
+					cnt = 0;
+					while(sit.isValid()) {
+						assert(sa[i].contains((*sit).key));
+						sit--;
+						cnt++;
+					}
+					assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(sa[i].getSize()));
 				}
 			}
+			switch(j) {
+			case 0:
+				sai[0].clear(); sai[1].clear(); sai[2].clear();
+				break;
+			case 1:
+				for(int i = 0; i < 3; i++) {
+					foreach(idx,jt;it) {
+						sai[i].remove(jt);
+						foreach(ht; it[idx+1..$])
+							assert(sai[i].contains(ht));
+						foreach(ht; it[0..idx])
+							assert(!sai[i].contains(ht));
+					}
+				}
+				break;
+			case 2:
+				for(int i = 0; i < 3; i++) {
+					foreach_reverse(idx,jt;it) {
+						sai[i].remove(jt);
+						foreach(ht; it[idx+1..$])
+							assert(!sai[i].contains(ht));
+						foreach(ht; it[0..idx])
+							assert(sai[i].contains(ht));
+					}
+				}
+				break;
+			case 3: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = sai[i].begin();
+					while(gt.isValid()) {
+						sai[i].remove(gt);
+					}
+				}
+				break;
+			}
+			case 4: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = sai[i].end();
+					while(gt.isValid()) {
+						sai[i].remove(gt, false);
+					}
+				}
+				break;
+			}
+			default:
+				assert(0);
+			}
+			assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2]);
+			assert(sai[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
+				conv!(size_t,string)(sai[0].getSize()));
 		}
-		saj[0].clear(); saj[1].clear(); saj[2].clear();
-		assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2]);
+	
+		Map!(Compare,int)[] saj = new Map!(Compare,int)[3];
+		saj[0] = new Map!(Compare,int)(ISRType.RBTree);
+		saj[1] = new Map!(Compare,int)(ISRType.BinarySearchTree);
+		saj[2] = new Map!(Compare,int)(ISRType.HashTable);
+		foreach(it;lot) {
+			foreach(idx,jt;it) {
+				for(int i = 0; i < 3; i++) {
+					saj[i].insert(new Compare(jt), jt);
+					assert(saj[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(saj[i].getSize()));
+					assert(saj[i].contains(new Compare(jt)), 
+						conv!(int,string)(jt));
+					saj[i].remove(new Compare(jt));
+					assert(!saj[i].contains(new Compare(jt)), 
+						conv!(int,string)(jt));
+					assert(saj[i].getSize() == idx, conv!(size_t,string)(idx) 
+						~ " " ~ conv!(size_t,string)(saj[i].getSize()));
+					saj[i].insert(new Compare(jt), jt);
+					assert(saj[i].getSize() == idx+1, 
+						conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(saj[i].getSize()));
+					assert(saj[i].contains(new Compare(jt)), 
+						conv!(int,string)(jt));
+					switch(i) {
+						case 0:
+							assert(saj[0] != saj[1] && saj[0] != saj[2] && 
+								saj[1] == saj[2]);
+							break;
+						case 1:
+							assert(saj[0] == saj[1] && saj[0] != saj[2] && 
+								saj[1] != saj[2]);
+							break;
+						case 2:
+							assert(saj[0] == saj[1] && saj[0] == saj[2] && 
+								saj[1] == saj[2]);
+							break;
+						default:
+							assert(0);
+					}
+	
+					auto sit = saj[i].begin();
+					size_t cnt = 0;
+					while(sit.isValid()) {
+						assert(saj[i].contains((*sit).key));
+						sit++;
+						cnt++;
+					}
+					assert(cnt == saj[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(saj[i].getSize()));
+					sit = saj[i].end();
+					cnt = 0;
+					while(sit.isValid()) {
+						assert(saj[i].contains((*sit).key));
+						sit--;
+						cnt++;
+					}
+					assert(cnt == saj[i].getSize(), conv!(size_t,string)(cnt) ~
+						" " ~ conv!(size_t,string)(saj[i].getSize()));
+				}
+			}
+			switch(j) {
+			case 0:
+				saj[0].clear(); saj[1].clear(); saj[2].clear();
+				break;
+			case 1:
+				for(int i = 0; i < 3; i++) {
+					foreach(idx,jt;it) {
+						saj[i].remove(new Compare(jt));
+						foreach(ht; it[idx+1..$])
+							assert(saj[i].contains(new Compare(ht)));
+						foreach(ht; it[0..idx])
+							assert(!saj[i].contains(new Compare(ht)));
+					}
+				}
+				break;
+			case 2:
+				for(int i = 0; i < 3; i++) {
+					foreach_reverse(idx,jt;it) {
+						saj[i].remove(new Compare(jt));
+						foreach(ht; it[idx+1..$])
+							assert(!saj[i].contains(new Compare(ht)));
+						foreach(ht; it[0..idx])
+							assert(saj[i].contains(new Compare(ht)));
+					}
+				}
+				break;
+			case 3: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = saj[i].begin();
+					while(gt.isValid()) {
+						saj[i].remove(gt);
+					}
+				}
+				break;
+			}
+			case 4: {
+				for(int i = 0; i < 3; i++) {
+					auto gt = saj[i].end();
+					while(gt.isValid()) {
+						saj[i].remove(gt, false);
+					}
+				}
+				break;
+			}
+			default:
+				assert(0);
+			}
+			assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2]);
+			assert(saj[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
+				conv!(size_t,string)(saj[0].getSize()));
+		}
 	}
 }
