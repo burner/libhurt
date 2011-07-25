@@ -169,6 +169,10 @@ abstract class Tree(T) : ISR!(T) {
 		return ret;
 	}
 
+	public ISRIterator!(T) searchIt(T data) {
+		return new Iterator!(T)(cast(Node!(T))search(data));
+	}
+
 	void clear() {
 	    this.root = null;
 	    this.size = 0;

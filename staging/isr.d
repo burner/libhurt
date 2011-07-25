@@ -19,6 +19,7 @@ interface ISR(T) {
 	public ISRIterator!(T) begin();
 	public ISRIterator!(T) end();
 	public ISRNode!(T) search(T data);
+	public ISRIterator!(T) searchIt(T data);
 	public bool isEmpty() const;
 	public size_t getSize() const;
 }
