@@ -91,8 +91,9 @@ public class Node(T) : ISRNode!(T) {
 				return false;
 			}
 			if(this.parent !is par) {
-				writeln(__FILE__,__LINE__,": parent is wrong ", parent.data, 
-					" ",par.data);
+				writeln(__FILE__,__LINE__,": parent is wrong ");
+					//, parent.data, 
+					//" ",par.data);
 				return false;
 			}
 		}
@@ -110,7 +111,7 @@ public class Node(T) : ISRNode!(T) {
 	}
 
 	public void print() const {
-		writeln(this.data);
+		//writeln(this.data);
 		if(this.link[0] !is null) {
 			this.link[0].print();
 		}
