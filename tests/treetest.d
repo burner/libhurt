@@ -1,6 +1,6 @@
-import rbtree;
-import bst;
-import hashtable;
+import hurt.container.rbtree;
+import hurt.container.bst;
+import hurt.container.hashtable;
 import hurt.util.random;
 import hurt.util.datetime;
 
