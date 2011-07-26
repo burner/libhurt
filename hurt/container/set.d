@@ -41,6 +41,10 @@ class Set(T) {
 		return this.map.insert(data);
 	}
 
+	public ISRIterator!(T) find(T key) {
+		return this.map.searchIt(key);
+	}
+
 	public bool remove(T data) {
 		return this.map.remove(data);
 	}
@@ -82,6 +86,16 @@ class Set(T) {
 			sit++;
 		}
 		return this.getSize() == s.getSize();
+	}
+
+	public int opApply(scope int delegate(ref T) dg) {
+		ISRIterator!(T) it = this.begin();
+		for(; it.isValid(); it++) {
+			T value = *it;
+			if(int r = dg(value))
+				return r;
+		}
+		return 0;
 	}
 }
 
