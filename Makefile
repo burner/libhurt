@@ -39,7 +39,7 @@ new: clean all
 	
 
 count:
-	wc -l `find . -name \*.d && find . -name \*.c`
+	wc -l `find hurt tests -name \*.d && find hurt tests -name \*.c`
 
 test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 	make

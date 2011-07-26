@@ -41,7 +41,7 @@ class BinarySearchTree(T) : Tree!(T) {
 	    return true;
 	}
 
-	public bool remove(Iterator!(T) it, bool dir = true) {
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
 			T value = *it;
 			if(dir)

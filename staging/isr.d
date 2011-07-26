@@ -8,17 +8,18 @@ enum ISRType {
 	HashTable
 }
 
-interface ISRNode(T) {
+abstract class ISRNode(T) {
 	T getData();
 } 
 
 interface ISR(T) {
 	public bool insert(T data);
 	public bool remove(T data);
-	//public bool remove(Iterator!(T) data, bool dir = true);
+	public bool remove(ISRIterator!(T) data, bool dir = true);
 	public ISRIterator!(T) begin();
 	public ISRIterator!(T) end();
 	public ISRNode!(T) search(T data);
+	public ISRIterator!(T) searchIt(T data);
 	public bool isEmpty() const;
 	public size_t getSize() const;
 }

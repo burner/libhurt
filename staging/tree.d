@@ -80,7 +80,7 @@ public class Node(T) : ISRNode!(T) {
 		this.red = true;
 	}
 
-	T getData() {
+	override T getData() {
 		return this.data;
 	}
 
@@ -91,8 +91,9 @@ public class Node(T) : ISRNode!(T) {
 				return false;
 			}
 			if(this.parent !is par) {
-				writeln(__FILE__,__LINE__,": parent is wrong ", parent.data, 
-					" ",par.data);
+				writeln(__FILE__,__LINE__,": parent is wrong ");
+					//, parent.data, 
+					//" ",par.data);
 				return false;
 			}
 		}
@@ -110,7 +111,7 @@ public class Node(T) : ISRNode!(T) {
 	}
 
 	public void print() const {
-		writeln(this.data);
+		//writeln(this.data);
 		if(this.link[0] !is null) {
 			this.link[0].print();
 		}
@@ -167,6 +168,10 @@ abstract class Tree(T) : ISR!(T) {
 		assert(ptr == ret.length, conv!(size_t,string)(ptr) ~ " " ~
 			conv!(size_t, string)(ret.length));
 		return ret;
+	}
+
+	public ISRIterator!(T) searchIt(T data) {
+		return new Iterator!(T)(cast(Node!(T))search(data));
 	}
 
 	void clear() {

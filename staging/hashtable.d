@@ -71,7 +71,7 @@ class Node(T) : ISRNode!(T) {
 		this.data = data;
 	}
 
-	T getData() {
+	override T getData() {
 		return this.data;
 	}
 }
@@ -142,6 +142,17 @@ class HashTable(T) : ISR!(T) {
 		this.table = new Node!(T)[16];
 	}
 
+	ISRIterator!(T) searchIt(T data) {
+		size_t hash = this.hashFunc(data) % this.table.length;
+		Node!(T) it = this.table[hash];
+		while(it !is null) {
+			if(it.data == data)
+				break;
+			it = it.next;
+		}
+		return new Iterator!(T)(this,hash,this.search(data));
+	}
+
 	Node!(T) search(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		Node!(T) it = this.table[hash];
@@ -153,7 +164,7 @@ class HashTable(T) : ISR!(T) {
 		return it;
 	}
 
-	public bool remove(Iterator!(T) it, bool dir = true) {
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
 			T value = *it;
 			if(dir)
