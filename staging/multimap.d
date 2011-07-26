@@ -297,18 +297,21 @@ class MultiMap(T,S) {
 	}
 
 	bool remove(Iterator!(T,S) it) {
-		size_t oldSize = (*it.getTreeIt()).getSize();
-		size_t newSize = oldSize-1;
-		bool listEmpty = it.remove();					
-		if(listEmpty) {
+		if(it is null || !it.isValid())
+			throw new InvalidIteratorException("Iterator is null or not valid");
+
+		Item!(T,S) item = *(it.getTreeIt());
+		DLinkedList!(S) list = item.values;
+		size_t os = list.getSize();
+		list.remove(it.getListIt());
+		if(os != list.getSize())
 			this.size--;
-			this.tree.remove(*it.getTreeIt());
+		if(list.empty()) {
+			this.tree.remove(it.getTreeIt());
+			return true;
 		} else {
-			oldSize = (*it.getTreeIt()).getSize();
+			return false;
 		}
-		if(oldSize > newSize) 
-			this.size--;
-		return listEmpty;
 	}
 
 	DLinkedList!(S) removeRange(T key) {
@@ -450,10 +453,11 @@ void main() {
 				}
 				break;
 			case 2:
-				foreach(kt; sa[0].keys()) {
-					while(sa[0].remove(sa[0].lower(kt))) {}
-					while(sa[1].remove(sa[1].lower(kt))) {}
-					while(sa[2].remove(sa[2].lower(kt))) {}
+				for(int k = 0; k < 3; k++) {
+					foreach(kt; sa[k].keys()) {
+						while(sa[k].contains(kt))
+							sa[k].remove(sa[k].lower(kt));	
+					}
 				}
 				break;
 			default:
