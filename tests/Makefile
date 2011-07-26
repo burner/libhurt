@@ -4,13 +4,17 @@ CFLAGS=-w -gc -I../ -L../libhurt.a -debug -m64 -unittest
 #CFLAGS=-w -gc -I../ -debug -m64
 
 #TESTS=convtest stacktest stringutiltest vectortest pairlisttest utiltest dlsttest maptest settest
-TESTS=settest
+TESTS=treetest
 
 all:tests
 
 tests: $(TESTS)
 
 new: clean tests
+
+treetest: treetest.d Makefile
+	$(DC) $(CFLAGS) treetest.d
+	exec ./treetest
 
 printtest: printtest.d Makefile
 	$(DC) $(CFLAGS) printtest.d

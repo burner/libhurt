@@ -7,7 +7,8 @@ ALGO_OBJS=hurt.algo.sorting.o
 
 CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o \
 hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o \
-hurt.container.rbtree.o hurt.container.map.o hurt.container.deque.o
+hurt.container.rbtree.o hurt.container.map.o hurt.container.tree.o hurt.container.isr.o hurt.container.deque.o \
+hurt.container.hashtable.o hurt.container.bst.o
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
 hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o
@@ -57,6 +58,9 @@ hurt.container.pairlist.o: hurt/container/pairlist.d Makefile
 hurt.container.stack.o: hurt/container/stack.d Makefile
 	$(DC) $(CFLAGS) hurt/container/stack.d -ofhurt.container.stack.o
 
+hurt.container.tree.o: hurt/container/tree.d Makefile
+	$(DC) $(CFLAGS) hurt/container/tree.d -ofhurt.container.tree.o
+
 hurt.container.rbtree.o: hurt/container/rbtree.d hurt.conv.conv.o Makefile
 	$(DC) $(CFLAGS) hurt/container/rbtree.d -ofhurt.container.rbtree.o
 
@@ -71,6 +75,15 @@ hurt.container.list.o: hurt/container/list.d Makefile
 
 hurt.container.set.o: hurt/container/set.d hurt.container.rbtree.o Makefile
 	$(DC) $(CFLAGS) hurt/container/set.d -ofhurt.container.set.o
+
+hurt.container.hashtable.o: hurt/container/hashtable.d Makefile
+	$(DC) $(CFLAGS) hurt/container/hashtable.d -ofhurt.container.hashtable.o
+
+hurt.container.isr.o: hurt/container/isr.d Makefile
+	$(DC) $(CFLAGS) hurt/container/isr.d -ofhurt.container.isr.o
+
+hurt.container.bst.o: hurt/container/bst.d Makefile
+	$(DC) $(CFLAGS) hurt/container/bst.d -ofhurt.container.bst.o
 
 hurt.container.multimap.o: hurt/container/multimap.d hurt.container.rbtree.o hurt.container.dlst.o hurt/container/iterator.d hurt.util.array.o Makefile
 	$(DC) $(CFLAGS) hurt/container/multimap.d -ofhurt.container.multimap.o

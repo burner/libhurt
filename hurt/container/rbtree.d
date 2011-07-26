@@ -1,649 +1,406 @@
 module hurt.container.rbtree;
 
-import hurt.util.random;
-import hurt.util.datetime;
-import hurt.conv.conv;
+import hurt.container.isr;
+import hurt.container.tree;
 
 import std.stdio;
 
-abstract class Node {
-	private bool red;
-	private Node par;
-	private Node link[2];
+import hurt.conv.conv;
 
-	public final bool isRed() const {
-		return this.red;
+class RBTree(T) : Tree!(T) {
+	private static isRed(const Node!(T) n) {
+		return n !is null && n.red;
 	}
 
-	public final void setRed(bool red) {
-		this.red = red;
-	}
-
-	public final Node getPar() {
-		return this.par;
-	}
-
-	public final void setPar(Node par) {
-		this.par = par;
-	}
-
-	public final Node getLink(bool dir) {
-		return this.link[dir];
-	}
-
-	public final void setLink(bool dir, Node node) {
-		this.link[dir] = node;
-	}
-
-	public bool compare(const Node n);
-
-	//public override int opCmp(Object o);
-	public override bool opEquals(Object o);
-	public void set(Node);
-}
-
-public class Iterator(T) {
-	Node current;
-	//Node treeRoot;
-
-	this(Node root) {
-		this.current = root;
-	}
-	
-	this(Node root, bool begin) {
-		this.current = root;
-		//this.treeRoot = root;
-		if(this.current is null)
-			return;
-		while(this.current.getLink(!begin) !is null) {
-			this.current = this.current.getLink(!begin);
+	private static singleRotate(Node!(T) node, bool dir) {
+		Node!(T) save = node.link[!dir];
+		node.link[!dir] = save.link[dir];
+		if(node.link[!dir] !is null) {
+			node.link[!dir].parent = node;
 		}
-	}
-
-	void opUnary(string s)() if(s == "++") {
-		Node y;
-		if(null !is (y = this.current.getLink(true))) {
-			while(y.getLink(false) !is null) {
-				y = y.getLink(false);
-			}
-			this.current = y;
-		} else {
-			y = this.current.par;
-			while(y !is null && this.current is y.getLink(true)) {
-				this.current = y;
-				y = y.par;
-			}
-			this.current = y;
+		save.link[dir] = node;
+		if(save.link[dir] !is null) {
+			save.link[dir].parent = save;
 		}
-	}	
-
-	void opUnary(string s)() if(s == "--") {
-		Node y;
-		if(null !is (y = this.current.getLink(false))) {
-			while(y.getLink(true) !is null) {
-				y = y.getLink(true);
-			}
-			this.current = y;
-		} else {
-			y = this.current.par;
-			while(y !is null && this.current is y.getLink(false)) {
-				this.current = y;
-				y = y.par;
-			}
-			this.current = y;
-		}
-	}	
-
-	T opUnary(string s)() if(s == "*") {
-		return cast(T)this.current;
-	}
-
-	bool isValid() const {
-		return current !is null;
-	}
-}
- 
-class RBTree(T : Node) {
-	static bool isRed(const Node tt) {
-		return tt !is null && tt.isRed();
-	}
-
-	Node root;
-	size_t size;
-
-	this() {
-		this.size = 0;
-		this.root = null;
-	}
-
-	size_t getSize() const {
-		return this.size;
-	}
-
-	Node singleRot(Node root, bool dir) {
-		Node save = root.getLink(!dir);
-
-		root.setLink(!dir, save.getLink(dir));
-		if(root.getLink(!dir) !is null) {
-			root.getLink(!dir).setPar(root);
-		}
-		save.setLink(dir,root);
-		if(save.getLink(dir) !is null) {
-			save.getLink(dir).setPar(save);
-		}
-		root.setRed(true);
-		save.setRed(false);
-
+		node.red = true;
+		save.red = false;
 		return save;
 	}
 
-	Node doubleRot(Node root, bool dir) {
-		root.setLink(!dir, singleRot(root.getLink(!dir), !dir));
-		root.getLink(!dir).setPar(root);
-		return singleRot(root, dir);
-	}
-
-	Node insertRecursive(Node root, Node data, Node parent) {
-		if(root is null) {
-			//root = new Node(data, parent);
-			root = data;
-			data.setRed(true);
-			root.setPar(parent);
-			this.size++;
-		} else if(data != root) {
-			bool dir = root.compare(data);
-			//bool dir = root < data;
-			root.setLink(dir, insertRecursive(root.getLink(dir), data, root));
-			if(root.getLink(dir) !is null) {
-				root.getLink(dir).setPar(root);
-			}
-			/* Hey, let's rebalance here! */
-			if(isRed(root.getLink(dir))) {
-				if(isRed(root.getLink(!dir))) {
-					/* Case 1 */
-					root.setRed(true);
-					root.getLink(false).setRed(false);
-					root.getLink(true).setRed(false);
-				} else {
-					/* Cases 2 & 3 */
-					if(isRed(root.getLink(dir).getLink(dir))) {
-						root = singleRot(root, !dir);
-						root.setPar(parent);
-					} else if(isRed(root.getLink(dir).getLink(!dir))) {
-						root = doubleRot(root, !dir);
-						root.setPar(parent);
-					}
-				}
-			}
+	private static doubleRotate(Node!(T) node, bool dir) {
+		node.link[!dir] = singleRotate(node.link[!dir], !dir);
+		if(node.link[!dir] !is null) {
+			node.link[!dir].parent = node;	
 		}
-		return root;
+		return singleRotate(node, dir);
 	}
 
-	Iterator!(T) insert(Node data) {
-		this.root = this.insertRecursive(this.root, data, null);
-		this.root.setPar(null);
-		this.root.setRed(false);
-		return new Iterator!(T)(data);
-	}
-
-	Node removeRecursive(Node root, Node data, ref bool done) {
-		if(root is null) {
-			done = true;
-		} else {
-			bool dir;
-
-			if(root == data) {
-				if(root.getLink(0) is null || root.getLink(1) is null) {
-					Node save = root.getLink(root.getLink(0) is null);
-
-					/* Case 0 */
-					if(isRed(root))
-						done = true;
-					else if(isRed(save)) {
-						save.setRed(0);
-						done = true;
-					}
-					this.size--;
-					return save;
-				} else {
-					Node heir = root.getLink(0);
-
-					while(heir.getLink(1) !is null)
-						heir = heir.getLink(1);
-
-					root.set(heir);
-					data.set(heir);
-					//root.data = heir.data;
-					//data = heir.data;
-				}
-			}
-
-			//dir = root < data;
-			dir = root.compare(data);
-			root.setLink(dir, removeRecursive(root.getLink(dir), data, done));
-			if(root.getLink(dir) !is null) {
-				root.getLink(dir).setPar(root);
-			}
-
-			if(!done) {
-				root = removeBalance(root, dir, done);
-			}
-		}
-		return root;
-	}
-
-	bool remove(Node data) {
-		bool done = false;
-
-		this.root = removeRecursive(this.root, data, done);
-		if(this.root !is null) {
-			this.root.setRed(0);
-			this.root.setPar(null);
-		}
-
-		return done;
-	}
-
-	Node removeBalance(Node root, bool dir, ref bool done) {
-		Node p = root;
-		Node s = root.getLink(!dir);
-
-		/* Case reduction, remove red sibling */
-		if(isRed(s)) {
-			root = singleRot(root, dir);
-			s = p.getLink(!dir);
-		}
-
-		if(s !is null) {
-			if(!isRed(s.getLink(0)) && !isRed(s.getLink(1))) {
-				if(isRed(p))
-					done = true;
-				p.setRed(false);
-				s.setRed(true);
-			} else {
-				bool save = p.isRed();
-				bool new_root = (root == p);
-
-				if(isRed(s.getLink(!dir)))
-					p = singleRot(p, dir);
-				else
-					p = doubleRot(p, dir);
-
-				p.setRed(save);
-				p.getLink(0).setRed(false);
-				p.getLink(1).setRed(false);
-
-				if(new_root)
-					root = p;
-				else {
-					root.setLink(dir, p);
-					root.getLink(dir).setPar(root);
-				}
-
-				done = true;
-			}
-		}
-
-		return root;
-	}
-
-	Node find(const Node data) {
-		Node it = this.root;
-		while(it !is null) {
-			if(it == data) {
-				return it;
-			} else {
-				//bool dir = it < data;
-				bool dir = it.compare(data);
-				it = it.getLink(dir);
-			}
-		}
-		return null;
-	}
-
-	Iterator!(T) findIt(const Node data) {
-		Node it = this.root;
-		while(it !is null) {
-			if(it == data) {
-				return new Iterator!(T)(it);
-			} else {
-				//bool dir = it < data;
-				bool dir = it.compare(data);
-				it = it.getLink(dir);
-			}
-		}
-		return new Iterator!(T)(null);
-	}
-
-	public int opApply(scope int delegate(ref T) dg) {
-		Iterator!(T) it = this.begin();
-		while(it.isValid()) {
-			T tmp = cast(T)(*it);
-			if(int r = dg(tmp)) {
-				return r;
-			}
-			it++;
-		}
-		return 0;
-	}
-
-	public int opApply(scope int delegate(ref size_t, ref T) dg) {
-		Iterator!(T) it = this.begin();
-		size_t idx = 0;
-		while(it.isValid()) {
-			T tmp = cast(T)(*it);
-			if(int r = dg(idx, tmp)) {
-				return r;
-			}
-			idx++;
-			it++;
-		}
-		return 0;
-	}
-
-	public int opApplyReverse(scope int delegate(ref T) dg) {
-		Iterator!(T) it = this.end();
-		while(it.isValid()) {
-			T tmp = cast(T)(*it);
-			if(int r = dg(tmp)) {
-				return r;
-			}
-			it--;
-		}
-		return 0;
-	}
-
-	public int opApplyReverse(scope int delegate(ref size_t, ref T) dg) {
-		Iterator!(T) it = this.end();
-		size_t idx = this.getSize();
-		while(it.isValid()) {
-			T tmp = cast(T)(*it);
-			if(int r = dg(idx, tmp)) {
-				return r;
-			}
-			idx--;
-			it--;
-		}
-		return 0;
-	}
-
-	Iterator!(T) begin() {
-		return new Iterator!(T)(this.root, true);
-	}
-
-	Iterator!(T) end() {
-		return new Iterator!(T)(this.root, false);
-	}
-
-	int validate() {
-		return rbAssert(this.root, null);
-	}
-
-	int rbAssert(Node root, Node parent) {
-		if(root is null)
+	private static int validate(const Node!(T) node, const Node!(T) parent) {
+		if(node is null) {
 			return 1;
-		else {
-			if(parent !is null && root.getPar() !is parent) {
-				writeln("Parent not correct ", parent.toString(), " ",root.toString());
+		} else {
+			if(node.parent !is parent) {
+				writeln("parent violation ", node.parent is null, " ",
+					parent is null);
 			}
-			if(root.getLink(false) !is null) {
-				assert(root.getLink(false).getPar() is root);
-			}
-			if(root.getLink(true) !is null) {
-				assert(root.getLink(true).getPar() is root);
-			}
-			Node ln = root.getLink(false);
-			Node rn = root.getLink(true);
+			if(node.link[0] !is null)
+				if(node.link[0].parent !is node) {
+					writeln("parent violation link wrong");
 
-			/* Consecutive red links */
-			if(isRed(root)) {
+				}
+			if(node.link[1] !is null)
+				if(node.link[1].parent !is node) {
+					writeln("parent violation link wrong");
+
+				}
+
+			const Node!(T) ln = node.link[0];
+			const Node!(T) rn = node.link[1];
+
+			if(isRed(node)) {
 				if(isRed(ln) || isRed(rn)) {
 					writeln("Red violation");
 					return 0;
 				}
 			}
-
-			int lh, rh;
-			lh = rbAssert(ln, root);
-			rh = rbAssert(rn, root);
-
-			/* Invalid binary search tree */
-			if((ln !is null && ln >= root) ||(rn !is null && rn <= root)) {
+			int lh = validate(ln, node);
+			int rh = validate(rn, node);
+			
+			if((ln !is null && ln.data >= node.data)
+					|| (rn !is null && rn.data <= node.data)) {
 				writeln("Binary tree violation");
 				return 0;
 			}
 
-			/* Black height mismatch */
-			if(lh != 0 && rh != 0 && lh != rh ) {
+			if(lh != 0 && rh != 0 && lh != rh) {
 				writeln("Black violation ", lh, " ", rh);
 				return 0;
 			}
 
-			/* Only count black links */
 			if(lh != 0 && rh != 0)
-				return isRed(root) ? lh : lh + 1;
+				return isRed(node) ? lh : lh +1;
 			else
 				return 0;
 		}
 	}
+
+	public bool validate() {
+		return validate(this.root, null) != 0;	
+	}
+
+	public Node!(T) search(T data) {
+		return search(this.root, data);
+	}
+
+	private Node!(T) search(Node!(T) node ,const T data) {
+		if(node is null)
+			return null;
+		else if(node.data == data)
+			return node;
+		else {
+			bool dir = node.data < data;
+			return this.search(node.link[dir], data);
+		}
+	}
+
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
+		if(it.isValid()) {
+			T value = *it;
+			if(dir)
+				it++;
+			else
+				it--;
+			return this.remove(value);
+		} else {
+			return false;
+		}
+	}
+
+	public bool remove(T data) {
+		bool done = false;
+		bool succes = false;
+		this.root = removeR(this.root, data, done, succes);
+		if(this.root !is null) {
+			this.root.red = false;
+			this.root.parent = null;
+		}
+		if(succes)
+			this.size--;
+		return succes;
+	}
+
+	private static Node!(T) removeR(Node!(T) node, T data, ref bool done, 
+			ref bool succes) {
+		if(node is null)
+			done = true;
+		else {
+			bool dir;
+			if(node.data == data) {
+				succes = true;
+				if(node.link[0] is null || node.link[1] is null) {
+					Node!(T) save = node.link[node.link[0] is null];	
+
+					if(isRed(node)) {
+						done = true;
+					} else if(isRed(save)) {
+						save.red = false;
+						done = true;
+					}
+					return save;
+				} else {
+					Node!(T) heir = node.link[0];
+					while(heir.link[1] !is null)
+						heir = heir.link[1];
+
+					node.data = heir.data;
+					data = heir.data;
+				}
+			}
+			dir = node.data < data;
+			node.link[dir] = removeR(node.link[dir], data, done, succes);
+			if(node.link[dir] !is null) {
+				node.link[dir].parent = node;
+			}
+
+			if(!done)
+				node = removeBalance(node, dir, done);
+		}
+		return node;
+	}
+
+	private static removeBalance(Node!(T) node, bool dir, ref bool done) {
+		Node!(T) p = node;
+		Node!(T) s = node.link[!dir];
+		if(isRed(s)) {
+			node = singleRotate(node, dir);
+			s = p.link[!dir];
+		}
+		
+		if(s !is null) {
+			if(!isRed(s.link[0]) && !isRed(s.link[1])) {
+				if(isRed(p))
+					done = true;
+				p.red = false;
+				s.red = true;
+			} else {
+				bool save = p.red;
+				bool newRoot = (node == p);
+				
+				if(isRed(s.link[!dir]))
+					p = singleRotate(p, dir);
+				else
+					p = doubleRotate(p, dir);
+
+				p.red = save;
+				p.link[0].red = false;
+				p.link[1].red = false;
+
+				if(newRoot)
+					node = p;
+				else {
+					node.link[dir] = p;
+					if(node.link[dir] !is null) {
+						node.link[dir].parent = node;
+					}
+				}
+
+				done = true;
+			}
+		}
+		return node;
+	}
+	
+	public bool insert(T data) {
+		if(this.root is null) {
+			this.root = new Node!(T)(data);
+			if(this.root is null) 
+				return false;
+			this.size++;
+		} else {
+			scope Node!(T) head = new Node!(T)();
+			Node!(T) g, t;
+			Node!(T) p, q;
+			bool dir = false, last;
+
+			t = head;
+			g = p = null;
+			q = t.link[1] = this.root;
+
+			while(true) {
+				if(q is null) {
+					p.link[dir] = q = new Node!(T)(data);
+					if(q is null)
+						return false;
+					else {
+						q.parent = p;
+						this.size++;
+					}
+				} else if(isRed(q.link[0]) && isRed(q.link[1])) {
+					q.red = true;
+					q.link[0].red = false;
+					q.link[1].red = false;
+					if(q.link[0] !is null) {
+						q.link[0].parent = q;
+					}
+					if(q.link[1] !is null) {
+						q.link[1].parent = q;
+					}
+				}
+				if(isRed(q) && isRed(p)) {
+					bool dir2 = t.link[1] is g;
+					if(q is p.link[last]) {
+						t.link[dir2] = singleRotate(g,!last);
+						if(t.link[dir2] !is null) {
+							t.link[dir2].parent = t;
+						}
+					} else {
+						t.link[dir2] = doubleRotate(g,!last);
+						if(t.link[dir2] !is null) {
+							t.link[dir2].parent = t;
+						}
+					}
+				}
+
+				if(q.data == data) {
+					break;
+				}
+
+				last = dir;
+				dir = q.data < data;
+
+				if(g !is null)
+					t = g;
+				g = p;
+				p = q;
+				q = q.link[dir];
+			}
+			this.root = head.link[1];
+			if(this.root !is null) {
+				this.root.parent = null;
+			}
+		}
+		this.root.red = false;				
+		return true;
+	}
 }
 
-private class Map(T,S) : Node {
-	T key;
-	S data;
-	
-	this(T key, S data) {
-		this.key = key;
-		this.data = data;
+bool compare(T)(RBTree!(T) t, T[T] s) {
+	foreach(it; s.values) {
+		if(t.search(it) is null) {
+			writeln(__LINE__, " size wrong");
+			return false;
+		}
 	}
-
-	override bool opEquals(Object o) {
-		Map!(T,S) f = cast(Map!(T,S))o;
-		return this.key == f.key;
-	}
-
-	override void set(Node toSet) {
-		Map!(T,S) c = cast(Map!(T,S))toSet;
-		this.key = c.key;
-		this.data = c.data;
-	}
-
-	override bool compare(const Node n) {
-		Map!(T,S) i = cast(Map!(T,S))n;
-		return this.key < i.key;
-	}
-
-	override int opCmp(Object o) {
-		Map!(T,S) f = cast(Map!(T,S))o;
-		int fHash = f.key;
-		int thisHash = this.key;
-		if(thisHash > fHash)
-			return 1;
-		else if(thisHash < fHash)
-			return -1;
-		else
-			return 0;
-	}
-}
-
-private class ISet : Node {
-	int data;
-	
-	this(int data) {
-		this.data = data;
-	}
-
-	override bool opEquals(Object o) {
-		ISet f = cast(ISet)o;
-		return this.data == f.data;
-	}
-
-	override void set(Node toSet) {
-		ISet c = cast(ISet)toSet;
-		this.data = c.data;
-	}
-
-	override bool compare(const Node n) {
-		ISet i = cast(ISet)n;
-		return this.data < i.data;
-	}
-
-	override int opCmp(Object o) {
-		ISet f = cast(ISet)o;
-		int fHash = f.data;
-		int thisHash = this.data;
-		if(thisHash > fHash)
-			return 1;
-		else if(thisHash < fHash)
-			return -1;
-		else
-			return 0;
-	}
-
-	override string toString() {
-		return conv!(int,string)(this.data);
-	}
+	return true;
 }
 
 unittest {
-	int[] t = [ 0, 31, 32, 105, 526, 531, 1027, 1036, 1048, 1282, 1452, 1540,
-		1541, 1546, 1547, 1554, 1563, 2575, 2576, 2585, 2590];
-	RBTree!(ISet) rbt2 = new RBTree!(ISet)();
-	size_t times = 20;
-	int[] rn = new int[times];
-	foreach(idx,ref it; rn) {
-		it = t[idx];
+	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
+	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
+	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
+	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
+	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
+	
+	foreach(lots; lot) {
+		RBTree!(int) a = new RBTree!(int)();
+		int[int] at;
+		foreach(idx, it; lots) {
+			assert(a.insert(it), conv!(int,string)(it));
+			assert(a.getSize() == idx+1);
+			foreach(jt; lots[0..idx+1]) {
+				assert(a.search(jt));
+			}
+			at[it] = it;
+			assert(a.validate());
+			assert(compare!(int)(a, at));
+			foreach(jt; a.values()) {
+				assert(a.search(jt));
+			}
+
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+		}
+		//writeln(__LINE__);
+		foreach(idx, it; lots) {
+			assert(a.remove(it));
+			assert(a.getSize() + idx + 1 == lots.length);
+			at.remove(it);
+			assert(a.validate());
+			assert(compare!(int)(a, at));
+			foreach(jt; lots[0..idx+1]) {
+				assert(!a.search(jt));
+			}
+			foreach(jt; lots[idx+1..$]) {
+				assert(a.search(jt));
+			}
+			int[] values = a.values();
+			//writeln(__LINE__," ", values);
+			foreach(jt; values) {
+				assert(a.search(jt));
+			}
+			Iterator!(int) ait = a.begin();
+			size_t cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait++;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+
+			ait = a.end();
+			cnt = 0;
+			while(ait.isValid()) {
+				assert(a.search(*ait));
+				ait--;
+				cnt++;
+			}
+			assert(cnt == a.getSize(), conv!(size_t,string)(cnt) ~
+				" " ~ conv!(size_t,string)(a.getSize()));
+		}
+		//writeln(__LINE__);
 	}
 
-	long st = getMilli();
-	for(int i = 0; i < times; i++) {
-		int tmp = rn[i];
-		rbt2.insert(new ISet(tmp));
-		rbt2.validate();
-	}
-	rbt2.validate();
-	//writeln("bottom up insert ", getMilli()-st);
-	foreach(idx, it; rbt2) {
-		assert(it.data == rn[idx], conv!(int,string)(it.data) ~ " : " ~ conv!(int,string)(rn[idx]));
-	}
-	Iterator!(ISet) it = rbt2.begin();
-	size_t count = 0;
-	while(it.isValid()) {
-		it++;
-		count++;
-	}
-	assert(count == rbt2.getSize());
-	Iterator!(ISet) jt = rbt2.end();
-	size_t ptr = t.length-2;
-	while(jt.isValid()) {
-		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
-		assert((*jt).data == rn[ptr],conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
-		jt--;
-		ptr--;
-	}
-		
-	st = getMilli();
-	for(int i = 0; i < times; i++) {
-		rbt2.remove(new ISet(rn[i]));
-		rbt2.validate();
-	}
-	//writeln("bottom up remove ", getMilli()-st);
-	assert(rbt2.getSize() == 0);
-
-	RBTree!(Map!(int,string)) map = new RBTree!(Map!(int,string));
-	map.insert(new Map!(int,string)(44,"fourtyfour"));
-	assert(map.find(new Map!(int,string)(44, null)));
-
-	int[] t2 = [0,1,2,3,4,5,6,7,8,9,10];
-	RBTree!(ISet) rbt22 = new RBTree!(ISet)();
-	times = t2.length;
-	rn = new int[times];
-	foreach(idx,ref iit; rn) {
-		iit = t2[idx];
+	for(int i = 0; i < lot[0].length; i++) {
+		RBTree!(int) itT = new RBTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.begin();
+		while(be.isValid())
+			assert(itT.remove(be, true));
+		assert(itT.getSize() == 0);
 	}
 
-	st = getMilli();
-	for(int i = 0; i < times; i++) {
-		int tmp = rn[i];
-		rbt22.insert(new ISet(tmp));
-		rbt22.validate();
+	for(int i = 0; i < lot[0].length; i++) {
+		RBTree!(int) itT = new RBTree!(int)();
+		foreach(it; lot[0]) {
+			itT.insert(it);
+		}
+		assert(itT.getSize() == lot[0].length);
+		Iterator!(int) be = itT.end();
+		while(be.isValid())
+			assert(itT.remove(be, false));
+		assert(itT.getSize() == 0);
 	}
-	rbt22.validate();
-	//writeln("bottom up insert ", getMilli()-st);
-	foreach(idx, it; rbt22) {
-		assert(it.data == rn[idx], conv!(int,string)(it.data) ~ " : " ~ conv!(int,string)(rn[idx]));
-	}
-	it = rbt22.begin();
-	count = 0;
-	while(it.isValid()) {
-		it++;
-		count++;
-	}
-	assert(count == rbt22.getSize());
-	jt = rbt22.end();
-	ptr = t2.length-1;
-	while(jt.isValid()) {
-		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
-		assert(ptr >= 0 && ptr < rn.length, conv!(size_t,string)(ptr) ~ " " 
-			~ conv!(size_t,string)(rn.length));
-		assert((*jt).data == rn[ptr],conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
-		jt--;
-		ptr--;
-	}
-		
-	st = getMilli();
-	for(int i = 0; i < times; i++) {
-		rbt22.remove(new ISet(rn[i]));
-		rbt22.validate();
-	}
-	//writeln("bottom up remove ", getMilli()-st);
-	assert(rbt22.getSize() == 0);
-
-	int[] t3 = [10,9,8,7,6,5,4,3,2,1];
-	RBTree!(ISet) rbt222 = new RBTree!(ISet)();
-	times = t3.length;
-	rn = new int[times];
-	foreach(idx,ref iit; rn) {
-		iit = t3[idx];
-	}
-
-	st = getMilli();
-	for(int i = 0; i < times; i++) {
-		int tmp = rn[i];
-		rbt222.insert(new ISet(tmp));
-		rbt222.validate();
-	}
-	rbt222.validate();
-	//writeln("bottom up insert ", getMilli()-st);
-	foreach(idx, it; rbt222) {
-		assert(it.data == rn[$-idx-1], conv!(int,string)(it.data) ~ " : " 
-			~ conv!(int,string)(rn[$-1-idx]));
-	}
-	it = rbt222.begin();
-	count = 0;
-	while(it.isValid()) {
-		it++;
-		count++;
-	}
-	assert(count == rbt222.getSize());
-	jt = rbt222.end();
-	ptr = t3.length-1;
-	while(jt.isValid()) {
-		//writeln("hello ", conv!(int,string)((*jt).data) ~ " : " ~ conv!(int,string)(t[ptr]));
-		assert(ptr >= 0 && ptr < rn.length, conv!(size_t,string)(ptr) ~ " " 
-			~ conv!(size_t,string)(rn.length));
-		assert((*jt).data == rn[$-1-ptr],conv!(int,string)((*jt).data) ~ " : " 
-			~ conv!(int,string)(rn[$-1-ptr]));
-		jt--;
-		ptr--;
-	}
-		
-	st = getMilli();
-	for(int i = 0; i < times; i++) {
-		rbt222.remove(new ISet(rn[i]));
-		rbt222.validate();
-	}
-	//writeln("bottom up remove ", getMilli()-st);
-	assert(rbt222.getSize() == 0);
-	writeln("rbtree test passed");
 }
