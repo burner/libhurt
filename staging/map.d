@@ -9,6 +9,7 @@ import tree;
 import hurt.conv.conv;
 
 import std.stdio;
+import std.traits, std.typetuple;
 
 class MapItem(T,S) {
 	T key;
@@ -56,6 +57,14 @@ class MapItem(T,S) {
 	override string toString() const {
 		return conv!(T,string)(this.key) ~ ":" ~ conv!(S,string)(this.data);
 	}
+
+	public T getKey() {
+		return this.key;
+	}
+
+	public S getData() {
+		return this.data;
+	}
 }
 
 class Map(T,S) {
@@ -83,13 +92,22 @@ class Map(T,S) {
 	public size_t getSize() const { return this.map.getSize(); }
 	public size_t isEmpty() const { return this.map.isEmpty(); }
 
-	private MapItem!(T,S) find(T key) {
+	private MapItem!(T,S) search(T key) {
 		this.finder.key = key;
-		return cast(MapItem!(T,S))this.map.search(this.finder);
+		auto node = this.map.search(this.finder);
+		writeln(__LINE__);
+		if(node is null) {
+			return null;
+		}
+		writeln(__LINE__, " ", node is null);
+		alias BaseClassesTuple!(typeof(node)) bst;
+		writeln(__LINE__, " ", typeid(bst));
+		MapItem!(T,S) ret =  cast(MapItem!(T,S))node.getData();
+		return ret;
 	}
 
 	public bool insert(T key, S data) {
-		MapItem!(T,S) fnd = this.find(key);
+		MapItem!(T,S) fnd = this.search(key);
 		if(fnd !is null) {
 			fnd.data = data;
 			return false;
@@ -103,4 +121,10 @@ class Map(T,S) {
 void main() {
 	Map!(string,int) m1 = new Map!(string,int)();
 	m1.insert("foo", 1337);
+	writeln(__LINE__);
+	MapItem!(string,int) i1 = m1.search("foo");
+	writeln(__LINE__, " ",i1 is null, " ", is(i1 == MapItem!(string,int)));
+	writeln(__LINE__, " ", is(i1 : ISRNode!(MapItem!(string,int))));
+	writeln(__LINE__, " ",i1.key);
+	assert(i1 !is null && i1.getData() == 1337);
 }
