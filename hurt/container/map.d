@@ -64,6 +64,10 @@ class MapItem(T,S) {
 	public S getData() {
 		return this.data;
 	}
+
+	public S opUnary(string s)() if(s == "*") {
+		return this.data;
+	}
 }
 
 class Map(T,S) {
