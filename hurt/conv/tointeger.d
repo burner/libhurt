@@ -97,10 +97,10 @@ public pure short ulongToShort(ulong from) {
 
 public pure T tToS(T,S)(S s) {
 	if(s < T.min) {
-		throw new ValueRangeException(" value " ~ conv!(S,string)(s) ~ 
+		throw new ValueRangeException(conv!(int,string)(__LINE__) ~ " value " ~ conv!(S,string)(s) ~ 
 			" doesn't fit into ");
 	} else if(s > T.max) {
-		throw new ValueRangeException(" value " ~ conv!(S,string)(s) ~ 
+		throw new ValueRangeException(conv!(int,string)(__LINE__) ~ " value " ~ conv!(S,string)(s) ~ 
 			" doesn't fit into ");
 	} else {
 		return cast(T)s;
