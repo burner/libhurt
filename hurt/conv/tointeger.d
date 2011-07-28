@@ -30,11 +30,11 @@ public pure T stringToInt(T)(in string str) {
 
 public pure uint longToUint(long from) {
 	if(from < 0) {
-		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
-			" doesn't fit into uint");
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
+			~ " doesn't fit into uint");
 	} else if(from > uint.max) {
-		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
-			" doesn't fit into uint");
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
+			~ " doesn't fit into uint");
 	} else {
 		return cast(uint)from;
 	}
@@ -42,11 +42,11 @@ public pure uint longToUint(long from) {
 
 public pure int longToInt(long from) {
 	if(from < int.min) {
-		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
-			" doesn't fit into uint");
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
+			~ " doesn't fit into uint");
 	} else if(from > int.max) {
-		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
-			" doesn't fit into uint");
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
+			~ " doesn't fit into uint");
 	} else {
 		return cast(int)from;
 	}
@@ -54,8 +54,8 @@ public pure int longToInt(long from) {
 
 public pure int ulongToUint(ulong from) {
 	if(from > uint.max) {
-		throw new ValueRangeException("long value " ~ conv!(long,string)(from) ~ 
-			" doesn't fit into uint");
+		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
+			~ " doesn't fit into uint");
 	} else {
 		return cast(uint)from;
 	}
@@ -108,36 +108,36 @@ unittest {
 	assert(0 == tToS!(ushort,byte)(0U));
 	assert(0 == tToS!(ubyte,byte)(0U));
 	assert(0 == tToS!(ulong,byte)(0U));
-	assert(0 == tToS!(int,ulong)(0));
-	assert(0 == tToS!(short,ulong)(0));
-	assert(0 == tToS!(byte,ulong)(0));
-	assert(0 == tToS!(long,ulong)(0));
-	assert(0 == tToS!(uint,ulong)(0U));
-	assert(0 == tToS!(ushort,ulong)(0U));
-	assert(0 == tToS!(ubyte,ulong)(0U));
-	assert(0 == tToS!(ulong,ulong)(0U));
-	assert(0 == tToS!(int,uint)(0));
-	assert(0 == tToS!(short,uint)(0));
-	assert(0 == tToS!(byte,uint)(0));
-	assert(0 == tToS!(long,uint)(0));
-	assert(0 == tToS!(uint,uint)(0U));
-	assert(0 == tToS!(ushort,uint)(0U));
-	assert(0 == tToS!(ubyte,uint)(0U));
-	assert(0 == tToS!(ulong,uint)(0U));
-	assert(0 == tToS!(int,ushort)(0));
-	assert(0 == tToS!(short,ushort)(0));
-	assert(0 == tToS!(byte,ushort)(0));
-	assert(0 == tToS!(long,ushort)(0));
-	assert(0 == tToS!(uint,ushort)(0U));
-	assert(0 == tToS!(ushort,ushort)(0U));
-	assert(0 == tToS!(ubyte,ushort)(0U));
-	assert(0 == tToS!(ulong,ushort)(0U));
-	assert(0 == tToS!(int,ubyte)(0));
-	assert(0 == tToS!(short,ubyte)(0));
-	assert(0 == tToS!(byte,ubyte)(0));
-	assert(0 == tToS!(long,ubyte)(0));
-	assert(0 == tToS!(uint,ubyte)(0U));
-	assert(0 == tToS!(ushort,ubyte)(0U));
-	assert(0 == tToS!(ubyte,ubyte)(0U));
-	assert(0 == tToS!(ulong,ubyte)(0U));
+	assert(0U == tToS!(int,ulong)(0));
+	assert(0U == tToS!(short,ulong)(0));
+	assert(0U == tToS!(byte,ulong)(0));
+	assert(0U == tToS!(long,ulong)(0));
+	assert(0U == tToS!(uint,ulong)(0U));
+	assert(0U == tToS!(ushort,ulong)(0U));
+	assert(0U == tToS!(ubyte,ulong)(0U));
+	assert(0U == tToS!(ulong,ulong)(0U));
+	assert(0U == tToS!(int,uint)(0));
+	assert(0U == tToS!(short,uint)(0));
+	assert(0U == tToS!(byte,uint)(0));
+	assert(0U == tToS!(long,uint)(0));
+	assert(0U == tToS!(uint,uint)(0U));
+	assert(0U == tToS!(ushort,uint)(0U));
+	assert(0U == tToS!(ubyte,uint)(0U));
+	assert(0U == tToS!(ulong,uint)(0U));
+	assert(0U == tToS!(int,ushort)(0));
+	assert(0U == tToS!(short,ushort)(0));
+	assert(0U == tToS!(byte,ushort)(0));
+	assert(0U == tToS!(long,ushort)(0));
+	assert(0U == tToS!(uint,ushort)(0U));
+	assert(0U == tToS!(ushort,ushort)(0U));
+	assert(0U == tToS!(ubyte,ushort)(0U));
+	assert(0U == tToS!(ulong,ushort)(0U));
+	assert(0U == tToS!(int,ubyte)(0));
+	assert(0U == tToS!(short,ubyte)(0));
+	assert(0U == tToS!(byte,ubyte)(0));
+	assert(0U == tToS!(long,ubyte)(0));
+	assert(0U == tToS!(uint,ubyte)(0U));
+	assert(0U == tToS!(ushort,ubyte)(0U));
+	assert(0U == tToS!(ubyte,ubyte)(0U));
+	assert(0U == tToS!(ulong,ubyte)(0U));
 }
