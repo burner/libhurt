@@ -6,6 +6,7 @@ import hurt.conv.chartonumeric;
 import hurt.exception.valuerangeexception;
 
 import std.stdio;
+import std.conv;
 
 public pure T stringToInt(T)(in string str) {
 	T ret = 0;
@@ -96,14 +97,27 @@ public pure short ulongToShort(ulong from) {
 }
 
 public pure T tToS(T,S)(S s) {
-	if(s < T.min) {
+	if(smaller(s,T.min)) {
 		throw new ValueRangeException(conv!(int,string)(__LINE__) ~ " value " ~ conv!(S,string)(s) ~ 
 			" doesn't fit into ");
-	} else if(s > T.max) {
+	//} else if(s > T.max) {
+	} else if(!smaller(s, T.max)) {
 		throw new ValueRangeException(conv!(int,string)(__LINE__) ~ " value " ~ conv!(S,string)(s) ~ 
 			" doesn't fit into ");
 	} else {
 		return cast(T)s;
+	}
+}
+
+public pure bool smaller(T,S)(T t, S s) {
+	if(t < 0 && !(s < 0)) {
+		return true;
+	} else if(s < 0 && !(t < 0)) {
+		return false;
+	} else if(t < s) {
+		return true;
+	} else {
+		return false;
 	}
 }
 

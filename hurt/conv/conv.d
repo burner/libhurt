@@ -103,8 +103,8 @@ unittest {
 	assert(0 == conv!(long,short)(0UL));
 	assert(0 == conv!(long,byte)(0UL));
 	assert(0 == conv!(long,ubyte)(0UL));
-	//assert(0 == conv!(ulong,int)(0UL));
-	//assert(0 == conv!(ulong,short)(0UL));
-	//assert(0 == conv!(ulong,byte)(0UL));
+	assert(0 == conv!(ulong,int)(0UL));
+	assert(0 == conv!(ulong,short)(0UL));
+	assert(0 == conv!(ulong,byte)(0UL));
 	assert(0 == conv!(ulong,ubyte)(0UL));
 }
