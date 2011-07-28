@@ -11,6 +11,17 @@ public pure bool isNumeric(T)() {
 	}
 }
 
+public pure bool isInteger(T)() {
+	static if(is(T == byte) || is(T == short) || is(T == int) || 
+			is(T == long) || is(T == ubyte) || is(T == ushort) || is(T == uint) 
+			|| is(T == ulong)) {
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
 public pure T max(T)(T t, T s) if(isNumeric!(T)()) {
 	return t > s ? t : s;
 }

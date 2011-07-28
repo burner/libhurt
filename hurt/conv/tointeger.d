@@ -61,7 +61,7 @@ public pure int ulongToUint(ulong from) {
 	}
 }
 
-public pure S tToS(T,S)(T t) if(isNumeric!(T) && isNumeric!(S)()) {
+public pure S tToS(T,S)(T t) if(isNumeric!(T) && isNumeric!(S)) {
 	if(smaller!(T,S)(t,S.min)) {
 		throw new ValueRangeException(__FILE__ ~ ":" 
 			~ conv!(int,string)(__LINE__) ~ " " ~ conv!(T,string)(t) ~ 
