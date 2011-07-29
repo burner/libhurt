@@ -5,11 +5,10 @@ import hurt.math.mathutil;
 
 import std.stdio;
 
-public pure immutable(T)[] integerToString(T,S)(S src, int base = 10, bool sign = false, bool title = false)
+public pure immutable(T)[] integerToString(T,S)(S src, int base = 10, 
+		bool sign = false, bool title = false)
 		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
-			(is(S == ubyte) || is(S == byte) || is(S == ushort) || 
-			 is(S == short) || is(S == uint) || is(S == int) ||
-			 is(S == ulong) || is(S == long)) ) {
+			isInteger!S() ) {
 
 	if(base > 16) { // only till base 16 aka hex
 		return null;
@@ -51,7 +50,39 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10, bool sign 
 	}
 }
 
-public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false)
+unittest {
+	assert("1010" == integerToString!(char,int)(10,2));
+	assert("-1010" == integerToString!(char,int)(-10,2));
+	assert("+1010" == integerToString!(char,int)(10,2,true));
+	assert("10" == integerToString!(char,int)(10));
+	assert("12" == integerToString!(char,int)(10,8));
+	assert("-10" == integerToString!(char,int)(-10));
+	assert("-12" == integerToString!(char,int)(-10,8));
+	assert("+10" == integerToString!(char,int)(10,10,true),
+		integerToString!(char,int)(10,10,true));
+	assert("+12" == integerToString!(char,int)(10,8,true));
+	assert("-10" == integerToString!(char,int)(-10,10,true));
+	assert("-12" == integerToString!(char,int)(-10,8,true));
+	assert("a" == integerToString!(char,int)(10,16),
+		integerToString!(char,int)(10,16));
+	assert("-a" == integerToString!(char,int)(-10,16));
+	assert("-a" == integerToString!(char,int)(-10,16));
+	assert("+a" == integerToString!(char,int)(10,16,true),
+		integerToString!(char,int)(10,10,true));
+	assert("+a" == integerToString!(char,int)(10,16,true));
+	assert("-a" == integerToString!(char,int)(-10,16,true));
+	assert("-a" == integerToString!(char,int)(-10,16,true));
+	assert("+A" == integerToString!(char,int)(10,16,true,true));
+	assert("-A" == integerToString!(char,int)(-10,16,true,true));
+	assert("-A" == integerToString!(char,int)(-10,16,true,true));
+	assert("+11" == integerToString!(char,int)(17,16,true,true),
+		integerToString!(char,int)(17,16,true,true));
+	assert("-11" == integerToString!(char,int)(-17,16,true,true));
+	assert("-11" == integerToString!(char,int)(-17,16,true,true));
+}
+
+public pure immutable(T)[] floatToString(T,S)(S src, int round = 6, 
+		bool sign = false)
 		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
 			(is(S == float) || is(S == double) || is(S == real))) {
 	long intp;
@@ -79,7 +110,8 @@ public immutable(T)[] floatToString(T,S)(S src, int round = 6, bool sign = false
 	return dec ~ "." ~ frac;
 }
 
-public immutable(T)[] floatToExponent(T,S)(S src, int round = 4, bool sign = false, bool big = false)
+public pure immutable(T)[] floatToExponent(T,S)(S src, int round = 4, 
+		bool sign = false, bool big = false)
 		if( (is(T == char) || is(T == wchar) || is(T == dchar)) && 
 			(is(S == float) || is(S == double) || is(S == real))) {
 	int count = 0;
@@ -93,23 +125,42 @@ public immutable(T)[] floatToExponent(T,S)(S src, int round = 4, bool sign = fal
 }
 
 unittest {
-	assert("10.00" == floatToString!(char,double)(10.0, 2), floatToString!(char,double)(10.0, 2));
-	assert("1.20" == floatToString!(char,double)(1.2, 2), floatToString!(char,double)(1.2, 2));
-	assert("100.2" == floatToString!(char,double)(100.222123, 1), floatToString!(char,double)(100.222123, 1));
-	assert("1.200000000" == floatToString!(char,real)(1.2, 9), floatToString!(char,real)(1.2, 9));
-	assert("100.2221230" == floatToString!(char,real)(100.222123, 7), floatToString!(char,real)(100.222123, 7));
-	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7), floatToString!(char,real)(-100.222123, 7));
-	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6), floatToString!(char,real)(-100.222121, 6));
-	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6), floatToString!(char,real)(-100.222129, 6));
-	assert("100.222130" == floatToString!(char,float)(100.222129, 6), floatToString!(char,float)(100.222129, 6));
-	assert("+1.20" == floatToString!(char,double)(1.2, 2, true), floatToString!(char,double)(1.2, 2, true));
-	assert("+100.2" == floatToString!(char,double)(100.222123, 1, true), floatToString!(char,double)(100.222123, 1, true));
-	assert("+1.200000000" == floatToString!(char,real)(1.2, 9, true), floatToString!(char,real)(1.2, 9, true));
-	assert("+100.2221230" == floatToString!(char,real)(100.222123, 7, true), floatToString!(char,real)(100.222123, 7, true));
-	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7, true), floatToString!(char,real)(-100.222123, 7, true));
-	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6, true), floatToString!(char,real)(-100.222121, 6, true));
-	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6, true), floatToString!(char,real)(-100.222129, 6, true));
-	assert("+100.222130" == floatToString!(char,float)(100.222129, 6, true), floatToString!(char,float)(100.222129, 6, true));
-	assert("1.0e1" == floatToExponent!(char,float)(10,1,false, false), floatToExponent!(char,float)(10,1,false, false));
-	assert("-1.0e2" == floatToExponent!(char,float)(-100,1,false, false), floatToExponent!(char,float)(-100,1,false, false));
+	assert("10.00" == floatToString!(char,double)(10.0, 2), 
+		floatToString!(char,double)(10.0, 2));
+	assert("1.20" == floatToString!(char,double)(1.2, 2), 
+		floatToString!(char,double)(1.2, 2));
+	assert("100.2" == floatToString!(char,double)(100.222123, 1), 
+		floatToString!(char,double)(100.222123, 1));
+	assert("1.200000000" == floatToString!(char,real)(1.2, 9), 
+		floatToString!(char,real)(1.2, 9));
+	assert("100.2221230" == floatToString!(char,real)(100.222123, 7), 
+		floatToString!(char,real)(100.222123, 7));
+	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7), 
+		floatToString!(char,real)(-100.222123, 7));
+	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6), 
+		floatToString!(char,real)(-100.222121, 6));
+	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6),
+		floatToString!(char,real)(-100.222129, 6));
+	assert("100.222130" == floatToString!(char,float)(100.222129, 6),
+		floatToString!(char,float)(100.222129, 6));
+	assert("+1.20" == floatToString!(char,double)(1.2, 2, true),
+		floatToString!(char,double)(1.2, 2, true));
+	assert("+100.2" == floatToString!(char,double)(100.222123, 1, true),
+		floatToString!(char,double)(100.222123, 1, true));
+	assert("+1.200000000" == floatToString!(char,real)(1.2, 9, true),
+		floatToString!(char,real)(1.2, 9, true));
+	assert("+100.2221230" == floatToString!(char,real)(100.222123, 7, true),
+		floatToString!(char,real)(100.222123, 7, true));
+	assert("-100.2221230" == floatToString!(char,real)(-100.222123, 7, true),
+		floatToString!(char,real)(-100.222123, 7, true));
+	assert("-100.222121" == floatToString!(char,real)(-100.222121, 6, true),
+		floatToString!(char,real)(-100.222121, 6, true));
+	assert("-100.222129" == floatToString!(char,real)(-100.222129, 6, true),
+		floatToString!(char,real)(-100.222129, 6, true));
+	assert("+100.222130" == floatToString!(char,float)(100.222129, 6, true),
+		floatToString!(char,float)(100.222129, 6, true));
+	assert("1.0e1" == floatToExponent!(char,float)(10,1,false, false),
+		floatToExponent!(char,float)(10,1,false, false));
+	assert("-1.0e2" == floatToExponent!(char,float)(-100,1,false, false),
+		floatToExponent!(char,float)(-100,1,false, false));
 }

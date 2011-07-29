@@ -1,10 +1,7 @@
 module hurt.math.mathutil;
 
 public pure bool isNumeric(T)() {
-	static if(is(T == byte) || is(T == short) || is(T == int) || 
-			is(T == long) || is(T == ubyte) || is(T == ushort) || is(T == uint) 
-			|| is(T == ulong) || is(T == float) || is(T == double) || 
-			is(T == real)) {
+	static if(isInteger!T() || isFloat!T()) {
 		return true;
 	} else {
 		return false;
@@ -19,7 +16,14 @@ public pure bool isInteger(T)() {
 	} else {
 		return false;
 	}
+}
 
+public pure bool isFloat(T)() {
+	static if(is(T == float) || is(T == double) || is(T == real)) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 public pure T max(T)(T t, T s) if(isNumeric!(T)()) {

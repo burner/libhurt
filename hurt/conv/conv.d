@@ -17,37 +17,23 @@ public pure S conv(T, S)(T t) {
 		} static if( is(S == string) ) {
 			return t;
 		}
-	} else static if(isInteger!T() && isInteger!S()) {
+	} else static if(isInteger!T() && (is(S == string))) {
+		return integerToString!(char,T)(t);
+	} else static if(isInteger!T() && (is(S == wstring))) {
+		return integerToString!(wchar,T)(t);
+	} else static if(isInteger!T() && (is(S == dstring))) {
+		return integerToString!(dchar,T)(t);
+	} else static if(isFloat!T() && (is(S == string))) {
+		return floatToString!(char,T)(t);
+	} else static if(isFloat!T() && (is(S == wstring))) {
+		return floatToString!(wchar,T)(t);
+	} else static if(isFloat!T() && (is(S == dstring))) {
+		return floatToString!(dchar,T)(t);
+	} else static if(isInteger!T() && isInteger!S()) {	// integer to integer
 		return tToS!(T,S)(t);
-	} else static if( is(T == ulong) ) {	// ulong
-		static if( is(S == string) ) {
-			return integerToString!(char,ulong)(t);
-		}
-	} else static if( is(T == long) ) {		// long
-		static if( is(S == string) ) {
-			return integerToString!(char,long)(t);
-		} 
 	} else static if( is(T == int) ) {		// int
 		static if( is(S == char) ) {
 			return byteToChar!(char)(t);
-		} else static if( is(S == string) ) {
-			return integerToString!(char,int)(t);
-		}
-	} else static if( is(T == uint) ) {		// uint
-		static if( is(S == string) ) {
-			return integerToString!(char,int)(t);
-		}
-	} else static if( is(T == short) ) {	// short
-		static if( is(S == string) ) {
-			return integerToString!(char,short)(t);	
-		}
-	} else static if( is(T == ushort) ) {	// short
-		static if( is(S == string) ) {
-			return integerToString!(char,ushort)(t);	
-		}
-	} else static if( is(T == byte) ) {		// byte
-		static if( is(S == string) ) {
-			return integerToString!(char,byte)(t);	
 		}
 	} else static if( is(T == dchar) ) {	// dchar
 		static if( is(S == char) ) {
@@ -127,4 +113,22 @@ unittest {
 	assert(0U == conv!(ushort,ubyte)(0U));
 	assert(0U == conv!(ubyte,ubyte)(0U));
 	assert(0U == conv!(ulong,ubyte)(0U));
+	assert("10" == conv!(long,string)(10));
+	assert("10" == conv!(int,string)(10));
+	assert("10" == conv!(short,string)(10));
+	assert("10" == conv!(byte,string)(10));
+	assert("10" == conv!(ulong,string)(10));
+	assert("10" == conv!(uint,string)(10));
+	assert("10" == conv!(ushort,string)(10));
+	assert("10" == conv!(ubyte,string)(10));
+	assert("-10" == conv!(long,string)(-10));
+	assert("-10" == conv!(int,string)(-10));
+	assert("-10" == conv!(short,string)(-10));
+	assert("-10" == conv!(byte,string)(-10));
+	assert("-10.000000" == conv!(float,string)(-10.000000));
+	assert("-10.000000" == conv!(double,string)(-10.000000));
+	assert("-10.000000" == conv!(real,string)(-10.000000));
+	assert("10.000000" == conv!(float,string)(10.000000));
+	assert("10.000000" == conv!(double,string)(10.000000));
+	assert("10.000000" == conv!(real,string)(10.000000));
 }
