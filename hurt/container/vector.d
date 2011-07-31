@@ -1,6 +1,7 @@
 module hurt.container.vector;
 
 import hurt.conv.conv;
+import hurt.container.dlst;
 
 import std.stdio;
 
@@ -29,6 +30,12 @@ class Vector(T) {
 		}
 	}
 
+	public this(DLinkedList!(T) ll) {
+		this(ll.getSize());
+		foreach(it; ll) 
+			this.append(it);
+	}
+
 	public Vector!(T) append(T toAdd) {
 		if(this.index+1 >= cast(typeof(this.index))this.data.length) {
 			this.data.length = this.data.length * 2;
@@ -53,8 +60,8 @@ class Vector(T) {
 	}
 
 	public Vector!(T) insert(in size_t idx, T toAdd) {
-		assert(idx <= this.index, "use append to insert a Element at the end idx = " 
-			~ conv!(size_t,string)(idx) ~ " curPos = "
+		assert(idx <= this.index, "use append to insert a Element at the 
+			end idx = " ~ conv!(size_t,string)(idx) ~ " curPos = "
 			~ conv!(typeof(index),string)(this.index));
 		this.index++;	
 		if(this.index+1 >= cast(typeof(this.index))this.data.length) {
@@ -63,7 +70,6 @@ class Vector(T) {
 		typeof(index) upIdx = this.index;
 		typeof(index) lowIdx = this.index-1;
 		while(lowIdx >= idx && lowIdx >= 0) {
-			//this.data[conv!(long,uint)(upIdx)] = this.data[conv!(long,uint)(lowIdx)];
 			this.data[upIdx] = this.data[lowIdx];
 			upIdx--;
 			lowIdx--;
@@ -125,7 +131,6 @@ class Vector(T) {
 
 	int opApply(int delegate(ref T value) dg) {
 		int result;
-		//uint up = (this.data.length-1) * this.partSize + this.curPos;
 		size_t up = this.index;
 		for(size_t i = 0; i < up && result is 0; i++) {
 			result = dg(this.data[i]);
@@ -135,7 +140,6 @@ class Vector(T) {
 
 	int opApply(int delegate(ref size_t,ref T) dg) {
 		int result;
-		//uint up = (this.data.length-1) * this.partSize + this.curPos;
 		size_t up = this.index;
 		for(size_t i = 0; i < up && result is 0; i++) {
 			result = dg(i,this.data[i]);
@@ -175,16 +179,22 @@ class Vector(T) {
 		if(this.index == -1) {
 			return null;
 		}
-
-		/*T[] ret = new T[this.index+1];
-		for(size_t i = 0; i <= this.index; i++) {
-			ret[i] = this.get(i);
-		}
-		return ret;*/
 		return this.data[0..this.index+1].dup;
 	}
 
 	public void clean() {
 		this.index = -1;
 	}
+}
+
+unittest {
+	DLinkedList!(int) ll = new DLinkedList!(int)();
+	ll.pushBack(0); ll.pushBack(1); ll.pushBack(2);
+	ll.pushBack(3); ll.pushBack(4); ll.pushBack(5);
+	Vector!(int) vec = new Vector!(int)(ll);
+	assert(vec[0] == 0 && vec[1] == 1 && vec[2] == 2 && vec[3] == 3 && 
+		vec[4] == 4 && vec[5] == 5);
+
+	foreach(idx, it; vec)
+		assert(vec[idx] == it);
 }

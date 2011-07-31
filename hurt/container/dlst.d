@@ -252,7 +252,8 @@ public class DLinkedList(T) {
 			size_t it = 0;
 			while(it < idx) {
 				tmp = tmp.getNext();
-				assert(tmp !is null, "tmp should not be null here. it = " ~ conv!(size_t,string)(it));
+				assert(tmp !is null, "tmp should not be null here. it = " 
+					~ conv!(size_t,string)(it));
 				it++;
 			}
 			Elem!(T) prev = tmp.getPrev();
@@ -276,7 +277,8 @@ public class DLinkedList(T) {
 
 	public T remove(Iterator!(T) it) {
 		if(!it.isValid()) {
-			throw new InvalidIteratorException(__FILE__ ~ conv!(int,string)(__LINE__) ~ ": Iterator not valid");
+			throw new InvalidIteratorException(__FILE__ ~ 
+				conv!(int,string)(__LINE__) ~ ": Iterator not valid");
 		}
 		if(it.getElem().getPrev() is null) {
 			T tmp = this.popFront();
