@@ -86,7 +86,7 @@ class Vector(T) {
 		T ret = this.data[idx];
 		typeof(this.index) upIdx = idx + 1;
 		typeof(this.index) lowIdx = idx;
-		while(lowIdx < this.index-1 && lowIdx > 0) {
+		while(lowIdx < this.index && lowIdx > 0) {
 			this.data[lowIdx] = this.data[upIdx];
 			upIdx++;
 			lowIdx++;
@@ -122,7 +122,7 @@ class Vector(T) {
 	}
 
 	public bool contains(T toFind) {
-		for(size_t idx = 0; idx < this.index; idx++) {
+		for(size_t idx = 0; idx < this.index+1; idx++) {
 			if(this.get(idx) == toFind)
 				return true;
 		}
@@ -131,7 +131,7 @@ class Vector(T) {
 
 	int opApply(int delegate(ref T value) dg) {
 		int result;
-		size_t up = this.index;
+		size_t up = this.index+1;
 		for(size_t i = 0; i < up && result is 0; i++) {
 			result = dg(this.data[i]);
 		}
@@ -140,7 +140,7 @@ class Vector(T) {
 
 	int opApply(int delegate(ref size_t,ref T) dg) {
 		int result;
-		size_t up = this.index;
+		size_t up = this.index+1;
 		for(size_t i = 0; i < up && result is 0; i++) {
 			result = dg(i,this.data[i]);
 		}
@@ -185,6 +185,18 @@ class Vector(T) {
 	public void clean() {
 		this.index = -1;
 	}
+
+	public override bool opEquals(Object o) {
+		Vector!(T) v = cast(Vector!(T))o;
+		if(this.getSize() != v.getSize())
+			return false;
+
+		foreach(idx,it;v) {
+			if(this[idx] != it)
+				return false;
+		}
+		return true;
+	}
 }
 
 unittest {
@@ -195,6 +207,26 @@ unittest {
 	assert(vec[0] == 0 && vec[1] == 1 && vec[2] == 2 && vec[3] == 3 && 
 		vec[4] == 4 && vec[5] == 5);
 
-	foreach(idx, it; vec)
+	size_t idx = 0;
+	foreach(it; vec) {
 		assert(vec[idx] == it);
+		idx++;
+	}
+	assert(idx == vec.getSize());
+	assert([0,1,2,3,4,5] == vec.elements());
+	Vector!(int) vec2 = new Vector!(int)(vec);
+	assert(vec2 == vec);
+	vec2.popFront();
+	assert(vec2 != vec);
+	foreach(it;[0,1,2,3,4,5])
+		assert(vec.contains(it), conv!(int,string)(it));
+	vec.remove(5);
+	assert(!vec.contains(5));
+	foreach(it;[0,1,2,3,4])
+		assert(vec.contains(it), conv!(int,string)(it));
+	vec.remove(3);
+	assert(!vec.contains(3));
+	foreach(it;[0,1,2,4])
+		assert(vec.contains(it), conv!(int,string)(it));
+
 }
