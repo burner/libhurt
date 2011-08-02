@@ -52,7 +52,7 @@ public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 	}
 }
 
-public class DLinkedList(T) {
+public class DLinkedList(T) : Iterable!(T) {
 	private class Elem(T) {
 		private T store;
 		private Elem!(T) prev;

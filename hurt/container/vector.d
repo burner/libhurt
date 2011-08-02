@@ -2,10 +2,11 @@ module hurt.container.vector;
 
 import hurt.conv.conv;
 import hurt.container.dlst;
+import hurt.container.iterator;
 
 import std.stdio;
 
-class Vector(T) {
+class Vector(T) : Iterable!(T) {
 	private T[] data;
 	version(X86_64) {
 		private long index;

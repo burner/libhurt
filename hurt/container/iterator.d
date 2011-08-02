@@ -11,3 +11,8 @@ interface Iterator(T) {
 
 	public bool opEquals(Object o);
 }
+
+interface Iterable(T) {
+	int opApply(int delegate(ref size_t,ref T) dg);
+	int opApply(int delegate(ref T) dg);
+}
