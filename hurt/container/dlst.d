@@ -218,7 +218,7 @@ public class DLinkedList(T) : Iterable!(T) {
 		this.size = 0;
 	}
 
-	public bool empty() const {
+	public bool isEmpty() const {
 		return this.size == 0;
 	}
 	

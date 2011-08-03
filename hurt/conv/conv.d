@@ -6,6 +6,8 @@ import hurt.conv.tointeger;
 import hurt.conv.tostring;
 import hurt.math.mathutil;
 
+import std.stdio;
+
 public pure S conv(T, S)(T t) {
 	static if( is(T == string) ) {			// string
 		static if( is(S == int) ) {
@@ -43,9 +45,41 @@ public pure S conv(T, S)(T t) {
 		static if( is(S == int) ) {
 			return cast(int)t;
 		}
+	} else static if( is(T == ubyte)) {		// ubyte
+		static if( is(S == string) ) {
+			return integerToString!(char,ubyte)(t);	
+		} else static if( is(S == byte) || is(S == ubyte) || is(S == short) || 
+				is(S == ushort) || is(S == int) || is(S == uint) || 
+				is(S == long) || is(S == ulong)) {
+			return tToS!(ubyte,S)(t);	
+		}
 	} else {
 		return null;
-	}
+	}	
+}
+
+
+unittest {
+	assert(0 == conv!(byte,int)(0));
+	assert(0 == conv!(byte,short)(0));
+	assert(0 == conv!(byte,byte)(0));
+	assert(0 == conv!(byte,ubyte)(0));
+	assert(0 == conv!(int,int)(0));
+	assert(0 == conv!(int,short)(0));
+	assert(0 == conv!(int,byte)(0));
+	assert(0 == conv!(int,ubyte)(0));
+	assert(0 == conv!(short,int)(0));
+	assert(0 == conv!(short,short)(0));
+	assert(0 == conv!(short,byte)(0));
+	assert(0 == conv!(short,ubyte)(0));
+	assert(0 == conv!(long,int)(0L));
+	assert(0 == conv!(long,short)(0UL));
+	assert(0 == conv!(long,byte)(0UL));
+	assert(0 == conv!(long,ubyte)(0UL));
+	assert(0 == conv!(ulong,int)(0UL));
+	assert(0 == conv!(ulong,short)(0UL));
+	assert(0 == conv!(ulong,byte)(0UL));
+	assert(0 == conv!(ulong,ubyte)(0UL));
 }
 
 unittest {

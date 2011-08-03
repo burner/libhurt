@@ -142,7 +142,7 @@ class Item(T,S) {
 
 	bool remove(hurt.container.dlst.Iterator!(S) it) {
 		this.values.remove(it);
-		return this.values.empty();
+		return this.values.isEmpty();
 	}
 
 	size_t getSize() const {
@@ -306,7 +306,7 @@ class MultiMap(T,S) {
 		list.remove(it.getListIt());
 		if(os != list.getSize())
 			this.size--;
-		if(list.empty()) {
+		if(list.isEmpty()) {
 			this.tree.remove(it.getTreeIt());
 			return true;
 		} else {

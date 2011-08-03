@@ -6,6 +6,9 @@ import hurt.conv.chartonumeric;
 import hurt.exception.valuerangeexception;
 import hurt.math.mathutil;
 
+import std.stdio;
+import std.conv;
+
 public pure T stringToInt(T)(in string str) {
 	T ret = 0;
 	T mul = 1;	
@@ -52,7 +55,7 @@ public pure int longToInt(long from) {
 	}
 }
 
-public pure int ulongToUint(ulong from) {
+public pure uint ulongToUint(ulong from) {
 	if(from > uint.max) {
 		throw new ValueRangeException("long value " ~ conv!(long,string)(from) 
 			~ " doesn't fit into uint");
