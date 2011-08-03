@@ -362,16 +362,18 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 						break;
 					case 'c': // print int as c. %c, 'a' prints a
 						break;
-					case 'a': // double to hexadecimal
+					case 'a': 
 						immutable(T)[] tmp;
-						if(is(arguments[argPtr] : Object)) {
-							Object value = va_arg!(Object)(arg);	
-							tmp = value.toString();
-						} /*else {
+						Object value;
+						//if(is(arguments[argPtr] : Object)) {
+							value = va_arg!(Object)(arg);	
+							//tmp = value.toString();
+							tmp = integerToString!(char,long)(cast(long)&value,16,false,true);	
+						/*} else {
 							throw new FormatError("A class was expected" 
 								~ (arguments[argPtr].toString()));
 						}*/
-						writeln(__LINE__, tmp);
+						//writeln(__LINE__, tmp, " ",tmp.length," ", cast(long)&value);
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						//debug writeln(__FILE__,__LINE__,": ", padding);
