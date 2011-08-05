@@ -23,7 +23,7 @@ hurt.util.datetime.o
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
-IO_OBJS=hurt.io.ioflags.o hurt.io.posix.o hurt.io.file.o hurt.io.inputstream.o \
+IO_OBJS=hurt.io.ioflags.o hurt.io.posix.o hurt.io.file.o \
 hurt.io.stdio.o
 
 all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(MATH_OBJS) $(IO_OBJS)

@@ -361,7 +361,36 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 					case 'P': // print pointer adress as hex
 						break;
 					case 'c': // print int as c. %c, 'a' prints a
-						break;
+						immutable(T)[] tmp = "";
+						if(arguments[argPtr] == typeid(char)) {
+							char value = va_arg!(char)(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp ~= value;
+						} else if(arguments[argPtr] == typeid(wchar)) {
+							wchar value = va_arg!(wchar)(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp ~= conv!(wchar,string)(value);
+						} else if(arguments[argPtr] == typeid(dchar)) {
+							dchar value = va_arg!(dchar)(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value," ", precision);
+							tmp ~= conv!(dchar,string)(value);
+						}
+						argPtr++;
+						immutable(T) paddingChar = padding0 ? '0' : ' ';
+						if(tmp.length < padding && !leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						foreach(jt; tmp) 
+							appendWithIdx!(T)(ret, ptr++, jt);
+
+						if(tmp.length < padding && leftAlign) {
+							for(size_t i = 0; i < padding - tmp.length; i++) {
+								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						break parse;
 					case 'a': 
 						immutable(T)[] tmp;
 						Object value;

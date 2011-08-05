@@ -1,7 +1,7 @@
 import hurt.io.file;
 import hurt.io.stdio;
 import hurt.io.ioflags;
-import hurt.io.inputstream;
+//import hurt.io.inputstream;
 
 import hurt.conv.conv;
 
@@ -22,7 +22,7 @@ void main() {
 	assert(close(fd) != -1, "close failed");
 	println("close worked");
 	println("€");
-	InputStream ins = new InputStream("testFile2utf16.txt");
-	println("ins bom " ~ ins.getBOM());
+	//InputStream ins = new InputStream("testFile2utf16.txt");
+	//println("ins bom " ~ ins.getBOM());
 	//assert(fsync(fd) != -1, "fsync failed");
 }

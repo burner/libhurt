@@ -40,6 +40,12 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == dchar) ) {	// dchar
 		static if( is(S == char) ) {
 			return dcharToChar(t);
+		} else static if( is(S == string) ) {
+			return "" ~ dcharToChar(t);
+		}
+	} else static if( is(T == wchar) ) {	// wchar
+		static if( is(S == string) ) {
+			return "" ~ wcharToChar(t);
 		}
 	} else static if( is(T == char) ) {		// char
 		static if( is(S == int) ) {
