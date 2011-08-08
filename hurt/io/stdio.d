@@ -13,6 +13,20 @@ static this() {
 	hurt.io.stdio.buf = new StringBuffer!(char)(32);	
 }
 
+public size_t printfln(immutable(char)[] form, ...) {
+	string str = format!(char,char)(form ~ "\n", _arguments, _argptr);
+	if(str.length == 0)
+		return 0;
+	return writeC(0, str.ptr, str.length);
+}
+
+public size_t printf(immutable(char)[] form, ...) {
+	string str = format!(char,char)(form, _arguments, _argptr);
+	if(str.length == 0)
+		return 0;
+	return writeC(0, str.ptr, str.length);
+}
+
 public size_t print(...) {
 	//writeln(buf.getString());
 	string str = makeString(_arguments, _argptr);

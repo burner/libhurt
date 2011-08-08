@@ -139,6 +139,26 @@ class Map(T,S) {
 		}
 	}
 
+	S[] values() {
+		S[] ret = new S[this.getSize()];
+		size_t idx = 0;
+		auto it = begin();
+		for(;it.isValid();it++) {
+			ret[idx++] = (*it).getData();
+		}
+		return ret;
+	}
+
+	T[] keys() {
+		T[] ret = new T[this.getSize()];
+		size_t idx = 0;
+		auto it = begin();
+		for(;it.isValid();it++) {
+			ret[idx++] = (*it).getKey();
+		}
+		return ret;
+	}
+
 	ISRIterator!(MapItem!(T,S)) begin() {
 		return this.map.begin();
 	}
