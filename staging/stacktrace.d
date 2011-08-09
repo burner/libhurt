@@ -104,6 +104,8 @@ public class Trace {
 
 void bar() {
 	scope auto trace = new Trace("bar");
+	int u = 1;
+	for(int i = 0; i < 10000; i++) { u += i;}
 }
 
 void foo() {
@@ -118,6 +120,8 @@ void foo() {
 
 void main() {
 	scope auto trace = new Trace("main");
+	foo();
+	foo();
 	foo();
 	bar();
 	bar();
