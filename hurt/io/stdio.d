@@ -14,14 +14,14 @@ static this() {
 }
 
 public size_t printfln(immutable(char)[] form, ...) {
-	string str = format!(char,char)(form ~ "\n", _arguments, _argptr);
+	string str = formatString!(char,char)(form ~ "\n", _arguments, _argptr);
 	if(str.length == 0)
 		return 0;
 	return writeC(0, str.ptr, str.length);
 }
 
 public size_t printf(immutable(char)[] form, ...) {
-	string str = format!(char,char)(form, _arguments, _argptr);
+	string str = formatString!(char,char)(form, _arguments, _argptr);
 	if(str.length == 0)
 		return 0;
 	return writeC(0, str.ptr, str.length);
@@ -60,8 +60,9 @@ public string makeString(TypeInfo[] arguments, void* args) {
 		} else if(it == typeid(float) || it == typeid(double)
 				|| it == typeid(real)) {
 			buf.pushBack("%.5f ");
-		} else if(it == typeid(immutable(char)[]) || it == typeid(immutable(wchar)[])
-				|| it == typeid(immutable(dchar)[])) {
+		} else if(it == typeid(immutable(char)[]) || 
+				it == typeid(immutable(wchar)[]) || 
+				it == typeid(immutable(dchar)[])) {
 			buf.pushBack("%s ");
 		} else {
 			//writeln(45, it);

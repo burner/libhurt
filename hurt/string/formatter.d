@@ -15,7 +15,8 @@ public immutable(S)[] format(T,S)(immutable(T)[] form, ...) {
 	return formatString!(T,S)(form, _arguments, _argptr);
 }
 
-public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] arguments, void* arg)
+public immutable(S)[] formatString(T,S)(immutable(T)[] form, 
+		TypeInfo[] arguments, void* arg)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 	//writeln(_arguments);
@@ -49,8 +50,6 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 			bool intToUInt = false;
 			bool kInterleaf = false;
 			int width = 0;
-			//parse: while(idx < form.length && form[idx] != ' ' && form[idx] != '\t' 
-					//&& form[idx] != '\n') {
 			parse: while(idx < form.length) {
 				switch(form[idx]) {
 					case '0': // pad with 0 instead of blanks
@@ -82,9 +81,10 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 							if(arguments[argPtr] == typeid(int)) {
 								padding = va_arg!(int)(arg);
 								argPtr++;
-								//debug writeln(__FILE__,__LINE__,": ", padding, " " , arg);
+								//debug writeln(__FILE__,__LINE__,": ", 
+									//padding, " " , arg);
 							} else {
-								throw new IllegalArgumentException("Expected an int not an " 
+								throw new IllegalArgumentException("Expected 										an int not an " 
 									~ arguments[argPtr].toString());
 							}
 						}
@@ -267,6 +267,14 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form, TypeInfo[] argument
 					case 's': // string
 						if(arguments[argPtr] == typeid(immutable(char)[])) {
 							immutable(char)[] value = va_arg!(immutable(char)[])(arg);
+							immutable(T) paddingChar = padding0 ? '0' : ' ';
+							//debug writeln(__FILE__,__LINE__,": ", padding);
+							if(value.length < padding && !leftAlign) {
+								for(size_t i = 0; i < padding - value.length; 
+										i++) {
+									appendWithIdx!(T)(ret, ptr++, paddingChar);
+								}
+							}
 							////debug writeln(__FILE__,__LINE__,": ", value);
 							foreach(it; value) {
 								appendWithIdx!(T)(ret, ptr++, it);
