@@ -11,7 +11,8 @@ hurt.container.rbtree.o hurt.container.map.o hurt.container.tree.o hurt.containe
 hurt.container.hashtable.o hurt.container.bst.o
 
 EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
-hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o
+hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o hurt.exception.ioexception.o
+
 
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
@@ -144,6 +145,9 @@ hurt.conv.tostring.o: hurt/conv/tostring.d Makefile
 
 hurt.conv.numerictochar.o: hurt/conv/numerictochar.d Makefile
 	$(DC) $(CFLAGS) hurt/conv/numerictochar.d -ofhurt.conv.numerictochar.o
+
+hurt.exception.ioexception.o: hurt/exception/ioexception.d Makefile
+	$(DC) $(CFLAGS) hurt/exception/ioexception.d -ofhurt.exception.ioexception.o
 
 hurt.exception.illegalargumentexception.o: hurt/exception/illegalargumentexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/illegalargumentexception.d -ofhurt.exception.illegalargumentexception.o
