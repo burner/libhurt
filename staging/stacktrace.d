@@ -1,5 +1,4 @@
-//module stacktrace;
-
+module hurt.util.stacktrace;
 
 import core.sync.mutex;
 import hurt.io.stdio;
@@ -48,7 +47,7 @@ public class Trace {
 	}
 
 	public static void printTrace() {
-		printfln("\nPrinting current stackTrace\n:");
+		println("\nPrinting current stackTrace:");
 		foreach(Trace it; Trace.stack) {
 			it.print();
 		}
@@ -70,11 +69,9 @@ public class Trace {
 	}
 
 	public void print() {
-		println(__LINE__);
 		for(uint i = 0; i < this.localDepth; i++) {
 			hurt.io.stdio.print("  ");
 		}
-		println(__LINE__);
 		printfln("%s:%d %s", this.file, this.line, this.funcName);
 	}
 
@@ -100,32 +97,4 @@ public class Trace {
 		Trace.depth--;
 		Trace.stack.popBack();
 	}
-}
-
-void bar() {
-	scope auto trace = new Trace("bar");
-	int u = 1;
-	for(int i = 0; i < 10000; i++) { u += i;}
-}
-
-void foo() {
-	scope auto trace = new Trace("foo");
-	bar();
-	bar();
-	bar();
-	bar();
-	bar();
-	bar();
-}
-
-void main() {
-	scope auto trace = new Trace("main");
-	foo();
-	foo();
-	foo();
-	bar();
-	bar();
-	bar();
-	delete trace;
-	Trace.printStats();
 }

@@ -18,7 +18,7 @@ MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o
 
 UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.milli.o hurt.util.random.o \
-hurt.util.datetime.o
+hurt.util.datetime.o hurt.util.stacktrace.o
 
 CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
 hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
@@ -112,7 +112,7 @@ hurt.string.formatter.o: hurt/string/formatter.d Makefile
 hurt.util.array.o: hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/util/array.d -ofhurt.util.array.o
 
-hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt.algo.sorting.o hurt.container.dlst.o Makefile
+hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt.algo.sorting.o hurt.container.dlst.o hurt.container.map.o Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
 
 hurt.util.random.o: hurt/util/random.d Makefile

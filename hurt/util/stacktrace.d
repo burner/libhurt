@@ -1,21 +1,16 @@
-module util.stacktrace;
+module hurt.util.stacktrace;
 
 import core.sync.mutex;
-import std.stdio;
-//import std.date;
-import std.conv;
-import core.vararg;
-
+import hurt.io.stdio;
+import hurt.container.isr;
+import hurt.conv.conv;
 import hurt.container.dlst;
+import hurt.container.map;
 import hurt.algo.sorting;
 
 extern(C) long getMilli();
 
-public interface Printable {
-	public string toString();
-}
-
-public final class StackTrace {
+public class Trace {
 	private string file;
 	private uint line;
 	private string funcName;
@@ -31,100 +26,75 @@ public final class StackTrace {
 		ulong time;
 	}
 
-	private __gshared static Stats[string] allCalls;
+	private __gshared static Map!(string,Stats) allCalls;
 	private __gshared static Mutex allCallsMutex;
 	private static uint depth;
-	private static DLinkedList!(StackTrace) stack;
+	private static DLinkedList!(Trace) stack;
 
 	public static void printStats() {
-		writeln("\nStats of all traced function:");
-		writefln("%55s %15s %15s", "function", "calls", "time in ms");
-		StackTrace.allCallsMutex.lock();
-		Stats[] a = StackTrace.allCalls.values;
+		println("\nStats of all traced function:");
+		printfln("%50s %14s %14s", "function", "calls", "time in ms");
+		Trace.allCallsMutex.lock();
+		Stats[] a = Trace.allCalls.values();
+		assert(a.length == Trace.allCalls.getSize());
 		sort!(Stats)(a, function(in Stats a, in Stats b) {
 			 return a.calls > b.calls; });
 		foreach(it; a) {
-			writefln("%55s %15d, %15d", it.funcName~"() at "~it.file~":"~to!(string)(it.line), it.calls, it.time);
+			printfln("%50s %14d %14d", it.funcName~"() at "~ it.file ~ ":" ~ 
+				conv!(int,string)(it.line), it.calls, it.time);
 		}
-		StackTrace.allCallsMutex.unlock();
+		Trace.allCallsMutex.unlock();
 	}
 
 	public static void printTrace() {
-		writeln("\nPrinting current stackTrace:");
-		foreach(StackTrace it; StackTrace.stack) {
+		println("\nPrinting current stackTrace:");
+		foreach(Trace it; Trace.stack) {
 			it.print();
 		}
 	}
 
 	static this() {
-		StackTrace.stack = new DLinkedList!(StackTrace)();
-		StackTrace.allCallsMutex = new Mutex();
+		Trace.stack = new DLinkedList!(Trace)();
+		Trace.allCalls = new Map!(string,Stats)(ISRType.HashTable);
+		Trace.allCallsMutex = new Mutex();
 	}
 
-	this(string file, uint line, string funcName) {
+	this(string func, string file = __FILE__, int line = __LINE__) {
 		this.file = file;
 		this.line = line;
-		this.funcName = funcName;
+		this.funcName = func;
 		this.startTime = getMilli();
-		this.localDepth = StackTrace.depth++;
-		StackTrace.stack.pushBack(this);
+		this.localDepth = Trace.depth++;
+		Trace.stack.pushBack(this);
 	}
 
 	public void print() {
 		for(uint i = 0; i < this.localDepth; i++) {
-			write("  ");
+			hurt.io.stdio.print("  ");
 		}
-		writefln("%s:%d %s(%s)", this.file, this.line, this.funcName, this.args);
-	}
-
-	public void putArgs(...) {
-		string tmp = "";
-		int cnt = 0;
-		for(int i = 0; i < _arguments.length; i++) {
-			//writeln("typeid = ",_arguments[i]);
-			if(_arguments[i] == typeid(string)) {
-				tmp ~= va_arg!(string)(_argptr);
-				tmp ~= " ";
-			} else if(_arguments[i] == typeid(Printable)) {
-				tmp ~= va_arg!(Printable)(_argptr).toString();
-				tmp ~= " ";
-			} else if(_arguments[i] == typeid(int)) {
-				tmp ~= to!(string)(va_arg!(int)(_argptr));
-				tmp ~= " ";
-			} else if(_arguments[i] == typeid(char)) {
-				tmp ~= to!(string)(va_arg!(char)(_argptr));
-				tmp ~= " ";
-			} else if(_arguments[i] == typeid(double)) {
-				tmp ~= to!(string)(va_arg!(double)(_argptr));
-				tmp ~= " ";
-			} else {
-				//StackTrace.printTrace();
-			}
-		}
-		//writeln(tmp);
-		this.args = tmp[0 .. $-1];
+		printfln("%s:%d %s", this.file, this.line, this.funcName);
 	}
 
 	~this() {
 		ulong timeDiff = getMilli() - this.startTime;
 		//writeln("destructor ", timeDiff);
-		string id = this.file ~ ":" ~ to!string(this.line);
-		StackTrace.allCallsMutex.lock();
-		if(id in StackTrace.allCalls) {
-			Stats s = StackTrace.allCalls[id];
+		string id = this.file ~ ":" ~ conv!(int,string)(this.line);
+		Trace.allCallsMutex.lock();
+		if(Trace.allCalls.contains(id)) {
+			Stats s = *Trace.allCalls.find(id);
 			s.calls++;
 			s.time += timeDiff;	
 		} else {
 			Stats s = new Stats;
-			StackTrace.allCalls[id] = s;
+			Trace.allCalls.insert(id, s);
 			s.calls++;
 			s.time = timeDiff;	
 			s.funcName = this.funcName;
 			s.line = this.line;
 			s.file= this.file;
 		}
-		StackTrace.allCallsMutex.unlock();
-		StackTrace.depth--;
-		StackTrace.stack.popBack();
+		Trace.allCallsMutex.unlock();
+		Trace.depth--;
+		Trace.stack.popBack();
 	}
 }

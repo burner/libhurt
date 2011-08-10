@@ -38,6 +38,14 @@ public pure T abs(T)(T t) if(isNumeric!(T)()) {
 	return t < 0 ? -t : t;
 }
 
+public pure bool equal(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
+	if(smaller(t,s))
+		return false;
+	if(smaller(s,t))
+		return false;
+	return true;
+}
+
 // reads is t smaller than s
 public pure bool smaller(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
 	if(t < 0 && s >= 0) {
@@ -50,7 +58,11 @@ public pure bool smaller(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
 }
 
 public pure bool bigger(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
-	return !smaller!(T,S)(t,s);
+	if(smaller(t,s))
+		return false;
+	if(equal(t,s))
+		return false;
+	return !smaller(s,t);
 }
 
 unittest {
@@ -70,4 +82,6 @@ unittest {
 	assert(!bigger!(short,long)(-10,100000000));
 	assert(bigger!(short,long)(-10,-100000000));
 	assert(bigger!(byte,long)(-10,-100000000));
+	assert(equal!(short,long)(-10,-10));
+	assert(equal!(byte,long)(-10,-10));
 }

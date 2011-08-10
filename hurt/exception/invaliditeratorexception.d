@@ -1,7 +1,10 @@
 module hurt.exception.invaliditeratorexception;
 
+import hurt.conv.conv;
+
 public class InvalidIteratorException : Exception {
-	this(string str) {
-		super(str);
+	public this(string str, string file = __FILE__, int line = __LINE__) {
+		super(file ~ ":" ~ conv!(int,string)(line) ~ " Invalid Iterator " 
+			~ str);
 	}
 }
