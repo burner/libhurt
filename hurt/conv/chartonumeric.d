@@ -23,6 +23,6 @@ public pure byte chartobase10(in char ch) {
 		case '9':
 			return 9;
 		default:
-			assert(0, "Invaild case");
+			assert(0, "Invaild case " ~ ch);
 	}
 }

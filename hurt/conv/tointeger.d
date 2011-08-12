@@ -7,12 +7,13 @@ import hurt.exception.valuerangeexception;
 import hurt.math.mathutil;
 
 import std.stdio;
-import std.conv;
+//import std.conv;
 
-public pure T stringToInt(T)(in string str) {
+public pure T stringToInt(T)(in string str, int multi = 10) {
 	T ret = 0;
 	T mul = 1;	
 	T tmp;
+	bool neg = false;
 		
 	foreach_reverse(it; str) {
 		// ignore underscores
@@ -20,15 +21,35 @@ public pure T stringToInt(T)(in string str) {
 
 		// panic if char isn't a digit
 		if(!isDigit(it)) {
-			assert(0, "is not digit");
+			if(it == '-') {
+				neg = true;
+				continue;
+			} else if(it == '+') {
+				continue;
+			} else {
+				assert(0, "is not digit nor sign");
+			}
 		}
 
 		// construct the number
 		tmp = chartobase10(it) * mul;	
 		ret += tmp;
-		mul *= 10;
+		mul *= multi;
 	}
-	return ret;
+	if(neg)
+		return -ret;
+	else
+		return ret;
+}
+
+unittest {
+	assert(stringToInt!(int)("100") == 100);
+	assert(stringToInt!(int)("589") == 589);
+	assert(stringToInt!(int)("-100") == -100);
+	assert(stringToInt!(int)("-589") == -589);
+	assert(stringToInt!(int)("10",8) == 8);
+	assert(stringToInt!(int)("12",8) == 10);
+	assert(stringToInt!(int)("22",8) == 18);
 }
 
 public pure uint longToUint(long from) {

@@ -43,6 +43,10 @@ enum SeekType {
 	SEEK_END = 2
 }
 
+public void raiseErrno(string file = __FILE__, int line = __LINE__) {
+
+}
+
 pure string errnoToString(const int errno) {
 	switch(errno) {
 		case 1 : return "Operation not permitted";

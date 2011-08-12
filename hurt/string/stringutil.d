@@ -1,5 +1,25 @@
 module hurt.string.stringutil;
 
+public pure bool isChar(T)() {
+	static if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+@safe
+public pure bool isString(T)() {
+	static if(is(T == immutable(char)[]) || is(T == immutable(wchar)[]) || 
+			is(T == immutable(dchar)[]) || 
+			is(T : const(dchar[])) || is(T : const(wchar[])) || 
+			is(T : const(char[]))) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 /** Trim blanks and tabs from the beginning and end of a str. */
 public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	uint low = 0;
