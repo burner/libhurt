@@ -74,6 +74,7 @@ enum SeekPos {
 private {
 	import hurt.conv.tointeger;
 	import hurt.exception.exception;
+	import hurt.string.formatter;
 	//import std.conv;
 	//import std.format;
 	import std.system;		// for Endian enumeration
@@ -1182,8 +1183,14 @@ class Stream : InputStream, OutputStream {
 	}
 
 	// writes data with optional trailing newline
-	OutputStream writefx(TypeInfo[] arguments, void* argptr, int newline=false) {
-		doFormat(&doFormatCallback,arguments,argptr);
+	OutputStream writefx(TypeInfo[] arguments, void* argptr, 
+			int newline=false) {
+		//string str = makeString(arguments,argptr);
+		string str = formatString!(char,char)(va_arg!(string)(argptr), 
+			arguments[1..$], argptr);
+		foreach(it;str)
+			doFormatCallback(it);
+		//doFormat(&doFormatCallback,arguments,argptr);
 		if (newline)
 			writeLine("");
 		return this;
