@@ -27,17 +27,18 @@ module hurt.io.stream;
 
 
 /* Class structure:
- *	InputStream			 interface for reading
- *	OutputStream			interface for writing
+ *	InputStream					interface for reading
+ *	OutputStream				interface for writing
  *	Stream						abstract base of stream implementations
- *		File						an OS file stream
- *		FilterStream		a base-class for wrappers around another stream
- *			BufferedStream	a buffered stream wrapping another stream
+ *		File					an OS file stream
+ *		FilterStream			a base-class for wrappers around another stream
+ *			BufferedStream		a buffered stream wrapping another stream
  *				BufferedFile	a buffered File
- *			EndianStream		a wrapper stream for swapping byte order and BOMs
- *			SliceStream		 a portion of another stream
- *		MemoryStream		a stream entirely stored in main memory
- *		TArrayStream		a stream wrapping an array-like buffer
+ *			EndianStream		a wrapper stream for swapping byte order and 
+ *									BOMs
+ *			SliceStream		 	a portion of another stream
+ *		MemoryStream			a stream entirely stored in main memory
+ *		TArrayStream			a stream wrapping an array-like buffer
  */
 
 /// A base class for stream exceptions.
@@ -77,15 +78,16 @@ private {
 	import hurt.string.formatter;
 	//import std.conv;
 	//import std.format;
-	import std.system;		// for Endian enumeration
-	import std.intrinsic; // for bswap
+	import hurt.system;		// for Endian enumeration
+	//import std.intrinsic; // for bswap
+	import hurt.util.util;
 	import hurt.string.utf;
 	import core.vararg;
 }
 
-version (Windows) {
+/*version (Windows) {
 	private import std.file;
-}
+}*/
 
 /// InputStream is the interface for readable streams.
 
@@ -386,7 +388,9 @@ interface OutputStream {
 
 // not really abstract, but its instances will do nothing useful
 class Stream : InputStream, OutputStream {
-	private import std.string, crc32, std.c.stdlib, std.c.stdio;
+	private import hurt.util.crc32;
+	private import core.stdc.stdio;
+	private import core.stdc.stdlib;
 
 	// stream abilities
 	bool readable = false;				/// Indicates whether this stream can be read from.
@@ -1135,13 +1139,13 @@ class Stream : InputStream, OutputStream {
 		size_t psize = buffer.length;
 		size_t count;
 		while (true) {
-			version (Win32) {
+			/*version (Win32) {
 				count = _vsnprintf(p, psize, f, args);
 				if (count != -1)
 					break;
 				psize *= 2;
 				p = cast(char*) alloca(psize);
-			} else version (Posix) {
+			} else*/ version (Posix) {
 				count = vsnprintf(p, psize, f, args);
 				if (count == -1)
 					psize *= 2;
@@ -1780,13 +1784,13 @@ enum FileMode {
 	Append = 10 // includes FileMode.Out
 }
 
-version (Win32) {
+/*version (Win32) {
 	private import std.c.windows.windows;
 	extern (Windows) {
 		void FlushFileBuffers(HANDLE hFile);
 		DWORD	GetFileType(HANDLE hFile);
 	}
-}
+}*/
 version (Posix) {
 	private import core.sys.posix.fcntl;
 	private import core.sys.posix.unistd;
@@ -1841,10 +1845,9 @@ class File: Stream {
 	 * The FileMode.Append mode will open the file for writing and move the
 	 * file position to the end of the file.
 	 */
-	this(string filename, FileMode mode = FileMode.In)
-	{
-			this();
-			open(filename, mode);
+	this(string filename, FileMode mode = FileMode.In) {
+		this();
+		open(filename, mode);
 	}
 
 
@@ -2187,16 +2190,16 @@ class BufferedFile: BufferedStream {
 
 /// UTF byte-order-mark signatures
 enum BOM {
-				UTF8,					 /// UTF-8
-				UTF16LE,				/// UTF-16 Little Endian
-				UTF16BE,				/// UTF-16 Big Endian
-				UTF32LE,				/// UTF-32 Little Endian
-				UTF32BE,				/// UTF-32 Big Endian
+	UTF8,					 /// UTF-8
+	UTF16LE,				/// UTF-16 Little Endian
+	UTF16BE,				/// UTF-16 Big Endian
+	UTF32LE,				/// UTF-32 Little Endian
+	UTF32BE,				/// UTF-32 Big Endian
 }
 
 private const int NBOMS = 5;
 immutable Endian[NBOMS] BOMEndian =
-[ std.system.endian,
+[ hurt.system.endian,
 	Endian.LittleEndian, Endian.BigEndian,
 	Endian.LittleEndian, Endian.BigEndian
 	];
@@ -2234,7 +2237,7 @@ class EndianStream : FilterStream {
 	 * The Endian type is defined
 	 * in the std.system module.
 	 */
-	this(Stream source, Endian end = std.system.endian) {
+	this(Stream source, Endian end = hurt.system.endian) {
 		super(source);
 		endian = end;
 	}
@@ -2699,7 +2702,7 @@ class MemoryStream: TArrayStream!(ubyte[]) {
 		assert (str == ("bef" ~ str2));
 	}
 }
-
+/+
 import std.mmfile;
 
 /***
@@ -2759,7 +2762,7 @@ unittest {
 	assert (str == "Hello, wield");
 	m.close();
 	std.file.remove("testing.txt");
-}
+}+/
 
 
 /***
