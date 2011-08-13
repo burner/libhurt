@@ -12,7 +12,8 @@
  *	with buffering and endian support added by Ben Hinkle
  *	with buffered readLine performance improvements by Dave Fladebo
  *	with opApply inspired by (and mostly copied from) Regan Heath
- *	with bug fixes and MemoryStream/SliceStream enhancements by Derick Eddington
+ *	with bug fixes and MemoryStream/SliceStream enhancements by Derick
+ *	Eddington
  *
  * Permission to use, copy, modify, distribute and sell this software
  * and its documentation for any purpose is hereby granted without fee,
@@ -103,7 +104,8 @@ interface InputStream {
 	/***
 	 * Read a block of data big enough to fill the given array buffer.
 	 *
-	 * Returns: the actual number of bytes read. Unfilled bytes are not modified.
+	 * Returns: the actual number of bytes read. Unfilled bytes are not
+	 * modified.
 	 */
 	size_t read(ubyte[] buffer);
 
@@ -112,29 +114,30 @@ interface InputStream {
 	 *
 	 * Throw a ReadException if it could not be read.
 	 * Outside of byte, ubyte, and char, the format is
-	 * implementation-specific and should not be used except as opposite actions
+	 * implementation-specific and should not be used except as opposite
+	 * actions
 	 * to write.
 	 */
 	void read(out byte x);
-	void read(out ubyte x);			 /// ditto
-	void read(out short x);			 /// ditto
-	void read(out ushort x);			/// ditto
-	void read(out int x);				 /// ditto
-	void read(out uint x);				/// ditto
-	void read(out long x);				/// ditto
-	void read(out ulong x);			 /// ditto
-	void read(out float x);			 /// ditto
-	void read(out double x);			/// ditto
-	void read(out real x);				/// ditto
-	void read(out ifloat x);			/// ditto
-	void read(out idouble x);		 /// ditto
-	void read(out ireal x);			 /// ditto
-	void read(out cfloat x);			/// ditto
-	void read(out cdouble x);		 /// ditto
-	void read(out creal x);			 /// ditto
-	void read(out char x);				/// ditto
-	void read(out wchar x);			 /// ditto
-	void read(out dchar x);			 /// ditto
+	void read(out ubyte x);			/// ditto
+	void read(out short x);			/// ditto
+	void read(out ushort x);		/// ditto
+	void read(out int x);			/// ditto
+	void read(out uint x);			/// ditto
+	void read(out long x);			/// ditto
+	void read(out ulong x);			/// ditto
+	void read(out float x);			/// ditto
+	void read(out double x);		/// ditto
+	void read(out real x);			/// ditto
+	void read(out ifloat x);		/// ditto
+	void read(out idouble x);		/// ditto
+	void read(out ireal x);			/// ditto
+	void read(out cfloat x);		/// ditto
+	void read(out cdouble x);		/// ditto
+	void read(out creal x);			/// ditto
+	void read(out char x);			/// ditto
+	void read(out wchar x);			/// ditto
+	void read(out dchar x);			/// ditto
 
 	// reads a string, written earlier by write()
 	void read(out char[] s);			/// ditto
@@ -143,7 +146,8 @@ interface InputStream {
 	void read(out wchar[] s);		 /// ditto
 
 	/***
-	 * Read a line that is terminated with some combination of carriage return and
+	 * Read a line that is terminated with some combination of carriage return
+	 * and
 	 * line feed or end-of-file.
 	 *
 	 * The terminators are not included. The wchar version
@@ -175,9 +179,12 @@ interface InputStream {
 
 	// iterate through the stream line-by-line
 	int opApply(scope int delegate(ref char[] line) dg);
-	int opApply(scope int delegate(ref ulong n, ref char[] line) dg);	/// ditto
-	int opApply(scope int delegate(ref wchar[] line) dg);						/// ditto
-	int opApply(scope int delegate(ref ulong n, ref wchar[] line) dg); /// ditto
+	int opApply(scope int delegate(ref ulong n, ref char[] line) dg);	
+	/// ditto
+	int opApply(scope int delegate(ref wchar[] line) dg);					
+	/// ditto
+	int opApply(scope int delegate(ref ulong n, ref wchar[] line) dg); 
+	/// ditto
 
 	/// Read a string of the given length,
 	/// throwing ReadException if there was a problem.
@@ -199,7 +206,8 @@ interface InputStream {
 	 *
 	 * This is the only method that will handle ungetc properly.
 	 * getcw's format is implementation-specific.
-	 * If EOF is reached then getc returns char.init and getcw returns wchar.init.
+	 * If EOF is reached then getc returns char.init and getcw returns
+	 * wchar.init.
 	 */
 
 	char getc();
@@ -220,11 +228,12 @@ interface InputStream {
 	 *
 	 * An argument of type string is interpreted as a format string.
 	 * All other arguments must be pointer types.
-	 * If a format string is not present a default will be supplied computed from
+	 * If a format string is not present a default will be supplied computed
+	 * from
 	 * the base type of the pointer type. An argument of type string* is filled
-	 * (possibly with appending characters) and a slice of the result is assigned
-	 * back into the argument. For example the following readf statements
-	 * are equivalent:
+	 * (possibly with appending characters) and a slice of the result is
+	 * assigned back into the argument. For example the following readf
+	 * statements are equivalent:
 	 * --------------------------
 	 * int x;
 	 * double y;
@@ -245,13 +254,13 @@ interface InputStream {
 	 * file.
 	 *
 	 * This does not require actually reading past the end, as with stdio. For
-	 * non-seekable streams this might only return true after attempting to read
-	 * past the end.
+	 * non-seekable streams this might only return true after attempting to
+	 * read past the end.
 	 */
 
 	bool eof();
 
-	bool isOpen();				/// Return true if the stream is currently open.
+	bool isOpen();	/// Return true if the stream is currently open.
 }
 
 /// Interface for writable streams.
@@ -304,8 +313,8 @@ interface OutputStream {
 	 * and should only be used in conjunction with read.
 	 * Throw WriteException on error.
 	 */
-		void write(const(char)[] s);
-		void write(const(wchar)[] s); /// ditto
+	void write(const(char)[] s);
+	void write(const(wchar)[] s); /// ditto
 
 	/***
 	 * Write a line of text,
@@ -353,7 +362,8 @@ interface OutputStream {
 	 */
 	OutputStream writef(...);
 	OutputStream writefln(...); /// ditto
-	OutputStream writefx(TypeInfo[] arguments, void* argptr, int newline = false);	/// ditto
+	OutputStream writefx(TypeInfo[] arguments, void* argptr, 
+		int newline = false);	/// ditto
 
 	void flush(); /// Flush pending output if appropriate.
 	void close(); /// Close the stream, flushing output if appropriate.
@@ -362,7 +372,8 @@ interface OutputStream {
 
 
 /***
- * Stream is the base abstract class from which the other stream classes derive.
+ * Stream is the base abstract class from which the other stream classes
+ * derive.
  *
  * Stream's byte order is the format native to the computer.
  *
@@ -393,19 +404,20 @@ class Stream : InputStream, OutputStream {
 	private import core.stdc.stdlib;
 
 	// stream abilities
-	bool readable = false;				/// Indicates whether this stream can be read from.
-	bool writeable = false;			 /// Indicates whether this stream can be written to.
-	bool seekable = false;				/// Indicates whether this stream can be seeked within.
-	protected bool isopen = true; /// Indicates whether this stream is open.
+	bool readable = false;	/// Indicates whether this stream can be read from.
+	bool writeable = false;	 
+	/// Indicates whether this stream can be written to.
+	bool seekable = false;				
+	/// Indicates whether this stream can be seeked within.
+	protected bool isopen = true; 
+	/// Indicates whether this stream is open.
 
-	protected bool readEOF = false; /** Indicates whether this stream is at eof
-																	 * after the last read attempt.
-																	 */
+	protected bool readEOF = false; 
+	// Indicates whether this stream is at eof after the last read attempt.
 
-	protected bool prevCr = false; /** For a non-seekable stream indicates that
-																	* the last readLine or readLineW ended on a
-																	* '\r' character.
-																	*/
+	protected bool prevCr = false; 
+	/** For a non-seekable stream indicates that the last readLine or readLineW
+	 *  ended on a '\r' character. */
 
 	this() {}
 
@@ -1236,12 +1248,12 @@ class Stream : InputStream, OutputStream {
 	}
 
 	/***
-	 * Change the current position of the stream. whence is either SeekPos.Set, in
-	 which case the offset is an absolute index from the beginning of the stream,
-	 SeekPos.Current, in which case the offset is a delta from the current
-	 position, or SeekPos.End, in which case the offset is a delta from the end of
-	 the stream (negative or zero offsets only make sense in that case). This
-	 returns the new file position.
+	 * Change the current position of the stream. whence is either SeekPos.Set,
+	 * in which case the offset is an absolute index from the beginning of the
+	 * stream, SeekPos.Current, in which case the offset is a delta from the
+	 * current position, or SeekPos.End, in which case the offset is a delta
+	 * from the end of the stream (negative or zero offsets only make sense in
+	 * that case). This returns the new file position.
 	 */
 	abstract ulong seek(long offset, SeekPos whence);
 
@@ -1249,8 +1261,10 @@ class Stream : InputStream, OutputStream {
 	 * Aliases for their normal seek counterparts.
 	 */
 	ulong seekSet(long offset) { return seek (offset, SeekPos.Set); }
-	ulong seekCur(long offset) { return seek (offset, SeekPos.Current); } /// ditto
-	ulong seekEnd(long offset) { return seek (offset, SeekPos.End); }		 /// ditto
+	ulong seekCur(long offset) { return seek (offset, SeekPos.Current); } 
+	/// ditto
+	ulong seekEnd(long offset) { return seek (offset, SeekPos.End); }		 
+	/// ditto
 
 	/***
 	 * Sets file position. Equivalent to calling seek(pos, SeekPos.Set).
@@ -1302,8 +1316,8 @@ class Stream : InputStream, OutputStream {
 
 	/***
 	 * Read the entire stream and return it as a string.
-	 * If the stream is not seekable the contents from the current position to eof
-	 * is read and returned.
+	 * If the stream is not seekable the contents from the current position to
+	 * eof is read and returned.
 	 */
 	override string toString() {
 		if (!readable)
@@ -1376,19 +1390,20 @@ class Stream : InputStream, OutputStream {
  * A base class for streams that wrap a source stream with additional
  * functionality.
  *
- * The method implementations forward read/write/seek calls to the
- * source stream. A FilterStream can change the position of the source stream
+ * The method implementations forward read/write/seek calls to the source
+ * stream. A FilterStream can change the position of the source stream
  * arbitrarily and may not keep the source stream state in sync with the
  * FilterStream, even upon flushing and closing the FilterStream. It is
- * recommended to not make any assumptions about the state of the source position
- * and read/write state after a FilterStream has acted upon it. Specifc subclasses
- * of FilterStream should document how they modify the source stream and if any
- * invariants hold true between the source and filter.
+ * recommended to not make any assumptions about the state of the source
+ * position and read/write state after a FilterStream has acted upon it.
+ * Specifc subclasses of FilterStream should document how they modify the
+ * source stream and if any invariants hold true between the source and filter.
  */
 class FilterStream : Stream {
 	private Stream s;							// source stream
 
-	/// Property indicating when this stream closes to close the source stream as
+	/// Property indicating when this stream closes to close the source stream
+	/// as
 	/// well.
 	/// Defaults to true.
 	bool nestClose = true;
@@ -1410,8 +1425,8 @@ class FilterStream : Stream {
 	 * Set the current source stream.
 	 *
 	 * Setting the source stream closes this stream before attaching the new
-	 * source. Attaching an open stream reopens this stream and resets the stream
-	 * state.
+	 * source. Attaching an open stream reopens this stream and resets the
+	 * stream state.
 	 */
 	void source(Stream s) {
 		close();
@@ -1420,8 +1435,8 @@ class FilterStream : Stream {
 	}
 
 	/***
-	 * Indicates the source stream changed state and that this stream should reset
-	 * any readable, writeable, seekable, isopen and buffering flags.
+	 * Indicates the source stream changed state and that this stream should
+	 * reset any readable, writeable, seekable, isopen and buffering flags.
 	 */
 	void resetSource() {
 		if (s !is null) {
@@ -1471,10 +1486,10 @@ class FilterStream : Stream {
  * This subclass is for buffering a source stream.
  *
  * A buffered stream must be
- * closed explicitly to ensure the final buffer content is written to the source
- * stream. The source stream position is changed according to the block size so
- * reading or writing to the BufferedStream may not change the source stream
- * position by the same amount.
+ * closed explicitly to ensure the final buffer content is written to the 
+ * source stream. The source stream position is changed according to the block
+ * size so reading or writing to the BufferedStream may not change the source
+ * stream position by the same amount.
  */
 class BufferedStream : FilterStream {
 	ubyte[] buffer;			 // buffer, if any
@@ -1484,15 +1499,15 @@ class BufferedStream : FilterStream {
 	size_t bufferSourcePos; // position in buffer of source stream position
 	ulong streamPos;			// absolute position in source stream
 
-	/* Example of relationship between fields:
-	 *
-	 *	s						 ...01234567890123456789012EOF
-	 *	buffer								|--										 --|
-	 *	bufferCurPos											 |
-	 *	bufferLen						 |--						--|
-	 *	bufferSourcePos												|
-	 *
-	 */
+  /* Example of relationship between fields:
+   *
+   *  s             ...01234567890123456789012EOF
+   *  buffer                |--                     --|
+   *  bufferCurPos                       |
+   *  bufferLen             |--            --|
+   *  bufferSourcePos                        |
+   *
+   */
 
 	invariant() {
 		assert(bufferSourcePos <= bufferLen);
@@ -1643,51 +1658,52 @@ class BufferedStream : FilterStream {
 	// reusing the memory in buffer if result will fit, otherwise
 	// will reallocate (using concatenation)
 	template TreadLine(T) {
-			T[] readLine(T[] inBuffer)
-			{
-					size_t		lineSize = 0;
-					bool		haveCR = false;
-					T			 c = '\0';
-					size_t		idx = 0;
-					ubyte*	pc = cast(ubyte*)&c;
+		T[] readLine(T[] inBuffer) {
+			size_t		lineSize = 0;
+			bool		haveCR = false;
+			T			 c = '\0';
+			size_t		idx = 0;
+			ubyte*	pc = cast(ubyte*)&c;
 
-				L0:
-					for(;;) {
-							size_t start = bufferCurPos;
-						L1:
-							foreach(ubyte b; buffer[start .. bufferLen]) {
-									bufferCurPos++;
-									pc[idx] = b;
-									if(idx < T.sizeof - 1) {
-											idx++;
-											continue L1;
-									} else {
-											idx = 0;
-									}
-									if(c == '\n' || haveCR) {
-											if(haveCR && c != '\n') bufferCurPos--;
-											break L0;
-									} else {
-											if(c == '\r') {
-													haveCR = true;
-											} else {
-													if(lineSize < inBuffer.length) {
-															inBuffer[lineSize] = c;
-													} else {
-															inBuffer ~= c;
-													}
-													lineSize++;
-											}
-									}
+			L0:
+				for(;;) {
+					size_t start = bufferCurPos;
+				L1:
+					foreach(ubyte b; buffer[start .. bufferLen]) {
+						bufferCurPos++;
+						pc[idx] = b;
+						if(idx < T.sizeof - 1) {
+							idx++;
+							continue L1;
+						} else {
+							idx = 0;
+						}
+						if(c == '\n' || haveCR) {
+							if(haveCR && c != '\n') 
+								bufferCurPos--;
+							break L0;
+						} else {
+							if(c == '\r') {
+								haveCR = true;
+							} else {
+								if(lineSize < inBuffer.length) {
+									inBuffer[lineSize] = c;
+								} else {
+									inBuffer ~= c;
+								}
+								lineSize++;
 							}
-							flush();
-							size_t res = super.readBlock(buffer.ptr, buffer.length);
-							if(!res) break L0; // EOF
-							bufferSourcePos = bufferLen = res;
-							streamPos += res;
+						}
 					}
-					return inBuffer[0 .. lineSize];
-			}
+					flush();
+					size_t res = super.readBlock(buffer.ptr, 
+						buffer.length);
+					if(!res) break L0; // EOF
+					bufferSourcePos = bufferLen = res;
+					streamPos += res;
+				}
+				return inBuffer[0 .. lineSize];
+		}
 	} // template TreadLine(T)
 
 	override char[] readLine(char[] inBuffer) {
@@ -1745,7 +1761,8 @@ class BufferedStream : FilterStream {
 			return false;
 		if (bufferLen == buffer.length)
 			flush();
-		size_t res = super.readBlock(&buffer[bufferLen],buffer.length-bufferLen);
+		size_t res = super.readBlock(&buffer[bufferLen],
+			buffer.length-bufferLen);
 		bufferSourcePos +=	res;
 		bufferLen += res;
 		streamPos += res;
@@ -1797,6 +1814,8 @@ version (Posix) {
 	alias int HANDLE;
 }
 
+private import hurt.string.stringutil;
+
 /// This subclass is for unbuffered file system streams.
 class File: Stream {
 
@@ -1833,8 +1852,8 @@ class File: Stream {
 	}
 
 	/***
-	 * Create the stream with no open file, an open file in read mode, or an open
-	 * file with explicit file mode.
+	 * Create the stream with no open file, an open file in read mode, or an 
+	 * open file with explicit file mode.
 	 * mode, if given, is a combination of FileMode.In
 	 * (indicating a file that can be read) and FileMode.Out (indicating a file
 	 * that can be written).
@@ -1864,29 +1883,28 @@ class File: Stream {
 		writeable = cast(bool)(mode & FileMode.Out);
 		version (Win32) {
 			if (std.file.useWfuncs) {
-				hFile = CreateFileW(std.utf.toUTF16z(filename), access, share,
-														null, createMode, 0, null);
+				hFile = CreateFileW(hurt.utf.toUTF16z(filename), access, 
+					share, null, createMode, 0, null);
 			} else {
-				hFile = CreateFileA(std.file.toMBSz(filename), access, share,
-														null, createMode, 0, null);
+				hFile = CreateFileA(hurt.file.toMBSz(filename), access, 
+					share, null, createMode, 0, null);
 			}
 			isopen = hFile != INVALID_HANDLE_VALUE;
 		}
 		version (Posix) {
-			hFile = core.sys.posix.fcntl.open(toStringz(filename), access | createMode, share);
+			hFile = core.sys.posix.fcntl.open(toStringz(filename), 
+				access | createMode, share);
 			isopen = hFile != -1;
 		}
 		if (!isopen)
-			throw new OpenException(cast(string) ("Cannot open or create file '"
-																						~ filename ~ "'"));
+			throw new OpenException(cast(string)
+				("Cannot open or create file '" ~ filename ~ "'"));
 		else if ((mode & FileMode.Append) == FileMode.Append)
 			seekEnd(0);
 	}
 
-	private void parseMode(int mode,
-												 out int access,
-												 out int share,
-												 out int createMode) {
+	private void parseMode(int mode, out int access, out int share, 
+			out int createMode) {
 		version (Win32) {
 			share |= FILE_SHARE_READ | FILE_SHARE_WRITE;
 			if (mode & FileMode.In) {
@@ -2048,14 +2066,17 @@ class File: Stream {
 		char[] exp = "Testing stream.d:".dup;
 		assert(line[0] == 'T');
 		assert(line.length == exp.length);
-		assert(!std.string.cmp(line, "Testing stream.d:"));
+		assert(hurt.string.stringutil.cmp!(char)(cast(string)line, 
+			"Testing stream.d:"), cast(string)line);
 		// jump over "Hello, "
 		file.seek(7, SeekPos.Current);
 		version (Win32)
 			assert(file.position() == 19 + 7);
 		version (Posix)
 			assert(file.position() == 18 + 7);
-		assert(!std.string.cmp(file.readString(6), "world!"));
+		string ztzt = cast(string)file.readString(6);
+		assert(hurt.string.stringutil.cmp!(char)(
+			ztzt, "world!"), ztzt);
 		i = 0; file.read(i);
 		assert(i == 666);
 		// string#1 + string#2 + int should give exacly that
@@ -2165,14 +2186,16 @@ class BufferedFile: BufferedStream {
 		char c1 = file.getc();
 		file.ungetc(c1);
 		assert( file.size() == oldsize );
-		assert(!std.string.cmp(file.readLine(), "Testing stream.d:"));
+		assert(hurt.string.stringutil.cmp(cast(string)file.readLine(), 
+			"Testing stream.d:"));
 		// jump over "Hello, "
 		file.seek(7, SeekPos.Current);
 		version (Win32)
 			assert(file.position() == 19 + 7);
 		version (Posix)
 			assert(file.position() == 18 + 7);
-		assert(!std.string.cmp(file.readString(6), "world!"));
+		assert(hurt.string.stringutil.cmp(cast(string)file.readString(6), 
+			"world!"));
 		i = 0; file.read(i);
 		assert(i == 666);
 		// string#1 + string#2 + int should give exacly that
@@ -2224,16 +2247,17 @@ immutable ubyte[][NBOMS] ByteOrderMarks =
  * read/write requests and the EndianStream will not perform any byte swapping.
  * The EndianStream reads and writes binary data (non-getc functions) in a
  * one-to-one
- * manner with the source stream so the source stream's position and state will be
- * kept in sync with the EndianStream if only non-getc functions are called.
+ * manner with the source stream so the source stream's position and state 
+ * will be kept in sync with the EndianStream if only non-getc functions are 
+ * called.
  */
 class EndianStream : FilterStream {
 
 	Endian endian;				/// Endianness property of the source stream.
 
 	/***
-	 * Create the endian stream for the source stream source with endianness end.
-	 * The default endianness is the native byte order.
+	 * Create the endian stream for the source stream source with endianness 
+	 * end. The default endianness is the native byte order.
 	 * The Endian type is defined
 	 * in the std.system module.
 	 */
@@ -2245,8 +2269,8 @@ class EndianStream : FilterStream {
 	/***
 	 * Return -1 if no BOM and otherwise read the BOM and return it.
 	 *
-	 * If there is no BOM or if bytes beyond the BOM are read then the bytes read
-	 * are pushed back onto the ungetc buffer or ungetcw buffer.
+	 * If there is no BOM or if bytes beyond the BOM are read then the bytes 
+	 * read * are pushed back onto the ungetc buffer or ungetcw buffer.
 	 * Pass ungetCharSize == 2 to use
 	 * ungetcw instead of ungetc when no BOM is present.
 	 */
@@ -2295,7 +2319,7 @@ class EndianStream : FilterStream {
 	 * size must be even.
 	 */
 	final void fixBO(const(void)* buffer, size_t size) {
-		if (endian != std.system.endian) {
+		if (endian != hurt.system.endian) {
 			ubyte* startb = cast(ubyte*)buffer;
 			uint* start = cast(uint*)buffer;
 			switch (size) {
@@ -2330,9 +2354,8 @@ class EndianStream : FilterStream {
 	}
 
 	/***
-	 * Correct the byte order of the given buffer in blocks of the given size and
-	 * repeated the given number of times.
-	 * size must be even.
+	 * Correct the byte order of the given buffer in blocks of the given size 
+	 * and repeated the given number of times. size must be even.
 	 */
 	final void fixBlockBO(void* buffer, uint size, size_t repeat) {
 		while (repeat--) {
@@ -2343,24 +2366,41 @@ class EndianStream : FilterStream {
 
 	override void read(out byte x) { readExact(&x, x.sizeof); }
 	override void read(out ubyte x) { readExact(&x, x.sizeof); }
-	override void read(out short x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out ushort x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out int x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out uint x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out long x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out ulong x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out float x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out double x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out real x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out ifloat x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out idouble x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out ireal x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out cfloat x) { readExact(&x, x.sizeof); fixBlockBO(&x,float.sizeof,2); }
-	override void read(out cdouble x) { readExact(&x, x.sizeof); fixBlockBO(&x,double.sizeof,2); }
-	override void read(out creal x) { readExact(&x, x.sizeof); fixBlockBO(&x,real.sizeof,2); }
+	override void read(out short x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out ushort x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out int x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out uint x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out long x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out ulong x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out float x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out double x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out real x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out ifloat x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out idouble x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out ireal x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out cfloat x) { readExact(&x, x.sizeof); 
+		fixBlockBO(&x,float.sizeof,2); }
+	override void read(out cdouble x) { readExact(&x, x.sizeof); 
+		fixBlockBO(&x,double.sizeof,2); }
+	override void read(out creal x) { readExact(&x, x.sizeof); 
+		fixBlockBO(&x,real.sizeof,2); }
 	override void read(out char x) { readExact(&x, x.sizeof); }
-	override void read(out wchar x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
-	override void read(out dchar x) { readExact(&x, x.sizeof); fixBO(&x,x.sizeof); }
+	override void read(out wchar x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
+	override void read(out dchar x) { readExact(&x, x.sizeof); 
+		fixBO(&x,x.sizeof); }
 
 	override wchar getcw() {
 		wchar c;
@@ -2398,24 +2438,42 @@ class EndianStream : FilterStream {
 
 	override void write(byte x) { writeExact(&x, x.sizeof); }
 	override void write(ubyte x) { writeExact(&x, x.sizeof); }
-	override void write(short x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(ushort x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(int x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(uint x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(long x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(ulong x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(float x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(double x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(real x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(ifloat x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(idouble x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(ireal x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(cfloat x) { fixBlockBO(&x,float.sizeof,2); writeExact(&x, x.sizeof); }
-	override void write(cdouble x) { fixBlockBO(&x,double.sizeof,2); writeExact(&x, x.sizeof); }
-	override void write(creal x) { fixBlockBO(&x,real.sizeof,2); writeExact(&x, x.sizeof);	}
-	override void write(char x) { writeExact(&x, x.sizeof); }
-	override void write(wchar x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
-	override void write(dchar x) { fixBO(&x,x.sizeof); writeExact(&x, x.sizeof); }
+	override void write(short x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(ushort x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(int x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(uint x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(long x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(ulong x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(float x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(double x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(real x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(ifloat x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(idouble x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(ireal x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(cfloat x) { fixBlockBO(&x,float.sizeof,2); 
+		writeExact(&x, x.sizeof); }
+	override void write(cdouble x) { fixBlockBO(&x,double.sizeof,2); 
+		writeExact(&x, x.sizeof); }
+	override void write(creal x) { fixBlockBO(&x,real.sizeof,2); 
+		writeExact(&x, x.sizeof);	}
+	override void write(char x) { 
+		writeExact(&x, x.sizeof); }
+	override void write(wchar x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
+	override void write(dchar x) { fixBO(&x,x.sizeof); 
+		writeExact(&x, x.sizeof); }
 
 	override void writeStringW(const(wchar)[] str) {
 		foreach(wchar cw;str) {
@@ -2445,7 +2503,7 @@ class EndianStream : FilterStream {
 		em.position(0);
 		static ubyte[12] x3 = [1,2,3,4,5,6,7,8,9,10,11,12];
 		em.fixBO(x3.ptr,12);
-		if (std.system.endian == Endian.LittleEndian) {
+		if (hurt.system.endian == Endian.LittleEndian) {
 			assert( x3[0] == 12 );
 			assert( x3[1] == 11 );
 			assert( x3[2] == 10 );
@@ -2469,7 +2527,7 @@ class EndianStream : FilterStream {
 		assert( m.data[1] == 0x55 );
 		em.position(0);
 		em.fixBO(x3.ptr,12);
-		if (std.system.endian == Endian.BigEndian) {
+		if (hurt.system.endian == Endian.BigEndian) {
 			assert( x3[0] == 12 );
 			assert( x3[1] == 11 );
 			assert( x3[2] == 10 );
@@ -2544,7 +2602,8 @@ class TArrayStream(Buffer): Stream {
 		ubyte* cbuf = cast(ubyte*) buffer;
 		if (len - cur < size)
 			size = cast(size_t)(len - cur);
-		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. cast(size_t)(cur + size)];
+		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. 
+			cast(size_t)(cur + size)];
 		cbuf[0 .. size] = ubuf[];
 		cur += size;
 		return size;
@@ -2556,7 +2615,8 @@ class TArrayStream(Buffer): Stream {
 		ulong blen = buf.length;
 		if (cur + size > blen)
 			size = cast(size_t)(blen - cur);
-		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. cast(size_t)(cur + size)];
+		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. 
+			cast(size_t)(cur + size)];
 		ubuf[] = cbuf[0 .. size];
 		cur += size;
 		if (cur > len)
@@ -2766,8 +2826,8 @@ unittest {
 
 
 /***
- * This subclass slices off a portion of another stream, making seeking relative
- * to the boundaries of the slice.
+ * This subclass slices off a portion of another stream, making seeking 
+ * relative to the boundaries of the slice.
  *
  * It could be used to section a large file into a
  * set of smaller files, such as with tar archives. Reading and writing a
@@ -2783,11 +2843,12 @@ class SliceStream : FilterStream {
 	}
 
 	/***
-	 * Indicate both the source stream to use for reading from and the low part of
-	 * the slice.
+	 * Indicate both the source stream to use for reading from and the low 
+	 * part of the slice.
 	 *
 	 * The high part of the slice is dependent upon the end of the source
-	 * stream, so that if you write beyond the end it resizes the stream normally.
+	 * stream, so that if you write beyond the end it resizes the stream 
+	 * normally.
 	 */
 	this (Stream s, ulong low)
 	in {
