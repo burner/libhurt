@@ -16,7 +16,7 @@ import hurt.string.formatter;
 import std.stdio;
 
 void main() {
-	Stream st = new hurt.io.stream.File("utf8");
-	string ln =  cast(string)st.readLine();
-	println(ln);
+	Stream st = new hurt.io.stream.File("inputstream.d");
+	foreach(char[] it; st)
+		println(cast(string)it);
 }

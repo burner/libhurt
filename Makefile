@@ -5,30 +5,27 @@ CCFLAGS=-c -Wall -m64 -static
 
 ALGO_OBJS=hurt.algo.sorting.o
 
-CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o \
-hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o \
-hurt.container.rbtree.o hurt.container.map.o hurt.container.tree.o hurt.container.isr.o hurt.container.deque.o \
-hurt.container.hashtable.o hurt.container.bst.o
+SYSTEM_OBJS=hurt.system.o
 
-EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o \
-hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o hurt.exception.ioexception.o
+CONTAINER_OBJS= hurt.container.bitmap.o hurt.container.dlst.o hurt.container.list.o hurt.container.multimap.o hurt.container.pairlist.o hurt.container.set.o hurt.container.stack.o hurt.container.vector.o hurt.container.rbtree.o hurt.container.map.o hurt.container.tree.o hurt.container.isr.o hurt.container.deque.o hurt.container.hashtable.o hurt.container.bst.o
 
+EXCEPTION_OBJS=hurt.exception.illegalargumentexception.o hurt.exception.valuerangeexception.o hurt.exception.nullexception.o hurt.exception.outofrangeexception.o hurt.exception.formaterror.o hurt.exception.invaliditeratorexception.o hurt.exception.ioexception.o hurt.exception.exception.o;
 
 MATH_OBJS=hurt.math.mathutil.o hurt.math.bigintbase10.o
 
-STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o
+STRING_OBJS=hurt.string.stringbuffer.o hurt.string.stringutil.o hurt.string.formatter.o hurt.string.utf.o
 
-UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.milli.o hurt.util.random.o \
-hurt.util.datetime.o hurt.util.stacktrace.o
+UTIL_OBJS=hurt.util.array.o hurt.util.stacktrace.o hurt.util.milli.o hurt.util.random.o hurt.util.datetime.o hurt.util.stacktrace.o
 
-CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o \
-hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
+CONV_OBJS=hurt.conv.chartonumeric.o hurt.conv.charconv.o hurt.conv.conv.o hurt.conv.convutil.o hurt.conv.numerictochar.o hurt.conv.tointeger.o hurt.conv.tostring.o
 
-IO_OBJS=hurt.io.ioflags.o hurt.io.posix.o hurt.io.file.o \
-hurt.io.stdio.o
+IO_OBJS=hurt.io.ioflags.o hurt.io.posix.o hurt.io.file.o hurt.io.stdio.o
 
-all: $(ALGO_OBJS) $(CONTAINER_OBJS) $(EXCEPTION_OBJS) $(STRING_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(MATH_OBJS) $(IO_OBJS)
+lib: $(ALGO_OBJS) $(SYSTEM_OBJS) $(EXCEPTION_OBJS) $(MATH_OBJS) $(UTIL_OBJS) $(CONV_OBJS) $(IO_OBJS)
 	ar -r libhurt.a *.o
+
+all: lib
+
 
 clean:
 	rm -rf *.o
@@ -46,6 +43,10 @@ count:
 test: $(ALGO_OBJS) $(CONTAINER_OBJS) $(MATH_OBJS) $(STRING_OBJS)
 	make
 	make -C tests
+
+
+hurt.system.o: hurt/system.d Makefile
+	$(DC) $(CFLAGS) hurt/system.d -ofhurt.system.o
 
 hurt.algo.sorting.o: hurt/algo/sorting.d Makefile
 	$(DC) $(CFLAGS) hurt/algo/sorting.d -ofhurt.algo.sorting.o
@@ -110,8 +111,14 @@ hurt.string.stringutil.o: hurt/string/stringutil.d hurt/util/stacktrace.d Makefi
 hurt.string.formatter.o: hurt/string/formatter.d Makefile
 	$(DC) $(CFLAGS) hurt/string/formatter.d -ofhurt.string.formatter.o
 
+#hurt.string.utf.o: hurt/string/utf.d Makefile
+#$(DC) $(CFLAGS) hurt/string/utf.d -ofhurt.string.utf.o
+
 hurt.util.array.o: hurt/util/array.d Makefile
 	$(DC) $(CFLAGS) hurt/util/array.d -ofhurt.util.array.o
+
+hurt.util.utf.o: hurt/util/utf.d hurt.string.stringutil.o hurt.conv.conv.o Makefile
+	$(DC) $(CFLAGS) hurt/util/utf.d -ofhurt.util.utf.o
 
 hurt.util.stacktrace.o: hurt/util/stacktrace.d hurt.algo.sorting.o hurt.container.dlst.o hurt.container.map.o Makefile
 	$(DC) $(CFLAGS) hurt/util/stacktrace.d -ofhurt.util.stacktrace.o
@@ -161,14 +168,14 @@ hurt.exception.outofrangeexception.o: hurt/exception/outofrangeexception.d Makef
 hurt.exception.nullexception.o: hurt/exception/nullexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/nullexception.d -ofhurt.exception.nullexception.o
 
+hurt.exception.exception.o: hurt/exception/exception.d Makefile
+	$(DC) $(CFLAGS) hurt/exception/exception.d -ofhurt.exception.exception.o
+
 hurt.exception.formaterror.o: hurt/exception/formaterror.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/formaterror.d -ofhurt.exception.formaterror.o
 
 hurt.exception.invaliditeratorexception.o: hurt/exception/invaliditeratorexception.d Makefile
 	$(DC) $(CFLAGS) hurt/exception/invaliditeratorexception.d -ofhurt.exception.invaliditeratorexception.o
-
-hurt.io.ioflags.o: hurt/io/ioflags.d Makefile
-	$(DC) $(CFLAGS) hurt/io/ioflags.d -ofhurt.io.ioflags.o
 
 hurt.io.stdio.o: hurt/io/stdio.d hurt/string/formatter.d hurt.conv.conv.o Makefile
 	$(DC) $(CFLAGS) hurt/io/stdio.d -ofhurt.io.stdio.o
@@ -181,3 +188,6 @@ hurt.io.posix.o: hurt/io/posix.c Makefile
 
 hurt.io.file.o:hurt/io/file.d hurt.io.ioflags.o hurt.io.posix.o Makefile
 	$(DC) $(CFLAGS) hurt/io/file.d -ofhurt.io.file.o
+
+hurt.io.ioflags.o: hurt/io/ioflags.d Makefile
+	$(DC) $(CFLAGS) hurt/io/ioflags.d -ofhurt.io.ioflags.o

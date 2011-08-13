@@ -1,4 +1,5 @@
 module hurt.io.ioflags;
+
 import std.conv;
 
 enum FileFlags {
@@ -41,10 +42,6 @@ enum SeekType {
 	SEEK_SET = 0,
 	SEEK_CUR = 1,
 	SEEK_END = 2
-}
-
-public void raiseErrno(string file = __FILE__, int line = __LINE__) {
-
 }
 
 pure string errnoToString(const int errno) {
