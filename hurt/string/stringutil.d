@@ -1,6 +1,5 @@
 module hurt.string.stringutil;
 
-import hurt.io.stdio;
 import hurt.exception.exception;
 
 import core.vararg; 
@@ -101,18 +100,15 @@ unittest
 public bool cmp(T)(immutable(T)[] str1, immutable(T)[] str2) 
 		if(isChar!(T)()) {
 	if(str1 is null || str2 is null) {
-		println(__LINE__);
 		return false;
 	}
 
 	if(str1.length != str2.length) {
-		println(__LINE__);
 		return false;
 	}
 
 	foreach(idx, it; str1) {
 		if(str2[idx] != it) {
-			println(__LINE__, idx);
 			return false;
 		}
 	}

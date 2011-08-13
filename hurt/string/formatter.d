@@ -11,7 +11,7 @@ import hurt.exception.illegalargumentexception;
 import core.vararg;
 
 import std.stdio;
-import std.utf;
+import hurt.string.utf;
 
 private static StringBuffer!(char) buf;
 
