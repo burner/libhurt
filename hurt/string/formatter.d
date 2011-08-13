@@ -4,12 +4,42 @@ import hurt.conv.conv;
 import hurt.conv.tostring;
 import hurt.util.array;
 import hurt.string.stringutil;
+import hurt.string.stringbuffer;
 import hurt.exception.formaterror;
 import hurt.exception.illegalargumentexception;
 
 import core.vararg;
 
 import std.stdio;
+
+private static StringBuffer!(char) buf;
+
+public string makeString(TypeInfo[] arguments, void* args) {
+	buf.clear();
+	foreach(it;arguments) {
+		if(it == typeid(char) || it == typeid(wchar) 
+				|| it == typeid(dchar)) {
+			buf.pushBack("%c ");
+		} else if(it == typeid(ubyte) || it == typeid(ushort) 
+				|| it == typeid(uint) || it == typeid(ulong)) {
+			buf.pushBack("%u ");
+		} else if(it == typeid(byte) || it == typeid(short) 
+				|| it == typeid(int) || it == typeid(long)) {
+			buf.pushBack("%d ");
+		} else if(it == typeid(float) || it == typeid(double)
+				|| it == typeid(real)) {
+			buf.pushBack("%.5f ");
+		} else if(it == typeid(immutable(char)[]) || 
+				it == typeid(immutable(wchar)[]) || 
+				it == typeid(immutable(dchar)[])) {
+			buf.pushBack("%s ");
+		} else {
+			//writeln(45, it);
+			buf.pushBack("%a ");
+		}
+	}
+	return formatString!(char,char)(buf.getString(), arguments, args);
+}
 
 public immutable(S)[] format(T,S)(immutable(T)[] form, ...) {
 	return formatString!(T,S)(form, _arguments, _argptr);

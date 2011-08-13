@@ -75,7 +75,7 @@ private {
 	import hurt.conv.tointeger;
 	import hurt.exception.exception;
 	//import std.conv;
-	import std.format;
+	//import std.format;
 	import std.system;		// for Endian enumeration
 	import std.intrinsic; // for bswap
 	import hurt.string.utf;
@@ -1167,7 +1167,7 @@ class Stream : InputStream, OutputStream {
 
 	private void doFormatCallback(dchar c) {
 		char[4] buf;
-		auto b = std.utf.toUTF8(buf, c);
+		auto b = hurt.string.utf.toUTF8(buf, c);
 		writeString(b);
 	}
 
