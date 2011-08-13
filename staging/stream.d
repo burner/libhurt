@@ -86,7 +86,7 @@ private {
 	import core.vararg;
 }
 
-/*version (Windows) {
+/*version(Windows) {
 	private import std.file;
 }*/
 
@@ -431,13 +431,13 @@ class Stream : InputStream, OutputStream {
 	// throws ReadException on error
 	void readExact(void* buffer, size_t size) {
 		for(;;) {
-			if (!size) return;
+			if(!size) return;
 			size_t readsize = readBlock(buffer, size); // return 0 on eof
-			if (readsize == 0) break;
+			if(readsize == 0) break;
 			buffer += readsize;
 			size -= readsize;
 		}
-		if (size != 0)
+		if(size != 0)
 			throw new ReadException("not enough data in stream");
 	}
 
@@ -495,12 +495,12 @@ class Stream : InputStream, OutputStream {
 	char[] readLine(char[] result) {
 		size_t strlen = 0;
 		char ch = getc();
-		while (readable) {
+		while(readable) {
 			switch (ch) {
 			case '\r':
-				if (seekable) {
+				if(seekable) {
 					ch = getc();
-					if (ch != '\n')
+					if(ch != '\n')
 						ungetc(ch);
 				} else {
 					prevCr = true;
@@ -511,7 +511,7 @@ class Stream : InputStream, OutputStream {
 				return result;
 
 			default:
-				if (strlen < result.length) {
+				if(strlen < result.length) {
 					result[strlen] = ch;
 				} else {
 					result ~= ch;
@@ -537,12 +537,12 @@ class Stream : InputStream, OutputStream {
 	wchar[] readLineW(wchar[] result) {
 		size_t strlen = 0;
 		wchar c = getcw();
-		while (readable) {
+		while(readable) {
 			switch (c) {
 			case '\r':
-				if (seekable) {
+				if(seekable) {
 					c = getcw();
-					if (c != '\n')
+					if(c != '\n')
 						ungetcw(c);
 				} else {
 					prevCr = true;
@@ -553,7 +553,7 @@ class Stream : InputStream, OutputStream {
 				return result;
 
 			default:
-				if (strlen < result.length) {
+				if(strlen < result.length) {
 					result[strlen] = c;
 				} else {
 					result ~= c;
@@ -570,10 +570,10 @@ class Stream : InputStream, OutputStream {
 	int opApply(scope int delegate(ref char[] line) dg) {
 		int res = 0;
 		char[128] buf;
-		while (!eof()) {
+		while(!eof()) {
 			char[] line = readLine(buf);
 			res = dg(line);
-			if (res) break;
+			if(res) break;
 		}
 		return res;
 	}
@@ -583,10 +583,10 @@ class Stream : InputStream, OutputStream {
 		int res = 0;
 		ulong n = 1;
 		char[128] buf;
-		while (!eof()) {
+		while(!eof()) {
 			auto line = readLine(buf);
 			res = dg(n,line);
-			if (res) break;
+			if(res) break;
 			n++;
 		}
 		return res;
@@ -596,10 +596,10 @@ class Stream : InputStream, OutputStream {
 	int opApply(scope int delegate(ref wchar[] line) dg) {
 		int res = 0;
 		wchar[128] buf;
-		while (!eof()) {
+		while(!eof()) {
 			auto line = readLineW(buf);
 			res = dg(line);
-			if (res) break;
+			if(res) break;
 		}
 		return res;
 	}
@@ -609,10 +609,10 @@ class Stream : InputStream, OutputStream {
 		int res = 0;
 		ulong n = 1;
 		wchar[128] buf;
-		while (!eof()) {
+		while(!eof()) {
 			auto line = readLineW(buf);
 			res = dg(n,line);
-			if (res) break;
+			if(res) break;
 			n++;
 		}
 		return res;
@@ -643,13 +643,13 @@ class Stream : InputStream, OutputStream {
 	// returns char.init on eof.
 	char getc() {
 		char c;
-		if (prevCr) {
+		if(prevCr) {
 			prevCr = false;
 			c = getc();
-			if (c != '\n')
+			if(c != '\n')
 				return c;
 		}
-		if (unget.length > 1) {
+		if(unget.length > 1) {
 			c = cast(char)unget[unget.length - 1];
 			unget.length = unget.length - 1;
 		} else {
@@ -663,19 +663,19 @@ class Stream : InputStream, OutputStream {
 	// returns wchar.init on eof.
 	wchar getcw() {
 		wchar c;
-		if (prevCr) {
+		if(prevCr) {
 			prevCr = false;
 			c = getcw();
-			if (c != '\n')
+			if(c != '\n')
 				return c;
 		}
-		if (unget.length > 1) {
+		if(unget.length > 1) {
 			c = unget[unget.length - 1];
 			unget.length = unget.length - 1;
 		} else {
 			void* buf = &c;
 			size_t n = readBlock(buf,2);
-			if (n == 1 && readBlock(buf+1,1) == 0)
+			if(n == 1 && readBlock(buf+1,1) == 0)
 					throw new ReadException("not enough data in stream");
 		}
 		return c;
@@ -684,9 +684,9 @@ class Stream : InputStream, OutputStream {
 	// pushes back character c into the stream; only has
 	// effect on further calls to getc() and getcw()
 	char ungetc(char c) {
-		if (c == c.init) return c;
+		if(c == c.init) return c;
 		// first byte is a dummy so that we never set length to 0
-		if (unget.length == 0)
+		if(unget.length == 0)
 			unget.length = 1;
 		unget ~= c;
 		return c;
@@ -695,9 +695,9 @@ class Stream : InputStream, OutputStream {
 	// pushes back Unicode character c into the stream; only
 	// has effect on further calls to getc() and getcw()
 	wchar ungetcw(wchar c) {
-		if (c == c.init) return c;
+		if(c == c.init) return c;
 		// first byte is a dummy so that we never set length to 0
-		if (unget.length == 0)
+		if(unget.length == 0)
 			unget.length = 1;
 		unget ~= c;
 		return c;
@@ -708,52 +708,52 @@ class Stream : InputStream, OutputStream {
 		int j = 0;
 		int count = 0, i = 0;
 		char c = getc();
-		while ((j < arguments.length || i < fmt.length) && !eof()) {
-			if (fmt.length == 0 || i == fmt.length) {
+		while((j < arguments.length || i < fmt.length) && !eof()) {
+			if(fmt.length == 0 || i == fmt.length) {
 				i = 0;
-				if (arguments[j] is typeid(char[])) {
+				if(arguments[j] is typeid(char[])) {
 					fmt = va_arg!(string)(args);
 					j++;
 					continue;
-				} else if (arguments[j] is typeid(int*) ||
+				} else if(arguments[j] is typeid(int*) ||
 									 arguments[j] is typeid(byte*) ||
 									 arguments[j] is typeid(short*) ||
 									 arguments[j] is typeid(long*)) {
 					fmt = "%d";
-				} else if (arguments[j] is typeid(uint*) ||
+				} else if(arguments[j] is typeid(uint*) ||
 									 arguments[j] is typeid(ubyte*) ||
 									 arguments[j] is typeid(ushort*) ||
 									 arguments[j] is typeid(ulong*)) {
 					fmt = "%d";
-				} else if (arguments[j] is typeid(float*) ||
+				} else if(arguments[j] is typeid(float*) ||
 									 arguments[j] is typeid(double*) ||
 									 arguments[j] is typeid(real*)) {
 					fmt = "%f";
-				} else if (arguments[j] is typeid(char[]*) ||
+				} else if(arguments[j] is typeid(char[]*) ||
 									 arguments[j] is typeid(wchar[]*) ||
 									 arguments[j] is typeid(dchar[]*)) {
 					fmt = "%s";
-				} else if (arguments[j] is typeid(char*)) {
+				} else if(arguments[j] is typeid(char*)) {
 					fmt = "%c";
 				}
 			}
-			if (fmt[i] == '%') {			// a field
+			if(fmt[i] == '%') {			// a field
 				i++;
 				bool suppress = false;
-				if (fmt[i] == '*') {		// suppress assignment
+				if(fmt[i] == '*') {		// suppress assignment
 					suppress = true;
 					i++;
 				}
 				// read field width
 				int width = 0;
-				while (isdigit(fmt[i])) {
+				while(isdigit(fmt[i])) {
 					width = width * 10 + (fmt[i] - '0');
 					i++;
 				}
-				if (width == 0)
+				if(width == 0)
 					width = -1;
 				// skip any modifier if present
-				if (fmt[i] == 'h' || fmt[i] == 'l' || fmt[i] == 'L')
+				if(fmt[i] == 'h' || fmt[i] == 'l' || fmt[i] == 'L')
 					i++;
 				// check the typechar and act accordingly
 				switch (fmt[i]) {
@@ -768,25 +768,25 @@ class Stream : InputStream, OutputStream {
 				case 'i':
 				case 'I':
 					{
-						while (iswhite(c)) {
+						while(iswhite(c)) {
 							c = getc();
 							count++;
 						}
 						bool neg = false;
-						if (c == '-') {
+						if(c == '-') {
 							neg = true;
 							c = getc();
 							count++;
-						} else if (c == '+') {
+						} else if(c == '+') {
 							c = getc();
 							count++;
 						}
 						char ifmt = cast(char)(fmt[i] | 0x20);
-						if (ifmt == 'i')		{ // undetermined base
-							if (c == '0')		 { // octal or hex
+						if(ifmt == 'i')		{ // undetermined base
+							if(c == '0')		 { // octal or hex
 								c = getc();
 								count++;
-								if (c == 'x' || c == 'X')			 { // hex
+								if(c == 'x' || c == 'X')			 { // hex
 									ifmt = 'x';
 									c = getc();
 									count++;
@@ -802,7 +802,7 @@ class Stream : InputStream, OutputStream {
 						{
 								case 'd':			 // decimal
 								case 'u': {
-									while (isdigit(c) && width) {
+									while(isdigit(c) && width) {
 										n = n * 10 + (c - '0');
 										width--;
 										c = getc();
@@ -811,7 +811,7 @@ class Stream : InputStream, OutputStream {
 								} break;
 
 								case 'o': {		 // octal
-									while (isoctdigit(c) && width) {
+									while(isoctdigit(c) && width) {
 										n = n * 8 + (c - '0');
 										width--;
 										c = getc();
@@ -820,9 +820,9 @@ class Stream : InputStream, OutputStream {
 								} break;
 
 								case 'x': {		 // hexadecimal
-									while (ishexdigit(c) && width) {
+									while(ishexdigit(c) && width) {
 										n *= 0x10;
-										if (isdigit(c))
+										if(isdigit(c))
 											n += c - '0';
 										else
 											n += 0xA + (c | 0x20) - 'a';
@@ -835,30 +835,30 @@ class Stream : InputStream, OutputStream {
 								default:
 										assert(0);
 						}
-						if (neg)
+						if(neg)
 							n = -n;
-						if (arguments[j] is typeid(int*)) {
+						if(arguments[j] is typeid(int*)) {
 							int* p = va_arg!(int*)(args);
 							*p = cast(int)n;
-						} else if (arguments[j] is typeid(short*)) {
+						} else if(arguments[j] is typeid(short*)) {
 							short* p = va_arg!(short*)(args);
 							*p = cast(short)n;
-						} else if (arguments[j] is typeid(byte*)) {
+						} else if(arguments[j] is typeid(byte*)) {
 							byte* p = va_arg!(byte*)(args);
 							*p = cast(byte)n;
-						} else if (arguments[j] is typeid(long*)) {
+						} else if(arguments[j] is typeid(long*)) {
 							long* p = va_arg!(long*)(args);
 							*p = n;
-						} else if (arguments[j] is typeid(uint*)) {
+						} else if(arguments[j] is typeid(uint*)) {
 							uint* p = va_arg!(uint*)(args);
 							*p = cast(uint)n;
-						} else if (arguments[j] is typeid(ushort*)) {
+						} else if(arguments[j] is typeid(ushort*)) {
 							ushort* p = va_arg!(ushort*)(args);
 							*p = cast(ushort)n;
-						} else if (arguments[j] is typeid(ubyte*)) {
+						} else if(arguments[j] is typeid(ubyte*)) {
 							ubyte* p = va_arg!(ubyte*)(args);
 							*p = cast(ubyte)n;
-						} else if (arguments[j] is typeid(ulong*)) {
+						} else if(arguments[j] is typeid(ulong*)) {
 							ulong* p = va_arg!(ulong*)(args);
 							*p = cast(ulong)n;
 						}
@@ -873,32 +873,32 @@ class Stream : InputStream, OutputStream {
 				case 'g':
 				case 'G':
 					{
-						while (iswhite(c)) {
+						while(iswhite(c)) {
 							c = getc();
 							count++;
 						}
 						bool neg = false;
-						if (c == '-') {
+						if(c == '-') {
 							neg = true;
 							c = getc();
 							count++;
-						} else if (c == '+') {
+						} else if(c == '+') {
 							c = getc();
 							count++;
 						}
 						real n = 0;
-						while (isdigit(c) && width) {
+						while(isdigit(c) && width) {
 							n = n * 10 + (c - '0');
 							width--;
 							c = getc();
 							count++;
 						}
-						if (width && c == '.') {
+						if(width && c == '.') {
 							width--;
 							c = getc();
 							count++;
 							double frac = 1;
-							while (isdigit(c) && width) {
+							while(isdigit(c) && width) {
 								n = n * 10 + (c - '0');
 								frac *= 10;
 								width--;
@@ -907,47 +907,47 @@ class Stream : InputStream, OutputStream {
 							}
 							n /= frac;
 						}
-						if (width && (c == 'e' || c == 'E')) {
+						if(width && (c == 'e' || c == 'E')) {
 							width--;
 							c = getc();
 							count++;
-							if (width) {
+							if(width) {
 								bool expneg = false;
-								if (c == '-') {
+								if(c == '-') {
 									expneg = true;
 									width--;
 									c = getc();
 									count++;
-								} else if (c == '+') {
+								} else if(c == '+') {
 									width--;
 									c = getc();
 									count++;
 								}
 								real exp = 0;
-								while (isdigit(c) && width) {
+								while(isdigit(c) && width) {
 									exp = exp * 10 + (c - '0');
 									width--;
 									c = getc();
 									count++;
 								}
-								if (expneg) {
-									while (exp--)
+								if(expneg) {
+									while(exp--)
 										n /= 10;
 								} else {
-									while (exp--)
+									while(exp--)
 										n *= 10;
 								}
 							}
 						}
-						if (neg)
+						if(neg)
 							n = -n;
-						if (arguments[j] is typeid(float*)) {
+						if(arguments[j] is typeid(float*)) {
 							float* p = va_arg!(float*)(args);
 							*p = n;
-						} else if (arguments[j] is typeid(double*)) {
+						} else if(arguments[j] is typeid(double*)) {
 							double* p = va_arg!(double*)(args);
 							*p = n;
-						} else if (arguments[j] is typeid(real*)) {
+						} else if(arguments[j] is typeid(real*)) {
 							real* p = va_arg!(real*)(args);
 							*p = n;
 						}
@@ -956,19 +956,19 @@ class Stream : InputStream, OutputStream {
 					} break;
 
 				case 's': {		 // string
-					while (iswhite(c)) {
+					while(iswhite(c)) {
 						c = getc();
 						count++;
 					}
 					char[] s;
 					char[]* p;
 					size_t strlen;
-					if (arguments[j] is typeid(char[]*)) {
+					if(arguments[j] is typeid(char[]*)) {
 						p = va_arg!(char[]*)(args);
 						s = *p;
 					}
-					while (!iswhite(c) && c != char.init) {
-						if (strlen < s.length) {
+					while(!iswhite(c) && c != char.init) {
+						if(strlen < s.length) {
 							s[strlen] = c;
 						} else {
 							s ~= c;
@@ -978,16 +978,16 @@ class Stream : InputStream, OutputStream {
 						count++;
 					}
 					s = s[0 .. strlen];
-					if (arguments[j] is typeid(char[]*)) {
+					if(arguments[j] is typeid(char[]*)) {
 						*p = s;
-					} else if (arguments[j] is typeid(char*)) {
+					} else if(arguments[j] is typeid(char*)) {
 						s ~= 0;
 						auto q = va_arg!(char*)(args);
 						q[0 .. s.length] = s[];
-					} else if (arguments[j] is typeid(wchar[]*)) {
+					} else if(arguments[j] is typeid(wchar[]*)) {
 						auto q = va_arg!(const(wchar)[]*)(args);
 						*q = toUTF16(s);
-					} else if (arguments[j] is typeid(dchar[]*)) {
+					} else if(arguments[j] is typeid(dchar[]*)) {
 						auto q = va_arg!(const(dchar)[]*)(args);
 						*q = toUTF32(s);
 					}
@@ -997,14 +997,14 @@ class Stream : InputStream, OutputStream {
 
 				case 'c': {		 // character(s)
 					char* s = va_arg!(char*)(args);
-					if (width < 0)
+					if(width < 0)
 						width = 1;
 					else
-						while (iswhite(c)) {
+						while(iswhite(c)) {
 						c = getc();
 						count++;
 					}
-					while (width-- && !eof()) {
+					while(width-- && !eof()) {
 						*(s++) = c;
 						c = getc();
 						count++;
@@ -1023,13 +1023,13 @@ class Stream : InputStream, OutputStream {
 				default:				// read character as is
 					goto nws;
 				}
-			} else if (iswhite(fmt[i])) {		 // skip whitespace
-				while (iswhite(c))
+			} else if(iswhite(fmt[i])) {		 // skip whitespace
+				while(iswhite(c))
 					c = getc();
 				i++;
 			} else {	// read character as is
 			nws:
-				if (fmt[i] != c)
+				if(fmt[i] != c)
 					break;
 				c = getc();
 				i++;
@@ -1057,13 +1057,13 @@ class Stream : InputStream, OutputStream {
 	void writeExact(const void* buffer, size_t size) {
 		const(void)* p = buffer;
 		for(;;) {
-			if (!size) return;
+			if(!size) return;
 			size_t writesize = writeBlock(p, size);
-			if (writesize == 0) break;
+			if(writesize == 0) break;
 			p += writesize;
 			size -= writesize;
 		}
-		if (size != 0)
+		if(size != 0)
 			throw new WriteException("unable to write to stream");
 	}
 
@@ -1111,9 +1111,9 @@ class Stream : InputStream, OutputStream {
 	// writes a line, throws WriteException on error
 	void writeLine(const(char)[] s) {
 		writeString(s);
-		version (Win32)
+		version(Win32)
 			writeString("\r\n");
-		else version (Mac)
+		else version(Mac)
 			writeString("\r");
 		else
 			writeString("\n");
@@ -1122,9 +1122,9 @@ class Stream : InputStream, OutputStream {
 	// writes a Unicode line, throws WriteException on error
 	void writeLineW(const(wchar)[] s) {
 		writeStringW(s);
-		version (Win32)
+		version(Win32)
 			writeStringW("\r\n");
-		else version (Mac)
+		else version(Mac)
 			writeStringW("\r");
 		else
 			writeStringW("\n");
@@ -1150,18 +1150,18 @@ class Stream : InputStream, OutputStream {
 		auto f = toStringz(format);
 		size_t psize = buffer.length;
 		size_t count;
-		while (true) {
-			/*version (Win32) {
+		while(true) {
+			/*version(Win32) {
 				count = _vsnprintf(p, psize, f, args);
-				if (count != -1)
+				if(count != -1)
 					break;
 				psize *= 2;
 				p = cast(char*) alloca(psize);
-			} else*/ version (Posix) {
+			} else*/ version(Posix) {
 				count = vsnprintf(p, psize, f, args);
-				if (count == -1)
+				if(count == -1)
 					psize *= 2;
-				else if (count >= psize)
+				else if(count >= psize)
 					psize = count + 1;
 				else
 					break;
@@ -1207,7 +1207,7 @@ class Stream : InputStream, OutputStream {
 		foreach(it;str)
 			doFormatCallback(it);
 		//doFormat(&doFormatCallback,arguments,argptr);
-		if (newline)
+		if(newline)
 			writeLine("");
 		return this;
 	}
@@ -1218,14 +1218,14 @@ class Stream : InputStream, OutputStream {
 	 * This restores the file position of s so that it is unchanged.
 	 */
 	void copyFrom(Stream s) {
-		if (seekable) {
+		if(seekable) {
 			ulong pos = s.position();
 			s.position(0);
 			copyFrom(s, s.size());
 			s.position(pos);
 		} else {
 			ubyte[128] buf;
-			while (!s.eof()) {
+			while(!s.eof()) {
 				size_t m = s.readBlock(buf.ptr, buf.length);
 				writeExact(buf.ptr, m);
 			}
@@ -1239,7 +1239,7 @@ class Stream : InputStream, OutputStream {
 	 */
 	void copyFrom(Stream s, ulong count) {
 		ubyte[128] buf;
-		while (count > 0) {
+		while(count > 0) {
 			size_t n = cast(size_t)(count<buf.length ? count : buf.length);
 			s.readExact(buf.ptr, n);
 			writeExact(buf.ptr, n);
@@ -1290,9 +1290,9 @@ class Stream : InputStream, OutputStream {
 	// returns true if end of stream is reached, false otherwise
 	bool eof() {
 		// for unseekable streams we only know the end when we read it
-		if (readEOF && !ungetAvailable())
+		if(readEOF && !ungetAvailable())
 			return true;
-		else if (seekable)
+		else if(seekable)
 			return position() == size();
 		else
 			return false;
@@ -1303,13 +1303,13 @@ class Stream : InputStream, OutputStream {
 
 	// flush the buffer if writeable
 	void flush() {
-		if (unget.length > 1)
+		if(unget.length > 1)
 			unget.length = 1; // keep at least 1 so that data ptr stays
 	}
 
 	// close the stream somehow; the default just flushes the buffer
 	void close() {
-		if (isopen)
+		if(isopen)
 			flush();
 		readEOF = prevCr = isopen = readable = writeable = seekable = false;
 	}
@@ -1320,18 +1320,18 @@ class Stream : InputStream, OutputStream {
 	 * eof is read and returned.
 	 */
 	override string toString() {
-		if (!readable)
+		if(!readable)
 			return super.toString();
 		size_t pos;
 		size_t rdlen;
 		size_t blockSize;
 		char[] result;
-		if (seekable) {
+		if(seekable) {
 			ulong orig_pos = position();
 			position(0);
 			blockSize = cast(size_t)size();
 			result = new char[blockSize];
-			while (blockSize > 0) {
+			while(blockSize > 0) {
 				rdlen = readBlock(&result[pos], blockSize);
 				pos += rdlen;
 				blockSize -= rdlen;
@@ -1340,7 +1340,7 @@ class Stream : InputStream, OutputStream {
 		} else {
 			blockSize = 4096;
 			result = new char[blockSize];
-			while ((rdlen = readBlock(&result[pos], blockSize)) > 0) {
+			while((rdlen = readBlock(&result[pos], blockSize)) > 0) {
 				pos += rdlen;
 				blockSize += rdlen;
 				result.length = result.length + blockSize;
@@ -1354,13 +1354,13 @@ class Stream : InputStream, OutputStream {
 	 * checksum.
 	 */
 	override size_t toHash() {
-		if (!readable || !seekable)
+		if(!readable || !seekable)
 			return super.toHash();
 		ulong pos = position();
 		uint crc = init_crc32 ();
 		position(0);
 		ulong len = size();
-		for (ulong i = 0; i < len; i++) {
+		for(ulong i = 0; i < len; i++) {
 			ubyte c;
 			read(c);
 			crc = update_crc32(c, crc);
@@ -1371,17 +1371,17 @@ class Stream : InputStream, OutputStream {
 
 	// helper for checking that the stream is readable
 	final protected void assertReadable() {
-		if (!readable)
+		if(!readable)
 			throw new ReadException("Stream is not readable");
 	}
 	// helper for checking that the stream is writeable
 	final protected void assertWriteable() {
-		if (!writeable)
+		if(!writeable)
 			throw new WriteException("Stream is not writeable");
 	}
 	// helper for checking that the stream is seekable
 	final protected void assertSeekable() {
-		if (!seekable)
+		if(!seekable)
 			throw new SeekException("Stream is not seekable");
 	}
 }
@@ -1439,7 +1439,7 @@ class FilterStream : Stream {
 	 * reset any readable, writeable, seekable, isopen and buffering flags.
 	 */
 	void resetSource() {
-		if (s !is null) {
+		if(s !is null) {
 			readable = s.readable;
 			writeable = s.writeable;
 			seekable = s.seekable;
@@ -1465,9 +1465,9 @@ class FilterStream : Stream {
 
 	// close stream
 	override void close() {
-		if (isopen) {
+		if(isopen) {
 			super.close();
-			if (nestClose)
+			if(nestClose)
 				s.close();
 		}
 	}
@@ -1523,7 +1523,7 @@ class BufferedStream : FilterStream {
 	 */
 	this(Stream source, size_t bufferSize = DefaultBufferSize) {
 		super(source);
-		if (bufferSize)
+		if(bufferSize)
 			buffer = new ubyte[bufferSize];
 	}
 
@@ -1537,14 +1537,14 @@ class BufferedStream : FilterStream {
 	// reads block of data of specified size using any buffered data
 	// returns actual number of bytes read
 	override size_t readBlock(void* result, size_t len) {
-		if (len == 0) return 0;
+		if(len == 0) return 0;
 
 		assertReadable();
 
 		ubyte* outbuf = cast(ubyte*)result;
 		size_t readsize = 0;
 
-		if (bufferCurPos + len < bufferLen) {
+		if(bufferCurPos + len < bufferLen) {
 			// buffer has all the data so copy it
 			outbuf[0 .. len] = buffer[bufferCurPos .. bufferCurPos+len];
 			bufferCurPos += len;
@@ -1553,7 +1553,7 @@ class BufferedStream : FilterStream {
 		}
 
 		readsize = bufferLen - bufferCurPos;
-		if (readsize > 0) {
+		if(readsize > 0) {
 			// buffer has some data so copy what is left
 			outbuf[0 .. readsize] = buffer[bufferCurPos .. bufferLen];
 			outbuf += readsize;
@@ -1563,7 +1563,7 @@ class BufferedStream : FilterStream {
 
 		flush();
 
-		if (len >= buffer.length) {
+		if(len >= buffer.length) {
 			// buffer can't hold the data so fill output buffer directly
 			size_t siz = super.readBlock(outbuf, len);
 			readsize += siz;
@@ -1571,7 +1571,7 @@ class BufferedStream : FilterStream {
 		} else {
 			// read a new block into buffer
 				bufferLen = super.readBlock(buffer.ptr, buffer.length);
-				if (bufferLen < len) len = bufferLen;
+				if(bufferLen < len) len = bufferLen;
 				outbuf[0 .. len] = buffer[0 .. len];
 				bufferSourcePos = bufferLen;
 				streamPos += bufferLen;
@@ -1591,15 +1591,15 @@ class BufferedStream : FilterStream {
 		ubyte* buf = cast(ubyte*)result;
 		size_t writesize = 0;
 
-		if (bufferLen == 0) {
+		if(bufferLen == 0) {
 			// buffer is empty so fill it if possible
-			if ((len < buffer.length) && (readable)) {
+			if((len < buffer.length) && (readable)) {
 				// read in data if the buffer is currently empty
 				bufferLen = s.readBlock(buffer.ptr, buffer.length);
 				bufferSourcePos = bufferLen;
 				streamPos += bufferLen;
 
-			} else if (len >= buffer.length) {
+			} else if(len >= buffer.length) {
 				// buffer can't hold the data so write it directly and exit
 				writesize = s.writeBlock(buf,len);
 				streamPos += writesize;
@@ -1607,7 +1607,7 @@ class BufferedStream : FilterStream {
 			}
 		}
 
-		if (bufferCurPos + len <= buffer.length) {
+		if(bufferCurPos + len <= buffer.length) {
 			// buffer has space for all the data so copy it and exit
 			buffer[bufferCurPos .. bufferCurPos+len] = buf[0 .. len];
 			bufferCurPos += len;
@@ -1618,7 +1618,7 @@ class BufferedStream : FilterStream {
 		}
 
 		writesize = buffer.length - bufferCurPos;
-		if (writesize > 0) {
+		if(writesize > 0) {
 			// buffer can take some data
 			buffer[bufferCurPos .. buffer.length] = buf[0 .. writesize];
 			bufferCurPos = bufferLen = buffer.length;
@@ -1641,7 +1641,7 @@ class BufferedStream : FilterStream {
 	override ulong seek(long offset, SeekPos whence) {
 		assertSeekable();
 
-		if ((whence != SeekPos.Current) ||
+		if((whence != SeekPos.Current) ||
 				(offset + bufferCurPos < 0) ||
 				(offset + bufferCurPos >= bufferLen)) {
 			flush();
@@ -1707,7 +1707,7 @@ class BufferedStream : FilterStream {
 	} // template TreadLine(T)
 
 	override char[] readLine(char[] inBuffer) {
-		if (ungetAvailable())
+		if(ungetAvailable())
 			return super.readLine(inBuffer);
 		else
 			return TreadLine!(char).readLine(inBuffer);
@@ -1715,7 +1715,7 @@ class BufferedStream : FilterStream {
 	alias Stream.readLine readLine;
 
 	override wchar[] readLineW(wchar[] inBuffer) {
-		if (ungetAvailable())
+		if(ungetAvailable())
 			return super.readLineW(inBuffer);
 		else
 			return TreadLine!(wchar).readLine(inBuffer);
@@ -1729,20 +1729,20 @@ class BufferedStream : FilterStream {
 		assert(bufferLen == 0);
 	}
 	body {
-		if (writeable && bufferDirty) {
-			if (bufferSourcePos != 0 && seekable) {
+		if(writeable && bufferDirty) {
+			if(bufferSourcePos != 0 && seekable) {
 				// move actual file pointer to front of buffer
 				streamPos = s.seek(-bufferSourcePos, SeekPos.Current);
 			}
 			// write buffer out
 			bufferSourcePos = s.writeBlock(buffer.ptr, bufferLen);
-			if (bufferSourcePos != bufferLen) {
+			if(bufferSourcePos != bufferLen) {
 				throw new WriteException("Unable to write to stream");
 			}
 		}
 		super.flush();
 		long diff = cast(long)bufferCurPos-bufferSourcePos;
-		if (diff != 0 && seekable) {
+		if(diff != 0 && seekable) {
 			// move actual file pointer to current position
 			streamPos = s.seek(diff, SeekPos.Current);
 		}
@@ -1753,13 +1753,13 @@ class BufferedStream : FilterStream {
 
 	// returns true if end of stream is reached, false otherwise
 	override bool eof() {
-		if ((buffer.length == 0) || !readable) {
+		if((buffer.length == 0) || !readable) {
 			return super.eof();
 		}
 		// some simple tests to avoid flushing
-		if (ungetAvailable() || bufferCurPos != bufferLen)
+		if(ungetAvailable() || bufferCurPos != bufferLen)
 			return false;
-		if (bufferLen == buffer.length)
+		if(bufferLen == buffer.length)
 			flush();
 		size_t res = super.readBlock(&buffer[bufferLen],
 			buffer.length-bufferLen);
@@ -1771,7 +1771,7 @@ class BufferedStream : FilterStream {
 
 	// returns size of stream
 	override ulong size() {
-		if (bufferDirty) flush();
+		if(bufferDirty) flush();
 		return s.size();
 	}
 
@@ -1801,14 +1801,14 @@ enum FileMode {
 	Append = 10 // includes FileMode.Out
 }
 
-/*version (Win32) {
+/*version(Win32) {
 	private import std.c.windows.windows;
 	extern (Windows) {
 		void FlushFileBuffers(HANDLE hFile);
 		DWORD	GetFileType(HANDLE hFile);
 	}
 }*/
-version (Posix) {
+version(Posix) {
 	private import core.sys.posix.fcntl;
 	private import core.sys.posix.unistd;
 	alias int HANDLE;
@@ -1819,19 +1819,19 @@ private import hurt.string.stringutil;
 /// This subclass is for unbuffered file system streams.
 class File: Stream {
 
-	version (Win32) {
+	version(Win32) {
 		private HANDLE hFile;
 	}
-	version (Posix) {
+	version(Posix) {
 		private HANDLE hFile = -1;
 	}
 
 	this() {
 		super();
-		version (Win32) {
+		version(Win32) {
 			hFile = null;
 		}
-		version (Posix) {
+		version(Posix) {
 			hFile = -1;
 		}
 		isopen = false;
@@ -1881,8 +1881,8 @@ class File: Stream {
 		seekable = true;
 		readable = cast(bool)(mode & FileMode.In);
 		writeable = cast(bool)(mode & FileMode.Out);
-		version (Win32) {
-			if (std.file.useWfuncs) {
+		version(Win32) {
+			if(std.file.useWfuncs) {
 				hFile = CreateFileW(hurt.utf.toUTF16z(filename), access, 
 					share, null, createMode, 0, null);
 			} else {
@@ -1891,48 +1891,48 @@ class File: Stream {
 			}
 			isopen = hFile != INVALID_HANDLE_VALUE;
 		}
-		version (Posix) {
+		version(Posix) {
 			hFile = core.sys.posix.fcntl.open(toStringz(filename), 
 				access | createMode, share);
 			isopen = hFile != -1;
 		}
-		if (!isopen)
+		if(!isopen)
 			throw new OpenException(cast(string)
 				("Cannot open or create file '" ~ filename ~ "'"));
-		else if ((mode & FileMode.Append) == FileMode.Append)
+		else if((mode & FileMode.Append) == FileMode.Append)
 			seekEnd(0);
 	}
 
 	private void parseMode(int mode, out int access, out int share, 
 			out int createMode) {
-		version (Win32) {
+		version(Win32) {
 			share |= FILE_SHARE_READ | FILE_SHARE_WRITE;
-			if (mode & FileMode.In) {
+			if(mode & FileMode.In) {
 				access |= GENERIC_READ;
 				createMode = OPEN_EXISTING;
 			}
-			if (mode & FileMode.Out) {
+			if(mode & FileMode.Out) {
 				access |= GENERIC_WRITE;
 				createMode = OPEN_ALWAYS; // will create if not present
 			}
-			if ((mode & FileMode.OutNew) == FileMode.OutNew) {
+			if((mode & FileMode.OutNew) == FileMode.OutNew) {
 				createMode = CREATE_ALWAYS; // resets file
 			}
 		}
-		version (Posix) {
+		version(Posix) {
 			//share = octal!666;
 			share = stringToInt!(int)("666",8);
-			if (mode & FileMode.In) {
+			if(mode & FileMode.In) {
 				access = O_RDONLY;
 			}
-			if (mode & FileMode.Out) {
+			if(mode & FileMode.Out) {
 				createMode = O_CREAT; // will create if not present
 				access = O_WRONLY;
 			}
-			if (access == (O_WRONLY | O_RDONLY)) {
+			if(access == (O_WRONLY | O_RDONLY)) {
 				access = O_RDWR;
 			}
-			if ((mode & FileMode.OutNew) == FileMode.OutNew) {
+			if((mode & FileMode.OutNew) == FileMode.OutNew) {
 				access |= O_TRUNC; // resets file
 			}
 		}
@@ -1951,13 +1951,13 @@ class File: Stream {
 
 	/// Close the current file if it is open; otherwise it does nothing.
 	override void close() {
-		if (isopen) {
+		if(isopen) {
 			super.close();
-			if (hFile) {
-				version (Win32) {
+			if(hFile) {
+				version(Win32) {
 					CloseHandle(hFile);
 					hFile = null;
-				} else version (Posix) {
+				} else version(Posix) {
 					core.sys.posix.unistd.close(hFile);
 					hFile = -1;
 				}
@@ -1968,7 +1968,7 @@ class File: Stream {
 	// destructor, closes file if still opened
 	~this() { close(); }
 
-	version (Win32) {
+	version(Win32) {
 		// returns size of stream
 		override ulong size() {
 			assertSeekable();
@@ -1980,11 +1980,11 @@ class File: Stream {
 
 	override size_t readBlock(void* buffer, size_t size) {
 		assertReadable();
-		version (Win32) {
+		version(Win32) {
 			ReadFile(hFile, buffer, size, &size, null);
-		} else version (Posix) {
+		} else version(Posix) {
 			size = core.sys.posix.unistd.read(hFile, buffer, size);
-			if (size == -1)
+			if(size == -1)
 				size = 0;
 		}
 		readEOF = (size == 0);
@@ -1993,11 +1993,11 @@ class File: Stream {
 
 	override size_t writeBlock(const void* buffer, size_t size) {
 		assertWriteable();
-		version (Win32) {
+		version(Win32) {
 			WriteFile(hFile, buffer, size, &size, null);
-		} else version (Posix) {
+		} else version(Posix) {
 			size = core.sys.posix.unistd.write(hFile, buffer, size);
-			if (size == -1)
+			if(size == -1)
 				size = 0;
 		}
 		return size;
@@ -2005,15 +2005,15 @@ class File: Stream {
 
 	override ulong seek(long offset, SeekPos rel) {
 		assertSeekable();
-		version (Win32) {
+		version(Win32) {
 			int hi = cast(int)(offset>>32);
 			uint low = SetFilePointer(hFile, cast(int)offset, &hi, rel);
-			if ((low == INVALID_SET_FILE_POINTER) && (GetLastError() != 0))
+			if((low == INVALID_SET_FILE_POINTER) && (GetLastError() != 0))
 				throw new SeekException("unable to move file pointer");
 			ulong result = (cast(ulong)hi << 32) + low;
-		} else version (Posix) {
+		} else version(Posix) {
 			auto result = lseek(hFile, cast(int)offset, rel);
-			if (result == cast(typeof(result))-1)
+			if(result == cast(typeof(result))-1)
 				throw new SeekException("unable to move file pointer");
 		}
 		readEOF = false;
@@ -2026,9 +2026,9 @@ class File: Stream {
 	 */
 
 	override size_t available() {
-		if (seekable) {
+		if(seekable) {
 			ulong lavail = size - position;
-			if (lavail > size_t.max) lavail = size_t.max;
+			if(lavail > size_t.max) lavail = size_t.max;
 			return cast(size_t)lavail;
 		}
 		return 0;
@@ -2049,9 +2049,9 @@ class File: Stream {
 		file.writeString("Hello, world!");
 		file.write(i);
 		// string#1 + string#2 + int should give exacly that
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 13 + 4);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 13 + 4);
 		// we must be at the end of file
 		assert(file.eof());
@@ -2070,9 +2070,9 @@ class File: Stream {
 			"Testing stream.d:"), cast(string)line);
 		// jump over "Hello, "
 		file.seek(7, SeekPos.Current);
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 7);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 7);
 		string ztzt = cast(string)file.readString(6);
 		assert(hurt.string.stringutil.cmp!(char)(
@@ -2080,9 +2080,9 @@ class File: Stream {
 		i = 0; file.read(i);
 		assert(i == 666);
 		// string#1 + string#2 + int should give exacly that
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 13 + 4);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 13 + 4);
 		// we must be at the end of file
 		assert(file.eof());
@@ -2169,9 +2169,9 @@ class BufferedFile: BufferedStream {
 		file.writeString("Hello, world!");
 		file.write(i);
 		// string#1 + string#2 + int should give exacly that
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 13 + 4);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 13 + 4);
 		// we must be at the end of file
 		assert(file.eof());
@@ -2190,18 +2190,18 @@ class BufferedFile: BufferedStream {
 			"Testing stream.d:"));
 		// jump over "Hello, "
 		file.seek(7, SeekPos.Current);
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 7);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 7);
 		assert(hurt.string.stringutil.cmp(cast(string)file.readString(6), 
 			"world!"));
 		i = 0; file.read(i);
 		assert(i == 666);
 		// string#1 + string#2 + int should give exacly that
-		version (Win32)
+		version(Win32)
 			assert(file.position() == 19 + 13 + 4);
-		version (Posix)
+		version(Posix)
 			assert(file.position() == 18 + 13 + 4);
 		// we must be at the end of file
 		assert(file.eof());
@@ -2278,33 +2278,33 @@ class EndianStream : FilterStream {
 		ubyte[4] BOM_buffer;
 		int n = 0;			 // the number of read bytes
 		int result = -1; // the last match or -1
-		for (int i=0; i < NBOMS; ++i) {
+		for(int i=0; i < NBOMS; ++i) {
 			int j;
 			immutable ubyte[] bom = ByteOrderMarks[i];
-			for (j=0; j < bom.length; ++j) {
-				if (n <= j) { // have to read more
-					if (eof())
+			for(j=0; j < bom.length; ++j) {
+				if(n <= j) { // have to read more
+					if(eof())
 						break;
 					readExact(&BOM_buffer[n++],1);
 				}
-				if (BOM_buffer[j] != bom[j])
+				if(BOM_buffer[j] != bom[j])
 					break;
 			}
-			if (j == bom.length) // found a match
+			if(j == bom.length) // found a match
 				result = i;
 		}
 		sizediff_t m = 0;
-		if (result != -1) {
+		if(result != -1) {
 			endian = BOMEndian[result]; // set stream endianness
 			m = ByteOrderMarks[result].length;
 		}
-		if ((ungetCharSize == 1 && result == -1) || (result == BOM.UTF8)) {
-			while (n-- > m)
+		if((ungetCharSize == 1 && result == -1) || (result == BOM.UTF8)) {
+			while(n-- > m)
 				ungetc(BOM_buffer[n]);
 		} else { // should eventually support unget for dchar as well
-			if (n & 1) // make sure we have an even number of bytes
+			if(n & 1) // make sure we have an even number of bytes
 				readExact(&BOM_buffer[n++],1);
-			while (n > m) {
+			while(n > m) {
 				n -= 2;
 				wchar cw = *(cast(wchar*)&BOM_buffer[n]);
 				fixBO(&cw,2);
@@ -2319,7 +2319,7 @@ class EndianStream : FilterStream {
 	 * size must be even.
 	 */
 	final void fixBO(const(void)* buffer, size_t size) {
-		if (endian != hurt.system.endian) {
+		if(endian != hurt.system.endian) {
 			ubyte* startb = cast(ubyte*)buffer;
 			uint* start = cast(uint*)buffer;
 			switch (size) {
@@ -2336,7 +2336,7 @@ class EndianStream : FilterStream {
 			}
 			default: {
 				uint* end = cast(uint*)(buffer + size - uint.sizeof);
-				while (start < end) {
+				while(start < end) {
 					uint x = bswap(*start);
 					*start = bswap(*end);
 					*end = x;
@@ -2346,7 +2346,7 @@ class EndianStream : FilterStream {
 				startb = cast(ubyte*)start;
 				ubyte* endb = cast(ubyte*)end;
 				auto len = uint.sizeof - (startb - endb);
-				if (len > 0)
+				if(len > 0)
 					fixBO(startb,len);
 			}
 			}
@@ -2358,7 +2358,7 @@ class EndianStream : FilterStream {
 	 * and repeated the given number of times. size must be even.
 	 */
 	final void fixBlockBO(void* buffer, uint size, size_t repeat) {
-		while (repeat--) {
+		while(repeat--) {
 			fixBO(buffer,size);
 			buffer += size;
 		}
@@ -2404,19 +2404,19 @@ class EndianStream : FilterStream {
 
 	override wchar getcw() {
 		wchar c;
-		if (prevCr) {
+		if(prevCr) {
 			prevCr = false;
 			c = getcw();
-			if (c != '\n')
+			if(c != '\n')
 				return c;
 		}
-		if (unget.length > 1) {
+		if(unget.length > 1) {
 			c = unget[unget.length - 1];
 			unget.length = unget.length - 1;
 		} else {
 			void* buf = &c;
 			size_t n = readBlock(buf,2);
-			if (n == 1 && readBlock(buf+1,1) == 0)
+			if(n == 1 && readBlock(buf+1,1) == 0)
 					throw new ReadException("not enough data in stream");
 			fixBO(&c,c.sizeof);
 		}
@@ -2503,7 +2503,7 @@ class EndianStream : FilterStream {
 		em.position(0);
 		static ubyte[12] x3 = [1,2,3,4,5,6,7,8,9,10,11,12];
 		em.fixBO(x3.ptr,12);
-		if (hurt.system.endian == Endian.LittleEndian) {
+		if(hurt.system.endian == Endian.LittleEndian) {
 			assert( x3[0] == 12 );
 			assert( x3[1] == 11 );
 			assert( x3[2] == 10 );
@@ -2527,7 +2527,7 @@ class EndianStream : FilterStream {
 		assert( m.data[1] == 0x55 );
 		em.position(0);
 		em.fixBO(x3.ptr,12);
-		if (hurt.system.endian == Endian.BigEndian) {
+		if(hurt.system.endian == Endian.BigEndian) {
 			assert( x3[0] == 12 );
 			assert( x3[1] == 11 );
 			assert( x3[2] == 10 );
@@ -2600,7 +2600,7 @@ class TArrayStream(Buffer): Stream {
 	override size_t readBlock(void* buffer, size_t size) {
 		assertReadable();
 		ubyte* cbuf = cast(ubyte*) buffer;
-		if (len - cur < size)
+		if(len - cur < size)
 			size = cast(size_t)(len - cur);
 		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. 
 			cast(size_t)(cur + size)];
@@ -2613,13 +2613,13 @@ class TArrayStream(Buffer): Stream {
 		assertWriteable();
 		ubyte* cbuf = cast(ubyte*) buffer;
 		ulong blen = buf.length;
-		if (cur + size > blen)
+		if(cur + size > blen)
 			size = cast(size_t)(blen - cur);
 		ubyte[] ubuf = cast(ubyte[])buf[cast(size_t)cur .. 
 			cast(size_t)(cur + size)];
 		ubuf[] = cbuf[0 .. size];
 		cur += size;
-		if (cur > len)
+		if(cur > len)
 			len = cur;
 		return size;
 	}
@@ -2636,9 +2636,9 @@ class TArrayStream(Buffer): Stream {
 				assert(0);
 		}
 
-		if (scur < 0)
+		if(scur < 0)
 			cur = 0;
-		else if (scur > len)
+		else if(scur > len)
 			cur = len;
 		else
 			cur = cast(ulong)scur;
@@ -2650,7 +2650,7 @@ class TArrayStream(Buffer): Stream {
 
 	/// Get the current memory data in total.
 	ubyte[] data() {
-		if (len > size_t.max)
+		if(len > size_t.max)
 			throw new StreamException("Stream too big");
 		const(void)[] res = buf[0 .. cast(size_t)len];
 		return cast(ubyte[])res;
@@ -2671,24 +2671,24 @@ unittest {
 	TArrayStream!(char[]) m;
 
 	m = new TArrayStream!(char[]) (buf);
-	assert (m.isOpen);
+	assert(m.isOpen);
 	m.writeString ("Hello, world");
-	assert (m.position () == 12);
-	assert (m.available == 88);
-	assert (m.seekSet (0) == 0);
-	assert (m.available == 100);
-	assert (m.seekCur (4) == 4);
-	assert (m.available == 96);
-	assert (m.seekEnd (-8) == 92);
-	assert (m.available == 8);
-	assert (m.size () == 100);
-	assert (m.seekSet (4) == 4);
-	assert (m.readString (4) == "o, w");
+	assert(m.position () == 12);
+	assert(m.available == 88);
+	assert(m.seekSet (0) == 0);
+	assert(m.available == 100);
+	assert(m.seekCur (4) == 4);
+	assert(m.available == 96);
+	assert(m.seekEnd (-8) == 92);
+	assert(m.available == 8);
+	assert(m.size () == 100);
+	assert(m.seekSet (4) == 4);
+	assert(m.readString (4) == "o, w");
 	m.writeString ("ie");
-	assert (buf[0..12] == "Hello, wield");
-	assert (m.position == 10);
-	assert (m.available == 90);
-	assert (m.size () == 100);
+	assert(buf[0..12] == "Hello, wield");
+	assert(m.position == 10);
+	assert(m.available == 90);
+	assert(m.size () == 100);
 }
 
 /// This subclass reads and constructs an array of bytes in memory.
@@ -2708,7 +2708,7 @@ class MemoryStream: TArrayStream!(ubyte[]) {
 
 	/// Ensure the stream can hold count bytes.
 	void reserve(size_t count) {
-		if (cur + count > buf.length)
+		if(cur + count > buf.length)
 			buf.length = cast(uint)((cur + count) * 2);
 	}
 
@@ -2721,32 +2721,32 @@ class MemoryStream: TArrayStream!(ubyte[]) {
 		MemoryStream m;
 
 		m = new MemoryStream ();
-		assert (m.isOpen);
+		assert(m.isOpen);
 		m.writeString ("Hello, world");
-		assert (m.position () == 12);
-		assert (m.seekSet (0) == 0);
-		assert (m.available == 12);
-		assert (m.seekCur (4) == 4);
-		assert (m.available == 8);
-		assert (m.seekEnd (-8) == 4);
-		assert (m.available == 8);
-		assert (m.size () == 12);
-		assert (m.readString (4) == "o, w");
+		assert(m.position () == 12);
+		assert(m.seekSet (0) == 0);
+		assert(m.available == 12);
+		assert(m.seekCur (4) == 4);
+		assert(m.available == 8);
+		assert(m.seekEnd (-8) == 4);
+		assert(m.available == 8);
+		assert(m.size () == 12);
+		assert(m.readString (4) == "o, w");
 		m.writeString ("ie");
-		assert (cast(char[]) m.data () == "Hello, wield");
+		assert(cast(char[]) m.data () == "Hello, wield");
 		m.seekEnd (0);
 		m.writeString ("Foo");
-		assert (m.position () == 15);
-		assert (m.available == 0);
+		assert(m.position () == 15);
+		assert(m.available == 0);
 		m.writeString ("Foo foo foo foo foo foo foo");
-		assert (m.position () == 42);
+		assert(m.position () == 42);
 		m.position = 0;
-		assert (m.available == 42);
+		assert(m.available == 42);
 		m.writef("%d %d %s",100,345,"hello");
 		auto str = m.toString;
-		assert (str[0..13] == "100 345 hello", str[0 .. 13]);
-		assert (m.available == 29);
-		assert (m.position == 13);
+		assert(str[0..13] == "100 345 hello", str[0 .. 13]);
+		assert(m.available == 29);
+		assert(m.position == 13);
 
 		MemoryStream m2;
 		m.position = 3;
@@ -2754,12 +2754,12 @@ class MemoryStream: TArrayStream!(ubyte[]) {
 		m2.writeString("before");
 		m2.copyFrom(m,10);
 		str = m2.toString;
-		assert (str[0..16] == "before 345 hello");
+		assert(str[0..16] == "before 345 hello");
 		m2.position = 3;
 		m2.copyFrom(m);
 		auto str2 = m.toString;
 		str = m2.toString;
-		assert (str == ("bef" ~ str2));
+		assert(str == ("bef" ~ str2));
 	}
 }
 /+
@@ -2779,14 +2779,14 @@ class MmFileStream : TArrayStream!(MmFile) {
 	}
 
 	override void flush() {
-		if (isopen) {
+		if(isopen) {
 			super.flush();
 			buf.flush();
 		}
 	}
 
 	override void close() {
-		if (isopen) {
+		if(isopen) {
 			super.close();
 			delete buf;
 			buf = null;
@@ -2799,27 +2799,27 @@ unittest {
 	MmFileStream m;
 	m = new MmFileStream (mf);
 	m.writeString ("Hello, world");
-	assert (m.position () == 12);
-	assert (m.seekSet (0) == 0);
-	assert (m.seekCur (4) == 4);
-	assert (m.seekEnd (-8) == 92);
-	assert (m.size () == 100);
-	assert (m.seekSet (4));
-	assert (m.readString (4) == "o, w");
+	assert(m.position () == 12);
+	assert(m.seekSet (0) == 0);
+	assert(m.seekCur (4) == 4);
+	assert(m.seekEnd (-8) == 92);
+	assert(m.size () == 100);
+	assert(m.seekSet (4));
+	assert(m.readString (4) == "o, w");
 	m.writeString ("ie");
 	ubyte[] dd = m.data();
-	assert ((cast(char[]) dd)[0 .. 12] == "Hello, wield");
+	assert((cast(char[]) dd)[0 .. 12] == "Hello, wield");
 	m.position = 12;
 	m.writeString ("Foo");
-	assert (m.position () == 15);
+	assert(m.position () == 15);
 	m.writeString ("Foo foo foo foo foo foo foo");
-	assert (m.position () == 42);
+	assert(m.position () == 42);
 	m.close();
 	mf = new MmFile("testing.txt");
 	m = new MmFileStream (mf);
-	assert (!m.writeable);
+	assert(!m.writeable);
 	char[] str = m.readString(12);
-	assert (str == "Hello, wield");
+	assert(str == "Hello, wield");
 	m.close();
 	std.file.remove("testing.txt");
 }+/
@@ -2852,7 +2852,7 @@ class SliceStream : FilterStream {
 	 */
 	this (Stream s, ulong low)
 	in {
-		assert (low <= s.size ());
+		assert(low <= s.size ());
 	}
 	body {
 		super(s);
@@ -2869,8 +2869,8 @@ class SliceStream : FilterStream {
 	 */
 	this (Stream s, ulong low, ulong high)
 	in {
-		assert (low <= high);
-		assert (high <= s.size ());
+		assert(low <= high);
+		assert(high <= s.size ());
 	}
 	body {
 		super(s);
@@ -2880,21 +2880,21 @@ class SliceStream : FilterStream {
 	}
 
 	invariant() {
-		if (bounded)
-			assert (pos <= high - low);
+		if(bounded)
+			assert(pos <= high - low);
 		else
-			assert (pos <= s.size - low);
+			assert(pos <= s.size - low);
 	}
 
 	override size_t readBlock (void *buffer, size_t size) {
 		assertReadable();
-		if (bounded && size > high - low - pos)
+		if(bounded && size > high - low - pos)
 				size = cast(size_t)(high - low - pos);
 		ulong bp = s.position;
-		if (seekable)
+		if(seekable)
 			s.position = low + pos;
 		size_t ret = super.readBlock(buffer, size);
-		if (seekable) {
+		if(seekable) {
 			pos = s.position - low;
 			s.position = bp;
 		}
@@ -2903,13 +2903,13 @@ class SliceStream : FilterStream {
 
 	override size_t writeBlock (const void *buffer, size_t size) {
 		assertWriteable();
-		if (bounded && size > high - low - pos)
+		if(bounded && size > high - low - pos)
 				size = cast(size_t)(high - low - pos);
 		ulong bp = s.position;
-		if (seekable)
+		if(seekable)
 			s.position = low + pos;
 		size_t ret = s.writeBlock(buffer, size);
-		if (seekable) {
+		if(seekable) {
 			pos = s.position - low;
 			s.position = bp;
 		}
@@ -2928,7 +2928,7 @@ class SliceStream : FilterStream {
 				spos = cast(long)(pos + offset);
 				break;
 			case SeekPos.End:
-				if (bounded)
+				if(bounded)
 					spos = cast(long)(high - low + offset);
 				else
 					spos = cast(long)(s.size - low + offset);
@@ -2937,11 +2937,11 @@ class SliceStream : FilterStream {
 				assert(0);
 		}
 
-		if (spos < 0)
+		if(spos < 0)
 			pos = 0;
-		else if (bounded && spos > high - low)
+		else if(bounded && spos > high - low)
 			pos = high - low;
-		else if (!bounded && spos > s.size - low)
+		else if(!bounded && spos > s.size - low)
 			pos = s.size - low;
 		else
 			pos = cast(ulong)spos;
@@ -2953,10 +2953,10 @@ class SliceStream : FilterStream {
 	override size_t available () {
 		size_t res = s.available;
 		ulong bp = s.position;
-		if (bp <= pos+low && pos+low <= bp+res) {
-			if (!bounded || bp+res <= high)
+		if(bp <= pos+low && pos+low <= bp+res) {
+			if(!bounded || bp+res <= high)
 				return cast(size_t)(bp + res - pos - low);
-			else if (high <= bp+res)
+			else if(high <= bp+res)
 				return cast(size_t)(high - pos - low);
 		}
 		return 0;
@@ -2968,44 +2968,44 @@ class SliceStream : FilterStream {
 
 		m = new MemoryStream ((cast(char[])"Hello, world").dup);
 		s = new SliceStream (m, 4, 8);
-		assert (s.size () == 4);
-		assert (m.position () == 0);
-		assert (s.position () == 0);
-		assert (m.available == 12);
-		assert (s.available == 4);
+		assert(s.size () == 4);
+		assert(m.position () == 0);
+		assert(s.position () == 0);
+		assert(m.available == 12);
+		assert(s.available == 4);
 
-		assert (s.writeBlock (cast(char *) "Vroom", 5) == 4);
-		assert (m.position () == 0);
-		assert (s.position () == 4);
-		assert (m.available == 12);
-		assert (s.available == 0);
-		assert (s.seekEnd (-2) == 2);
-		assert (s.available == 2);
-		assert (s.seekEnd (2) == 4);
-		assert (s.available == 0);
-		assert (m.position () == 0);
-		assert (m.available == 12);
+		assert(s.writeBlock (cast(char *) "Vroom", 5) == 4);
+		assert(m.position () == 0);
+		assert(s.position () == 4);
+		assert(m.available == 12);
+		assert(s.available == 0);
+		assert(s.seekEnd (-2) == 2);
+		assert(s.available == 2);
+		assert(s.seekEnd (2) == 4);
+		assert(s.available == 0);
+		assert(m.position () == 0);
+		assert(m.available == 12);
 
 		m.seekEnd(0);
 		m.writeString("\nBlaho");
-		assert (m.position == 18);
-		assert (m.available == 0);
-		assert (s.position == 4);
-		assert (s.available == 0);
+		assert(m.position == 18);
+		assert(m.available == 0);
+		assert(s.position == 4);
+		assert(s.available == 0);
 
 		s = new SliceStream (m, 4);
-		assert (s.size () == 14);
-		assert (s.toString () == "Vrooorld\nBlaho");
+		assert(s.size () == 14);
+		assert(s.toString () == "Vrooorld\nBlaho");
 		s.seekEnd (0);
-		assert (s.available == 0);
+		assert(s.available == 0);
 
 		s.writeString (", etcetera.");
-		assert (s.position () == 25);
-		assert (s.seekSet (0) == 0);
-		assert (s.size () == 25);
-		assert (m.position () == 18);
-		assert (m.size () == 29);
-		assert (m.toString() == "HellVrooorld\nBlaho, etcetera.");
+		assert(s.position () == 25);
+		assert(s.seekSet (0) == 0);
+		assert(s.size () == 25);
+		assert(m.position () == 18);
+		assert(m.size () == 29);
+		assert(m.toString() == "HellVrooorld\nBlaho, etcetera.");
 	}
 }
 
