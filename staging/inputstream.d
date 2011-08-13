@@ -10,12 +10,13 @@ import hurt.container.vector;
 import hurt.string.stringbuffer;
 
 import hurt.io.stdio;
-import std.stdio;
 import hurt.io.stream;
+import hurt.string.formatter;
 
+import std.stdio;
 
 void main() {
 	Stream st = new hurt.io.stream.File("utf8");
 	string ln =  cast(string)st.readLine();
-	writeln(ln);
+	println(ln);
 }

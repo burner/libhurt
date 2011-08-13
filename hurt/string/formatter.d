@@ -11,8 +11,13 @@ import hurt.exception.illegalargumentexception;
 import core.vararg;
 
 import std.stdio;
+import std.utf;
 
 private static StringBuffer!(char) buf;
+
+static this() {
+	buf = new StringBuffer!(char)(32);
+}
 
 public string makeString(TypeInfo[] arguments, void* args) {
 	buf.clear();
@@ -297,6 +302,40 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 					case 's': // string
 						if(arguments[argPtr] == typeid(immutable(char)[])) {
 							immutable(char)[] value = va_arg!(immutable(char)[])(arg);
+							immutable(T) paddingChar = padding0 ? '0' : ' ';
+							//debug writeln(__FILE__,__LINE__,": ", padding);
+							if(value.length < padding && !leftAlign) {
+								for(size_t i = 0; i < padding - value.length; 
+										i++) {
+									appendWithIdx!(T)(ret, ptr++, paddingChar);
+								}
+							}
+							////debug writeln(__FILE__,__LINE__,": ", value);
+							foreach(it; value) {
+								appendWithIdx!(T)(ret, ptr++, it);
+							}
+							argPtr++;
+						} else if(arguments[argPtr] == 
+								typeid(immutable(wchar)[])) {
+							immutable(char)[] value = 
+								toUTF8(va_arg!(immutable(wchar)[])(arg));
+							immutable(T) paddingChar = padding0 ? '0' : ' ';
+							//debug writeln(__FILE__,__LINE__,": ", padding);
+							if(value.length < padding && !leftAlign) {
+								for(size_t i = 0; i < padding - value.length; 
+										i++) {
+									appendWithIdx!(T)(ret, ptr++, paddingChar);
+								}
+							}
+							////debug writeln(__FILE__,__LINE__,": ", value);
+							foreach(it; value) {
+								appendWithIdx!(T)(ret, ptr++, it);
+							}
+							argPtr++;
+						} else if(arguments[argPtr] == 
+								typeid(immutable(dchar)[])) {
+							immutable(char)[] value = 
+								toUTF8(va_arg!(immutable(dchar)[])(arg));
 							immutable(T) paddingChar = padding0 ? '0' : ' ';
 							//debug writeln(__FILE__,__LINE__,": ", padding);
 							if(value.length < padding && !leftAlign) {
