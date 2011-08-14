@@ -79,6 +79,13 @@ public template StringBuffer(T) {
 			return this;
 		}
 
+		public StringBuffer!(T) pushBack(T[] toAdd) {
+			foreach(it; toAdd)
+				this.pushBack(it);
+
+			return this;
+		}
+
 		public StringBuffer!(T) pushBack(immutable(T)[] toAdd) {
 			if(this.bufferPointer + toAdd.length >= this.initSize) {
 				this.buffer.length += toAdd.length * 2u;
