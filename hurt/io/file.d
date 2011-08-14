@@ -11,6 +11,18 @@ public extern(C) int seekC(int fd, ulong offset, int st);
 public extern(C) int readC(int fd, void *buf, const long count);
 public extern(C) int getErrno();
 
+bool exists(string filename) {
+	int fd = open(filename, FileFlags.O_RDONLY, ModeValues.S_IRWXU);
+	int err = getErrno();
+	bool ex = true;
+	if(err == 2)
+		ex = false;
+	else
+		close(fd);
+
+	return ex;
+}
+
 long write(const int fd, void[] buf) {
 	return writeC(fd, buf.ptr, buf.length);
 }
