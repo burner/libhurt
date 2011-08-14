@@ -55,6 +55,10 @@ class Vector(T) : Iterable!(T) {
 		return ret;
 	}
 
+	public T peekBack() {
+		return this.data[this.index-1];
+	}
+
 	public T get(size_t idx) {
 		assert(idx <= this.index, "given index is out of bound");	
 		return this.data[idx];
