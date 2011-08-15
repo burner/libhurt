@@ -56,7 +56,8 @@ class Vector(T) : Iterable!(T) {
 	}
 
 	public T peekBack() {
-		return this.data[this.index-1];
+		assert(this.index != -1, "vector empty");	
+		return this.data[this.index];
 	}
 
 	public T get(size_t idx) {
