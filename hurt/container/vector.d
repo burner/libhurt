@@ -45,6 +45,14 @@ class Vector(T) : Iterable!(T) {
 		return this;
 	}
 
+	public Vector!(T) pushFront(T toAdd) {
+		return this.insert(0,toAdd);
+	}
+
+	public Vector!(T) pushBack(T toAdd) {
+		return this.append(toAdd);
+	}
+
 	public T popBack() {
 		T ret = this.data[this.index--];
 		return ret;
