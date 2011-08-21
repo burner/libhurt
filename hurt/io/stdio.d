@@ -32,7 +32,8 @@ public size_t print(...) {
 	string str = makeString(_arguments, _argptr);
 	if(str.length == 0)
 		return 0;
-	str = str[0..$];
+	if(str.length > 2 && str[$-1] == ' ')
+		str = str[0..$];
 	return writeC(0, str.ptr, str.length);
 }
 
@@ -41,7 +42,11 @@ public size_t println(...) {
 	string str = makeString(_arguments, _argptr);	
 	if(str.length == 0)
 		return 0;
-	str = str[0..$-1] ~ "\n";
+
+	if(str.length > 2 && str[$-1] == ' ')
+		str = str[0..$] ~ "\n";
+	else
+		str ~= '\n';
 	return writeC(0, str.ptr, str.length);
 }
 

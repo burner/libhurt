@@ -14,7 +14,14 @@ public pure S conv(T, S)(T t) {
 			return stringToInt!(int)(t);	
 		} else static if( is(S == ulong) ) {
 			return stringToInt!(ulong)(t);
-		} static if( is(S == dstring) ) {
+		} else static if( is(S == bool) ) {
+			if(t == "true")
+				return true;
+			if(t == "false")
+				return false;
+			throw new Exception(t ~ " is not true nor false");
+		}
+		static if( is(S == dstring) ) {
 
 		} static if( is(S == string) ) {
 			return t;
@@ -58,6 +65,13 @@ public pure S conv(T, S)(T t) {
 				is(S == ushort) || is(S == int) || is(S == uint) || 
 				is(S == long) || is(S == ulong)) {
 			return tToS!(ubyte,S)(t);	
+		}
+	} else static if( is(T == bool)) {
+		static if( is(S == string) ) {
+			if(t)
+				return "true";
+			else
+				return "false";
 		}
 	} else {
 		return null;
@@ -171,4 +185,6 @@ unittest {
 	assert("10.000000" == conv!(float,string)(10.000000));
 	assert("10.000000" == conv!(double,string)(10.000000));
 	assert("10.000000" == conv!(real,string)(10.000000));
+	assert("false" == conv!(bool,string)(false));
+	assert("true" == conv!(bool,string)(true));
 }

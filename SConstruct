@@ -72,6 +72,7 @@ hurt/util/milli.c
 hurt/util/random.d
 hurt/util/stacktrace.d
 hurt/util/util.d
+hurt/util/getopt.d
 ''')
 
 lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gc -g"))
