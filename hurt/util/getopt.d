@@ -62,6 +62,18 @@ struct Args {
 		}
 	}
 
+	private bool notAnOption(string str) {
+		foreach(it; this.optionShort) {
+			if(it == str)
+				return false;
+		}
+		foreach(it; this.optionLong) {
+			if(it == str)
+				return false;
+		}
+		return true;
+	}
+
 	public Args setOption(T)(string opShort, string opLong, string desc, 
 			ref T value, bool last = false) {
 		if(opShort is null || opShort.length == 0 || 
@@ -87,8 +99,12 @@ struct Args {
 				else
 					l = z;
 			}
+			if(l is null)
+				return this;
+
 			static if(is(T == bool)) {
 				if(l.getData() < this.args.length-1 &&
+						this.notAnOption(this.args[l.getData()+1]) &&
 						(this.args[l.getData()+1] == "true" ||
 						 this.args[l.getData()+1] == "false") ) {
 					value = conv!(string,bool)(this.args[l.getData()+1]);
@@ -96,10 +112,12 @@ struct Args {
 					value = true;
 				}
 			} else {
-				if(l.getData() < this.args.length-1)
+				if(l.getData() < this.args.length-1 &&
+						this.notAnOption(this.args[l.getData()+1])) {
 					value = conv!(string,T)(this.args[l.getData()+1]);	
-				else
+				} else {
 					throw new Exception("not enough arguments passed");
+				}
 			}
 			
 			if(last && (this.map.find("-h") !is null || 

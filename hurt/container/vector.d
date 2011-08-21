@@ -218,8 +218,12 @@ unittest {
 	ll.pushBack(0); ll.pushBack(1); ll.pushBack(2);
 	ll.pushBack(3); ll.pushBack(4); ll.pushBack(5);
 	Vector!(int) vec = new Vector!(int)(ll);
-	assert(vec[0] == 0 && vec[1] == 1 && vec[2] == 2 && vec[3] == 3 && 
-		vec[4] == 4 && vec[5] == 5);
+	assert(vec[0] == 0);
+	assert(vec[1] == 1);
+	assert(vec[2] == 2);
+	assert(vec[3] == 3);
+	assert(vec[4] == 4);
+	assert(vec[5] == 5);
 
 	size_t idx = 0;
 	foreach(it; vec) {
