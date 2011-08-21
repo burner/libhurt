@@ -110,7 +110,7 @@ struct Args {
 		return this;
 	}
 }
-
+/*
 void main(string[] args) {
 	Args arguments = Args(args);
 	arguments.setHelpText("test programm to test the args parser");
@@ -123,4 +123,4 @@ void main(string[] args) {
 	arguments.setOption("-f", "--foo", "foo option", foo);
 	arguments.setOption("-d", "--file", "file option", file, true);
 	println(__LINE__,bar, foo, tar, file);
-}
+}*/
