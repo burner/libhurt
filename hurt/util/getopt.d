@@ -42,7 +42,7 @@ struct Args {
 		this.help = help;	
 	}
 
-	private void printHelp() {
+	public void printHelp() {
 		if(this.help !is null && this.help.length > 0) {
 			println(this.help,'\n');
 		}
