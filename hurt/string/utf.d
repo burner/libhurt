@@ -427,7 +427,7 @@ unittest {
 }
 
 /// ditto
-dchar decode(in wchar[] s, ref size_t idx)
+pure dchar decode(in wchar[] s, ref size_t idx)
 out (result) {
 	assert(isValidDchar(result));
 }
@@ -846,7 +846,7 @@ string toUTF8(in char[] s) {
 }
 
 /// ditto
-string toUTF8(in wchar[] s) {
+pure string toUTF8(in wchar[] s) {
 	char[] r;
 	size_t i;
 	size_t slen = s.length;
