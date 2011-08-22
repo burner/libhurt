@@ -1020,6 +1020,42 @@ dstring toUTF32(in wchar[] s) {
 	return r[0 .. j].assumeUnique();  // legit because it's unique
 }
 
+dchar[] toUTF32Array(in char[] s) {
+	dchar[] r;
+	size_t slen = s.length;
+	size_t j = 0;
+
+	r.length = slen;		// r[] will never be longer than s[]
+	for(size_t i = 0; i < slen; ) {
+		dchar c = s[i];
+		if(c >= 0x80)
+			c = decode(s, i);
+		else
+			i++;		// c is ascii, no need for decode
+		r[j++] = c;
+	}
+
+	return r[0 .. j]; // legit because it's unique
+}
+
+dchar[] toUTF32Array(in wchar[] s) {
+	dchar[] r;
+	size_t slen = s.length;
+	size_t j = 0;
+
+	r = new dchar[slen];		// r[] will never be longer than s[]
+	for(size_t i = 0; i < slen; ) {
+		dchar c = s[i];
+		if(c >= 0x80)
+			c = decode(s, i);
+		else
+			i++;		// c is ascii, no need for decode
+		r[j++] = c;
+	}
+
+	return r[0 .. j];  // legit because it's unique
+}
+
 /// ditto
 dstring toUTF32(in dchar[] s) {
 	validate(s);
