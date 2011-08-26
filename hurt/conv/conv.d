@@ -62,6 +62,8 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == char) ) {		// char
 		static if( is(S == int) ) {
 			return cast(int)t;
+		} else static if( is(S == string) ) {
+			return "" ~ t;
 		}
 	} else static if( is(T == ubyte)) {		// ubyte
 		static if( is(S == string) ) {
