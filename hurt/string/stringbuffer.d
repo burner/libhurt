@@ -143,6 +143,10 @@ public template StringBuffer(T) {
 			return this.buffer[0 .. this.bufferPointer].idup;
 		}
 
+		public T[] getData() {
+			return this.buffer[0 .. this.bufferPointer];
+		}
+
 		public T charAt(size_t idx) {
 			if(idx > this.bufferPointer) {
 				assert(0, "Index out of bound");
