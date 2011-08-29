@@ -11,23 +11,23 @@
 
 ******************************************************************************/
 
-module tango.time.chrono.Korean;
+module hurt.time.chrono.korean;
 
-private import tango.time.chrono.GregorianBased;
-
+import hurt.time.chrono.gregorianbased;
 
 /** 
  * $(ANCHOR _Korean)
  * Represents the Korean calendar.
  */
 public class Korean : GregorianBased {
-  /**
-   * $(I Property.) Overridden. Retrieves the identifier associated with the current calendar.
-   * Returns: An integer representing the identifier of the current calendar.
-   */
-  public override const uint id() {
-    return KOREA;
-  }
+	/**
+	 * $(I Property.) Overridden. Retrieves the identifier associated with 
+	 * the current calendar.
+	 * Returns: An integer representing the identifier of the current calendar.
+	 */
+	public override const uint id() {
+		return KOREA;
+	}
 
 }
 

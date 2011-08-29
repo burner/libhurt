@@ -11,22 +11,21 @@
 
 ******************************************************************************/
 
-module tango.time.chrono.ThaiBuddhist;
+module hurt.time.chrono.thaibuddhist;
 
-private import tango.time.chrono.GregorianBased;
-
+import hurt.time.chrono.gregorianbased;
 
 /**
  * $(ANCHOR _ThaiBuddhist)
  * Represents the Thai Buddhist calendar.
  */
 public class ThaiBuddhist : GregorianBased {
-  /**
-   * $(I Property.) Overridden. Retrieves the identifier associated with the current calendar.
-   * Returns: An integer representing the identifier of the current calendar.
-   */
-  public override const uint id() {
-    return THAI;
-  }
-
+	/**
+	 * $(I Property.) Overridden. Retrieves the identifier associated with 
+	 * the current calendar.
+	 * Returns: An integer representing the identifier of the current calendar.
+	 */
+	public override const uint id() {
+		return THAI;
+	}
 }

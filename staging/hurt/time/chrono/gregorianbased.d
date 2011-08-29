@@ -13,7 +13,7 @@
 
 module hurt.time.chrono.gregorianbased;
 
-import hurt.core.exception;
+//import hurt.core.exception;
 import hurt.time.time;
 import hurt.time.chrono.gregorian;
 
@@ -44,7 +44,7 @@ class GregorianBased : Gregorian {
 			if(ticks >= eraRange.ticks)
 				return year - eraRange.yearOffset;
 		}
-		throw new IllegalArgumentException("Value was out of range.");
+		throw new Exception("Value was out of range.");
 	}
 
 	public override const uint getEra(const(Time) time) {
@@ -53,7 +53,7 @@ class GregorianBased : Gregorian {
 			if(ticks >= eraRange.ticks)
 				return eraRange.era;
 		}
-		throw new IllegalArgumentException("Value was out of range.");
+		throw new Exception("Value was out of range.");
 	}
 
 	public override const uint[] eras() {
@@ -70,10 +70,10 @@ class GregorianBased : Gregorian {
 			if(era == eraRange.era) {
 				if(year >= eraRange.minEraYear && year <= eraRange.maxEraYear)
 					return eraRange.yearOffset + year;
-				throw new IllegalArgumentException("Value was out of range.");
+				throw new Exception("Value was out of range.");
 			}
 		}
-		throw new IllegalArgumentException("Era value was not valid.");
+		throw new Exception("Era value was not valid.");
 	}
 
 	protected const uint currentEra() {

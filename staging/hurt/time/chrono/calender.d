@@ -314,7 +314,7 @@ public abstract class Calendar {
 			default:
 				break;
 			}
-		throw new IllegalArgumentException("Value was out of range.");
+		throw new Exception("Value was out of range.");
 	}
 
 	/**
@@ -432,7 +432,7 @@ public abstract class Calendar {
 		    if(truncateDay)
 				nDays -= newDom - origDom;
 		    else
-				throw new IllegalArgumentException("days out of range");
+				throw new Exception("days out of range");
 
 		}
 		for(int m = 0; m < nMonths; m++)

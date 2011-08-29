@@ -14,6 +14,7 @@ module hurt.time.clock;
 
 public import hurt.util.datetime;
 public import hurt.time.time;
+import hurt.conv.conv;
 
 //private import  tango.sys.Common;
 
@@ -184,7 +185,7 @@ struct Clock
                 {
                         timeval tv = void;
                         if (gettimeofday (&tv, null))
-                            throw new PlatformException ("Clock.now :: Posix timer is not available");
+                            throw new Exception("Clock.now :: Posix timer is not available");
 
                         return convert (tv);
                 }
@@ -216,7 +217,8 @@ struct Clock
                 {
                         DateTime dt = void;
                         auto timeval = convert (time);
-                        dt.time.millis = timeval.tv_usec / 1000;
+                        dt.time.millis = 
+							conv!(long,uint)(timeval.tv_usec / 1000);
 
                         tm t = void;
                         gmtime_r (&timeval.tv_sec, &t);

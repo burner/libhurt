@@ -125,7 +125,8 @@ version( linux ) {
 
 version( linux ) {
 	extern __gshared int	  daylight;
-	extern __gshared c_long   timezone;
+	__gshared c_long   timezone;
+	//extern __gshared c_long   timezone; TODO
 
 	extern(C) tm*   getdate(in char*);
 	extern(C) char* strptime(in char*, in char*, tm*);

@@ -11,9 +11,9 @@
 
 ******************************************************************************/
 
-module tango.time.chrono.Japanese;
+module hurt.time.chrono.japanese;
 
-private import tango.time.chrono.GregorianBased;
+import hurt.time.chrono.gregorianbased;
 
 
 /**

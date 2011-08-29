@@ -11,9 +11,9 @@
 
 ******************************************************************************/
 
-module tango.time.chrono.Taiwan;
+module hurt.time.chrono.taiwan;
 
-private import tango.time.chrono.GregorianBased;
+import hurt.time.chrono.gregorianbased;
 
 /**
  * $(ANCHOR _Taiwan)
