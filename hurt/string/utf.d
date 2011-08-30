@@ -276,7 +276,7 @@ nothrow size_t toUTFindex(in dchar[] s, size_t n) {
  * advanced past the decoded character. If the character is not well formed,
  * a $(D UtfException) is thrown and $(D_PARAM idx) remains unchanged.
  */
-dchar decode(in char[] s, ref size_t idx)
+pure dchar decode(in char[] s, ref size_t idx)
 out (result) {
 	assert(isValidDchar(result));
 }
@@ -483,7 +483,7 @@ unittest {
 
 
 /// ditto
-dchar decode(in dchar[] s, ref size_t idx) {
+pure dchar decode(in dchar[] s, ref size_t idx) {
 	enforce(idx < s.length, "Attempted to decode past the end of a string");
 
 	size_t i = idx;
@@ -983,7 +983,7 @@ pure wstring toUTF16(in dchar[] s) {
 /*****
  * Encodes string $(D_PARAM s) into UTF-32 and returns the encoded string.
  */
-dstring toUTF32(in char[] s) {
+pure dstring toUTF32(in char[] s) {
 	dchar[] r;
 	size_t slen = s.length;
 	size_t j = 0;

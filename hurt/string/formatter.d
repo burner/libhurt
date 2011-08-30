@@ -538,7 +538,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 
 	}
 	//writeln(__LINE__," ", ret[0..ptr]);
-	return ret[0..ptr].idup;
+	return conv!(immutable(T)[],immutable(S)[])(ret[0..ptr].idup);
 }
 
 unittest {

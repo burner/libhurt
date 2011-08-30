@@ -23,8 +23,10 @@ public pure S conv(T, S)(T t) {
 			throw new Exception(t ~ " is not true nor false");
 		}
 		static if( is(S == dstring) ) {
-
-		} static if( is(S == string) ) {
+			return toUTF32(t);
+		} else static if( is(S == wstring) ) {
+			return toUTF16(t);
+		} else static if( is(S == string) ) {
 			return t;
 		}
 	} else static if( is(T == dstring) ) {

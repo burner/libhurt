@@ -15,4 +15,5 @@ interface Iterator(T) {
 interface Iterable(T) {
 	int opApply(int delegate(ref size_t,ref T) dg);
 	int opApply(int delegate(ref T) dg);
+	size_t getSize();
 }
