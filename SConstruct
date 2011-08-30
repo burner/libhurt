@@ -33,6 +33,23 @@ hurt/conv/tostring.d
 ''')
 
 src += Split('''
+hurt/time/clock.d
+hurt/time/iso8601.d
+hurt/time/stopwatch.d
+hurt/time/time.d
+hurt/time/wallclock.d
+hurt/time/chrono/calendar.d
+hurt/time/chrono/gregorian.d
+hurt/time/chrono/hijri.d
+hurt/time/chrono/korean.d
+hurt/time/chrono/thaibuddhist.d
+hurt/time/chrono/gregorianbased.d
+hurt/time/chrono/hebrew.d
+hurt/time/chrono/japanese.d
+hurt/time/chrono/taiwan.d
+''')
+
+src += Split('''
 hurt/exception/exception.d
 hurt/exception/illegalargumentexception.d
 hurt/exception/ioexception.d
