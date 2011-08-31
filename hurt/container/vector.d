@@ -113,6 +113,20 @@ class Vector(T) : Iterable!(T) {
 		return this.get(idx);
 	}
 
+	public T set(typeof(index) idx, T value) {
+		assert(idx <= this.index, "use append to insert a Element at the 
+			end idx = " ~ conv!(size_t,string)(idx) ~ " curPos = "
+			~ conv!(typeof(index),string)(this.index));
+
+		this.data[idx] = value;
+		return this.data[idx];
+	}
+	
+	public T opIndexAssign(typeof(index) idx, T value) {
+		this.set(idx, value);
+		return this.data[idx];
+	}
+
 	public T[] opSlice(size_t low, size_t high) {
 		assert(low < high, "low index is bigger than high index");
 		assert(high < this.index,
