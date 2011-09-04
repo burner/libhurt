@@ -16,6 +16,11 @@ class Iterator(T) : ISRIterator!(T) {
 		this.curNode = curNode;
 	}
 
+	override ISRIterator!(T) dup() {
+		Iterator!(T) it = new Iterator!(T)(this.table, this.idx, this.curNode);
+		return it;
+	}
+
 	//public void opUnary(string s)() if(s == "++") {
 	override void increment() {
 		Node!(T) next = this.curNode.next;

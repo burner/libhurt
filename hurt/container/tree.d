@@ -13,6 +13,10 @@ public class Iterator(T) : ISRIterator!(T) {
 		this.current = current;
 	}
 
+	override ISRIterator!(T) dup() {
+		return new Iterator!(T)(this.current);
+	}
+
 	//void opUnary(string s)() if(s == "++") {
 	override void increment() {
 		Node!(T) y;

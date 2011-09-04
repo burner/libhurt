@@ -129,7 +129,7 @@ class Vector(T) : Iterable!(T) {
 
 	public T[] opSlice(size_t low, size_t high) {
 		assert(low < high, "low index is bigger than high index");
-		assert(high < this.index,
+		assert(high <= this.index,
 			 "high is out of index");
 
 		T[] ret = new T[high-low];

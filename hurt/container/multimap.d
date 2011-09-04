@@ -18,6 +18,22 @@ class Iterator(T,S) {
 	private hurt.container.dlst.Iterator!(S) listIt;
 	private bool range;
 
+	Iterator!(T,S) dup() {
+		return new Iterator!(T,S)(true, this.map, this.treeIt, this.listIt, 
+			this.range);	
+	}
+
+	this(bool dup, MultiMap!(T,S) map, ISRIterator!(Item!(T,S)) tit, 
+			hurt.container.dlst.Iterator!(S) lit, bool range) {
+		this.map = map;
+		this.treeIt = tit.dup;
+		this.listIt = lit.dup;
+		this.range = range;
+		assert(this.map !is null);
+		assert(this.treeIt !is null);
+		assert(this.listIt !is null);
+	}
+
 	this(MultiMap!(T,S) map, ISRIterator!(Item!(T,S)) it, bool begin = true, 
 			bool range = true) {
 		this.treeIt = it;
@@ -317,7 +333,11 @@ class MultiMap(T,S) {
 	DLinkedList!(S) removeRange(T key) {
 		this.finder.key = key;
 		//Item!(T,S) it = cast(Item!(T,S))this.tree.search(this.finder);
-		Item!(T,S) it = this.tree.search(this.finder).getData();
+		ISRNode!(Item!(T,S)) item = this.tree.search(this.finder);
+		if(item is null)
+			return null;
+
+		Item!(T,S) it = item.getData();
 		if(it !is null) {
 			this.tree.remove(this.finder);
 			this.size -= it.getSize();
