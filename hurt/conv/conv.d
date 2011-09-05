@@ -39,12 +39,16 @@ public pure S conv(T, S)(T t) {
 		return integerToString!(wchar,T)(t);
 	} else static if(isInteger!T() && (is(S == dstring))) {
 		return integerToString!(dchar,T)(t);
+	} else static if(isInteger!T() && isFloat!S()) {
+		return tToS!(T,S)(t);
 	} else static if(isFloat!T() && (is(S == string))) {
 		return floatToString!(char,T)(t);
 	} else static if(isFloat!T() && (is(S == wstring))) {
 		return floatToString!(wchar,T)(t);
 	} else static if(isFloat!T() && (is(S == dstring))) {
 		return floatToString!(dchar,T)(t);
+	} else static if(isFloat!T() && isInteger!S()) {
+		return tToS!(T,S)(t);
 	} else static if(isInteger!T() && isInteger!S()) {	// integer to integer
 		return tToS!(T,S)(t);
 	} else static if( is(T == int) ) {		// int
