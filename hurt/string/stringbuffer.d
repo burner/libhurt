@@ -127,6 +127,15 @@ public template StringBuffer(T) {
 				return this.buffer[this.bufferPointer-1];
 			}
 
+		public T peekBack() 
+			in {
+				assert(this.bufferPointer, 
+					"Tryed to popBack empty StringBuffer");
+			}
+			body {
+				return this.buffer[this.bufferPointer-1];
+			}
+
 		public typeof(bufferPointer) getSize() const {
 			return this.bufferPointer;
 		}

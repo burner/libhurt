@@ -1002,7 +1002,7 @@ pure dstring toUTF32(in char[] s) {
 }
 
 /// ditto
-dstring toUTF32(in wchar[] s) {
+pure dstring toUTF32(in wchar[] s) {
 	dchar[] r;
 	size_t slen = s.length;
 	size_t j = 0;

@@ -7,6 +7,7 @@ import hurt.conv.conv;
 import hurt.container.dlst;
 import hurt.container.map;
 import hurt.algo.sorting;
+import hurt.string.formatter;
 
 extern(C) long getMilli();
 
@@ -38,10 +39,10 @@ public class Trace {
 		Stats[] a = Trace.allCalls.values();
 		assert(a.length == Trace.allCalls.getSize());
 		sort!(Stats)(a, function(in Stats a, in Stats b) {
-			 return a.calls > b.calls; });
+			 return a.time > b.time; });
 		foreach(it; a) {
 			printfln("%50s %14d %14d", it.funcName~"() at "~ it.file ~ ":" ~ 
-				conv!(int,string)(it.line), it.calls, it.time);
+				format!(char,char)("%5d",it.line), it.calls, it.time);
 		}
 		Trace.allCallsMutex.unlock();
 	}
@@ -72,7 +73,7 @@ public class Trace {
 		for(uint i = 0; i < this.localDepth; i++) {
 			hurt.io.stdio.print("  ");
 		}
-		printfln("%s:%d %s", this.file, this.line, this.funcName);
+		printfln("%s:%4d %s", this.file, this.line, this.funcName);
 	}
 
 	~this() {
