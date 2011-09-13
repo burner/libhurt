@@ -14,6 +14,10 @@ public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 		this.elem = elem;
 	}
 
+	public Iterator!(T) dup() {
+		return new Iterator!(T)(this.elem);
+	}
+
 	public T getValue() {
 		if(elem is null) {
 			throw new NullException("Iterator value is null");

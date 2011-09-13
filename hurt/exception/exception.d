@@ -335,8 +335,8 @@ auto line = readln(f);
 enforce(line.length, "Expected a non-empty line."));
 --------------------
  +/
-T enforce(T, string file = __FILE__, int line = __LINE__)
-		(T value, lazy const(char)[] msg = null) {
+pure T enforce(T, string file = __FILE__, int line = __LINE__)
+		(T value, const(char)[] msg = null) {
 	if (!value) 
 		bailOut(file, line, msg);
 	return value;
@@ -353,7 +353,7 @@ T enforce(T, string file = __FILE__, int line = __LINE__)
 	return value;
 }
 
-private void bailOut(string file, int line, in char[] msg) {
+private pure void bailOut(string file, int line, in char[] msg) {
 	throw new Exception(msg ? msg.idup : "Enforcement failed", file, line);
 }
 

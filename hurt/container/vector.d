@@ -45,6 +45,14 @@ class Vector(T) : Iterable!(T) {
 		return this;
 	}
 
+	public Vector!(T) pushFront(T toAdd) {
+		return this.insert(0,toAdd);
+	}
+
+	public Vector!(T) pushBack(T toAdd) {
+		return this.append(toAdd);
+	}
+
 	public T popBack() {
 		T ret = this.data[this.index--];
 		return ret;
@@ -105,9 +113,23 @@ class Vector(T) : Iterable!(T) {
 		return this.get(idx);
 	}
 
+	public T set(typeof(index) idx, T value) {
+		assert(idx <= this.index, "use append to insert a Element at the 
+			end idx = " ~ conv!(size_t,string)(idx) ~ " curPos = "
+			~ conv!(typeof(index),string)(this.index));
+
+		this.data[idx] = value;
+		return this.data[idx];
+	}
+	
+	public T opIndexAssign(typeof(index) idx, T value) {
+		this.set(idx, value);
+		return this.data[idx];
+	}
+
 	public T[] opSlice(size_t low, size_t high) {
 		assert(low < high, "low index is bigger than high index");
-		assert(high < this.index,
+		assert(high <= this.index,
 			 "high is out of index");
 
 		T[] ret = new T[high-low];
@@ -210,8 +232,12 @@ unittest {
 	ll.pushBack(0); ll.pushBack(1); ll.pushBack(2);
 	ll.pushBack(3); ll.pushBack(4); ll.pushBack(5);
 	Vector!(int) vec = new Vector!(int)(ll);
-	assert(vec[0] == 0 && vec[1] == 1 && vec[2] == 2 && vec[3] == 3 && 
-		vec[4] == 4 && vec[5] == 5);
+	assert(vec[0] == 0);
+	assert(vec[1] == 1);
+	assert(vec[2] == 2);
+	assert(vec[3] == 3);
+	assert(vec[4] == 4);
+	assert(vec[5] == 5);
 
 	size_t idx = 0;
 	foreach(it; vec) {

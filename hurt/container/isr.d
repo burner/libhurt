@@ -30,6 +30,7 @@ abstract class ISRIterator(T) {
 	public T opUnary(string s)() if(s == "*") { return getData(); }
 	public T getData();
 	public bool isValid() const;
+	public ISRIterator!(T) dup();
 	public void increment();
 	public void decrement();
 }

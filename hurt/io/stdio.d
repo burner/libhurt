@@ -14,7 +14,8 @@ static this() {
 }
 
 public size_t printfln(immutable(char)[] form, ...) {
-	string str = formatString!(char,char)(form ~ "\n", _arguments, _argptr);
+	string str = formatString!(char,char)(form, _arguments, _argptr);
+	str ~= "\n";
 	if(str.length == 0)
 		return 0;
 	return writeC(0, str.ptr, str.length);
@@ -32,16 +33,19 @@ public size_t print(...) {
 	string str = makeString(_arguments, _argptr);
 	if(str.length == 0)
 		return 0;
-	str = str[0..$];
+	if(str.length > 1 && str[$-1] == ' ')
+		str = str[0..$-1];
 	return writeC(0, str.ptr, str.length);
 }
 
 public size_t println(...) {
 	//writeln(buf.getString());
 	string str = makeString(_arguments, _argptr);	
-	if(str.length == 0)
-		return 0;
-	str = str[0..$-1] ~ "\n";
+
+	if(str.length > 1 && str[$-1] == ' ')
+		str = str[0..$-1] ~ "\n";
+	else
+		str ~= '\n';
 	return writeC(0, str.ptr, str.length);
 }
 
