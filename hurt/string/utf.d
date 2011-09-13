@@ -796,7 +796,7 @@ pure nothrow ubyte codeLength(C)(dchar c) {
  * of $(D char), $(D wchar), or $(D dchar). Throws a $(D UtfException)
  * if it is not. Use to check all untrusted input for correctness.
  */
-@safe void validate(S)(in S s) if(isString!(S)()) {
+@safe pure void validate(S)(in S s) if(isString!(S)()) {
 	immutable len = s.length;
 	for(size_t i = 0; i < len; ) {
 		decode(s, i);
@@ -1057,7 +1057,7 @@ dchar[] toUTF32Array(in wchar[] s) {
 }
 
 /// ditto
-dstring toUTF32(in dchar[] s) {
+pure dstring toUTF32(in dchar[] s) {
 	validate(s);
 	return s.idup;
 }

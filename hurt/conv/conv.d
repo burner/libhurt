@@ -63,7 +63,10 @@ public pure S conv(T, S)(T t) {
 			tmp[0] = t;
 			return "" ~ toUTF8(tmp);
 		} else static if( is(S == dstring) ) {
-			return ""d ~ t;
+			//return ""d ~ t;
+			dchar[1] tmp;
+			tmp[0] = t;
+			return toUTF32(tmp);
 		}
 	} else static if( is(T == wchar) ) {	// wchar
 		static if( is(S == string) ) {
