@@ -93,3 +93,5 @@ hurt/util/util.d
 ''')
 
 lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gc -g -m64"))
+#lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gc -g"))
+#lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-O"))

@@ -3,8 +3,9 @@ module hurt.container.vector;
 import hurt.conv.conv;
 import hurt.container.dlst;
 import hurt.container.iterator;
-
-import std.stdio;
+import hurt.io.stdio;
+import hurt.string.formatter;
+import hurt.string.stringbuffer;
 
 class Vector(T) : Iterable!(T) {
 	private T[] data;
@@ -69,7 +70,9 @@ class Vector(T) : Iterable!(T) {
 	}
 
 	public T get(size_t idx) {
-		assert(idx <= this.index, "given index is out of bound");	
+		assert(idx <= this.index, "given index is out of bound " ~ 
+			conv!(size_t,string)(idx) ~ " " ~ 
+			conv!(typeof(this.index),string)(this.index));
 		return this.data[idx];
 	}
 
@@ -216,14 +219,27 @@ class Vector(T) : Iterable!(T) {
 
 	public override bool opEquals(Object o) {
 		Vector!(T) v = cast(Vector!(T))o;
-		if(this.getSize() != v.getSize())
+		if(this.getSize() != v.getSize()) {
+			//println("sizes are not equal", this.getSize(), v.getSize());
 			return false;
+		}
 
 		foreach(idx,it;v) {
-			if(this[idx] != it)
+			if(this[idx] != it) {
+				//println("to equal at index",idx, it, this[idx]);
 				return false;
+			}
 		}
 		return true;
+	}
+
+	override string toString() {
+		StringBuffer!(char) ret = new StringBuffer!(char)(this.index*3);
+		ret.pushBack("[");
+		foreach(it; this) {
+			ret.pushBack(format!(char,char)("%5d,", it));
+		}
+		return ret.getString();
 	}
 }
 

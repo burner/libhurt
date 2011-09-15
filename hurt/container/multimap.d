@@ -91,6 +91,13 @@ class Iterator(T,S) {
 		return this.treeIt;
 	}
 
+	public S getData() {
+		if(this.listIt.isValid()) {
+			return *this.listIt;
+		}
+		throw new InvalidIteratorException("MultiMap Iterator is not valid");	
+	}
+
 	public void opUnary(string s)() if(s == "--") {
 		--this.listIt;
 		if(this.listIt.isValid()) {
@@ -104,10 +111,12 @@ class Iterator(T,S) {
 	}
 
 	public S opUnary(string s)() if(s == "*") {
-		if(this.listIt.isValid()) {
+		/*if(this.listIt.isValid()) {
 			return *this.listIt;
 		}
-		throw new InvalidIteratorException("MultiMap Iterator is not valid");	
+		throw new InvalidIteratorException("MultiMap Iterator is not valid");
+		*/
+		return this.getData();
 	}
 
 	public bool isValid() const {
