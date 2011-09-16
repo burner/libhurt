@@ -9,9 +9,14 @@ Features:
 	Container:
 		Bitmap
 		Double Linked List
+
+		// Map MultiMap and Set can use BinarySeachTrees, RBTrees as well as
+		// HashMaps as underlying datastructures, simple by passing an argument
+		// to there constructors
 		Map
 		MultiMap
 		Set
+
 		Single Linked List
 		Stack
 		Vector
@@ -19,16 +24,24 @@ Features:
 	Convert:
 		Numbertypes to string
 		string to Numbertypes
-		some Numbertypes to some Numbertypes (sort of a safe cast)
+		utfX to utfX (x = (8,16,32)
+		Numbertypes to Numbertypes (sort of a safe cast)
 	
 	io:
+		ported std.stream from phobos
 		C File like File
 		print(f)(ln) sort of
 
 	Util:
+		time modules from tango
 		append to array functions
 		find in array functions
-		sort function (only on array so far)
+		sort function
+
+	String:
+		StringBuffer(T) (T = (char,wchar,dchar))
+		lower, upper
+		printf style format 
 
 	Math:
 		BigInteger (needed this for some Euler Projects)
