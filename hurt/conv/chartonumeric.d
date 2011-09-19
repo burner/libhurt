@@ -1,6 +1,8 @@
 module hurt.conv.chartonumeric;
 
-public pure byte chartobase10(in char ch) {
+import hurt.conv.conv;
+
+public pure byte chartobase10(T)(T ch) {
 	switch(ch) {
 		case '0':
 			return 0;
@@ -23,6 +25,6 @@ public pure byte chartobase10(in char ch) {
 		case '9':
 			return 9;
 		default:
-			assert(0, "Invaild case " ~ ch);
+			assert(0, "Invaild case " ~ conv!(T,string)(ch));
 	}
 }

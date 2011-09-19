@@ -9,15 +9,17 @@ import hurt.math.mathutil;
 import std.stdio;
 //import std.conv;
 
-public pure T stringToInt(T)(in string str, int multi = 10) {
+public pure T stringToInt(T,S)(immutable(S)[] str, int multi = 10) 
+		if(is(S == char) || is(S == wchar) || is(S == dchar)) {
 	T ret = 0;
 	T mul = 1;	
 	T tmp;
 	bool neg = false;
 		
-	foreach_reverse(it; str) {
+	foreach_reverse(S it; str) {
 		// ignore underscores
-		if(it == '_') continue;
+		if(it == '_') 
+			continue;
 
 		// panic if char isn't a digit
 		if(!isDigit(it)) {

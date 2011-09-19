@@ -12,7 +12,7 @@ import std.stdio;
 public pure S conv(T, S)(T t) {
 	static if( is(T == string) ) {			// string
 		static if( is(S == int) ) {
-			return stringToInt!(int)(t);	
+			return stringToInt!(int,char)(t);	
 		} else static if( is(S == ulong) ) {
 			return stringToInt!(ulong)(t);
 		} else static if( is(S == bool) ) {
@@ -32,8 +32,10 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == dstring) ) {
 		static if( is(S == string) ) {
 			return toUTF8(t);
+		} else static if( is(S == dstring) ) {
+			return t;
 		} else static if( isInteger!S() ) {
-			return toUTF32(stringToInt!(S)(toUTF8(t)));
+			return stringToInt!(S,dchar)(t);
 		}
 	} else static if(isInteger!T() && (is(S == string))) {
 		return integerToString!(char,T)(t);
@@ -81,6 +83,8 @@ public pure S conv(T, S)(T t) {
 			return cast(int)t;
 		} else static if( is(S == string) ) {
 			return "" ~ t;
+		} else static if( is(S == dchar) ) {
+			return cast(dchar)t;
 		}
 	} else static if( is(T == ubyte)) {		// ubyte
 		static if( is(S == string) ) {

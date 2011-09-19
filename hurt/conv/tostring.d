@@ -121,7 +121,7 @@ public pure immutable(T)[] floatToExponent(T,S)(S src, int round = 4,
 	}
 	immutable(T)[] digits = floatToString!(T,S)(src, round, sign);
 	immutable(T)[] expo = integerToString!(T,int)(count);
-	return digits ~ (big ? "E" : "e") ~ expo;
+	return digits ~ (big ? 'E' : 'e') ~ expo;
 }
 
 unittest {

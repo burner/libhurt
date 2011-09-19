@@ -282,21 +282,21 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 								appendWithIdx!(T)(ret, ptr++, tmp[0]);
 								noSign = true;
 							}
-							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
-							appendWithIdx!(T)(ret, ptr++, cast(immutable)'x');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable T)'0');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable T)'x');
 						} else if(altForm && form[idx] == 'X') {
 							if(tmp[0] == '-' || tmp[0] == '+') {
 								appendWithIdx!(T)(ret, ptr++, tmp[0]);
 								noSign = true;
 							}
-							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
-							appendWithIdx!(T)(ret, ptr++, cast(immutable)'X');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable T)'0');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable T)'X');
 						} else if(altForm && form[idx] == 'o') {
 							if(tmp[0] == '-' || tmp[0] == '+') {
 								appendWithIdx!(T)(ret, ptr++, tmp[0]);
 								noSign = true;
 							}
-							appendWithIdx!(T)(ret, ptr++, cast(immutable)'0');
+							appendWithIdx!(T)(ret, ptr++, cast(immutable T)'0');
 						}
 						if(noSign) {
 							tmp = tmp[1..$];
@@ -326,7 +326,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							}
 							////debug writeln(__FILE__,__LINE__,": ", value);
 							foreach(it; value) {
-								appendWithIdx!(T)(ret, ptr++, it);
+								appendWithIdx!(T)(ret, ptr++, cast(immutable T)it);
 							}
 							argPtr++;
 						}
@@ -344,7 +344,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							}
 							////debug writeln(__FILE__,__LINE__,": ", value);
 							foreach(it; value) {
-								appendWithIdx!(T)(ret, ptr++, it);
+								appendWithIdx!(T)(ret, ptr++, cast(immutable T)it);
 							}
 							argPtr++;
 						} else if(arguments[argPtr] == 
@@ -361,7 +361,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							}
 							////debug writeln(__FILE__,__LINE__,": ", value);
 							foreach(it; value) {
-								appendWithIdx!(T)(ret, ptr++, it);
+								appendWithIdx!(T)(ret, ptr++, cast(immutable T)it);
 							}
 							argPtr++;
 						} else if(arguments[argPtr] == 
@@ -378,7 +378,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							}
 							////debug writeln(__FILE__,__LINE__,": ", value);
 							foreach(it; value) {
-								appendWithIdx!(T)(ret, ptr++, it);
+								appendWithIdx!(T)(ret, ptr++, cast(immutable T)it);
 							}
 							argPtr++;
 						}
@@ -506,7 +506,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 						//if(is(arguments[argPtr] : Object)) {
 							value = va_arg!(Object)(arg);	
 							//tmp = value.toString();
-							tmp = integerToString!(char,long)(cast(long)&value,16,false,true);	
+							tmp = integerToString!(T,long)(cast(long)&value,16,false,true);	
 						/*} else {
 							throw new FormatError("A class was expected" 
 								~ (arguments[argPtr].toString()));
