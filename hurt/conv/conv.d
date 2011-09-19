@@ -32,6 +32,8 @@ public pure S conv(T, S)(T t) {
 	} else static if( is(T == dstring) ) {
 		static if( is(S == string) ) {
 			return toUTF8(t);
+		} else static if( isInteger!S() ) {
+			return toUTF32(stringToInt!(S)(toUTF8(t)));
 		}
 	} else static if(isInteger!T() && (is(S == string))) {
 		return integerToString!(char,T)(t);
