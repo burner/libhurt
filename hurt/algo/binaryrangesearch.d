@@ -3,18 +3,30 @@ module hurt.algo.binaryrangesearch;
 struct Range(T,S) {
 	S value;
 	T first, last;
-	bool lastSet;
+	bool firstSet, lastSet;
+
+	this(S value) {
+		this.value = value;
+		this.firstSet = true;
+		this.lastSet = true;
+	}
 
 	this(T first, S value) {
 		this.first = first;
+		this.firstSet = true;
 		this.value = value;
 	}
 
 	this(T first, T last, S value) {
 		this.first = first;
+		this.firstSet = true;
 		this.last = last;
 		this.lastSet = true;
 		this.value = value;
+	}
+
+	bool isFirstSet() const {
+		return this.firstSet;
 	}
 
 	bool isLastSet() const {
@@ -22,6 +34,9 @@ struct Range(T,S) {
 	}
 
 	bool canExpend(T next) const {
+		if(!this.firstSet)
+			return true;
+
 		if(this.lastSet) {
 			if((cast(int)this.last)+1 == (cast(int)next)) {
 				return true;
@@ -41,13 +56,30 @@ struct Range(T,S) {
 		if(!this.canExpend(next)) {
 			return;
 		}
-		if(lastSet) {
+		if(!this.firstSet) {
+			this.first = next;
+			this.firstSet = true;
+			return;
+		}
+			
+		if(this.lastSet) {
 			this.last = next;
 		} else {
 			this.last = next;
 			this.lastSet = true;
 		}
 	}
+}
+
+unittest {
+	Range!(dchar,int) r1 = Range!(dchar,int)(9);
+	assert(r1.canExpend('a'));
+	assert(r1.canExpend('b'));
+	r1.expend('a');
+	r1.first = 'a';
+	assert(r1.canExpend('b'));
+	r1.expend('b');
+	r1.last = 'b';
 }
 
 S binarySearch(T,S)(Range!(T,S) r[], T key) {
