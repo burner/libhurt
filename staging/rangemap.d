@@ -160,18 +160,45 @@ class RangeMap(T,S) {
 		assert(mid.setNode(recursiveTreeCreate(nodes, middle+1, right)));
 		return mid;
 	}
+
+	package static bool validate(Node!(T,S) node) {
+		if(node is null)
+			return true;
+
+		Node!(T,S) left = node.getLeft();
+		Node!(T,S) right = node.getRight();
+		if(left !is null) {
+			if(left.isLastSet && node.getFirst() < left.getLast())
+				return false;
+			else if(!left.isLastSet() && node.getFirst() < left.getFirst())
+				return false;
+		}
+		if(right !is null) {
+			if(right.isLastSet && node.getLast() > right.getFirst())
+				return false;
+			else if(!node.isLastSet() && node.getFirst() > right.getFirst())
+				return false;
+		}
+		return validate(left) && validate(right);
+	}
+
+	package bool validate() {
+		return validate(this.root);
+	}
 }
 
 unittest {
 	Node!(dchar,int)[] ar1 = new Node!(dchar,int)[1];
 	ar1[0] = new Node!(dchar,int)('a',0);
 	RangeMap!(dchar,int) m1 = new RangeMap!(dchar,int)(ar1);
+	assert(m1.validate());
 	for(size_t i = 1; i < 26; i++) {
 		ar1 = new Node!(dchar,int)[i];
 		for(size_t j = 0; j < i; j++) {
 			ar1[j] = new Node!(dchar,int)(cast(dchar)(j+97), cast(int)j);
 		}
 		m1 = new RangeMap!(dchar,int)(ar1);
+		assert(m1.validate());
 	}
 }
 
