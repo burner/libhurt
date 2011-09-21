@@ -5,7 +5,13 @@ import hurt.container.map;
 import hurt.algo.sorting;
 import hurt.io.stdio;
 
+/*
+	Class: Node
+*/
 private class Node(T,S) {
+	/*	Variable: first
+	  	Stores the left or only value of the range. 
+	*/
 	private T first;
 	private T last;
 	private S value;
@@ -167,18 +173,21 @@ class RangeMap(T,S) {
 
 		Node!(T,S) left = node.getLeft();
 		Node!(T,S) right = node.getRight();
+
 		if(left !is null) {
-			if(left.isLastSet && node.getFirst() < left.getLast())
+			if(left.isLastSet() && node.getFirst() < left.getLast())
 				return false;
 			else if(!left.isLastSet() && node.getFirst() < left.getFirst())
 				return false;
 		}
+
 		if(right !is null) {
-			if(right.isLastSet && node.getLast() > right.getFirst())
+			if(node.isLastSet() && node.getLast() > right.getFirst())
 				return false;
 			else if(!node.isLastSet() && node.getFirst() > right.getFirst())
 				return false;
 		}
+
 		return validate(left) && validate(right);
 	}
 

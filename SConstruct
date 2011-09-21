@@ -20,6 +20,7 @@ hurt/container/vector.d
 
 src += Split('''
 hurt/algo/sorting.d
+hurt/algo/binaryrangesearch.d
 ''')
 
 src += Split('''
