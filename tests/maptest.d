@@ -32,9 +32,9 @@ void main() {
 	map.insert(31, old);
 
 
-	size_t idx = 0;
+	/*size_t idx = 0;
 	foreach(key, value; map) {
 		assert(key == k[idx] && contains(v,conv!(string,int)(value)));
 		idx++;
-	}
+	}*/
 }

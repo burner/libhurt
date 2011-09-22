@@ -5,6 +5,7 @@ import hurt.container.map;
 import hurt.container.vector;
 import hurt.math.mathutil;
 import hurt.conv.tointeger;
+import hurt.algo.binaryrangesearch;
 import hurt.container.dlst;
 
 //import std.stdio;

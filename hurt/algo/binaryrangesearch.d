@@ -50,13 +50,12 @@ struct Range(T,S) {
 	}
 }
 
-S binarySearch(T,S)(Range!(T,S) r[], T key) {
+S binarySearch(T,S)(in Range!(T,S)[] r, T key) {
 	size_t l = 0;	
 	size_t h = r.length-1;	
 	size_t m;	
 	while(h >= l) {
 		m = l + ((h - l) / 2);
-		//printfln("%3d %3d %5d", l, h,m);
 		if(h < l) {
 			throw new Exception("failed to find the range");
 		}
