@@ -808,7 +808,7 @@ pure nothrow ubyte codeLength(C)(dchar c) {
 
 @trusted {
 
-char[] toUTF8(out char[4] buf, dchar c)
+pure char[] toUTF8(out char[4] buf, dchar c)
 in {
 	assert(isValidDchar(c));
 }

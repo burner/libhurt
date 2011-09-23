@@ -63,9 +63,8 @@ public pure S conv(T, S)(T t) {
 		static if( is(S == char) ) {
 			return dcharToChar(t);
 		} else static if( is(S == string) ) {
-			dchar[1] tmp;
-			tmp[0] = t;
-			return "" ~ toUTF8(tmp);
+			char[4] tmp;
+			return toUTF8(tmp, t).idup;
 		} else static if( is(S == dstring) ) {
 			//return ""d ~ t;
 			dchar[1] tmp;
