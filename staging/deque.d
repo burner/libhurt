@@ -1,5 +1,6 @@
 module hurt.container.deque;
 
+import hurt.exception.outofrangeexception;
 import hurt.io.stdio;
 import hurt.conv.conv;
 import hurt.container.iterator;
@@ -134,7 +135,12 @@ class Deque(T) {
 			this.growCapacity();
 		}	
 		this.data[this.head] = toPush;
-		this.head = (this.head-1) % this.data.length;
+		//this.head = (this.head-1) % this.data.length;
+		if((this.head-1) < 0) {
+			this.head = this.data.length-1;
+		} else {
+			this.head--;	
+		}
 	}
 
 	void pushBack(T toPush) {
@@ -143,6 +149,17 @@ class Deque(T) {
 		}	
 		this.tail = (this.tail+1) % this.data.length;
 		this.data[this.tail] = toPush;
+	}
+
+	T opIndex(long idx) {
+		if(idx >= 0) {
+			if((this.head + idx) % this.data.length >= this.tail) {
+				throw new OutOfRangeException(conv!(long,string)(idx));
+			} else {
+				return this.data[(this.head + idx) % this.data.length];
+			}
+		}
+		assert(false, "not reachable");
 	}
 
 	bool isEmpty() const {
@@ -159,7 +176,7 @@ class Deque(T) {
 		}
 	}
 
-	void print() {
+	void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
 			printf("%d ", it);
@@ -171,8 +188,15 @@ unittest {
 	void pushBackPopFront(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushBack(i);	
+			for(int j = 0; j <= i; j++) {
+				assert(de[j] == j, conv!(int,string)(de[j]) ~ " " ~
+					conv!(int,string)(j));	
+			}
 			assert(i+1 == de.getSize());
 		}
+		assert(count == de.getSize(),
+			conv!(size_t,string)(de.getSize()) ~ " " 
+			~ conv!(int,string)(count));
 		for(int i = 0; i < count; i++) {
 			assert(i == de.popFront());
 			assert(count-1-i == de.getSize(), 
@@ -182,6 +206,8 @@ unittest {
 	}
 
 	void pushFrontPopBack(Deque!(int) de, int count) {
+		assert(count > 0);
+		assert(de.isEmpty());
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
 			if(i+1 != de.getSize())
@@ -190,6 +216,9 @@ unittest {
 				conv!(size_t,string)(de.getSize()) ~ " " 
 				~ conv!(int,string)(i+1));
 		}
+		assert(count == de.getSize(),
+			conv!(size_t,string)(de.getSize()) ~ " " 
+			~ conv!(int,string)(count));
 		for(int i = 0; i < count; i++) {
 			assert(i == de.popBack());
 			assert(count-1-i == de.getSize(), 
@@ -203,6 +232,9 @@ unittest {
 			de.pushFront(i);	
 			assert(i+1 == de.getSize());
 		}
+		assert(count == de.getSize(),
+			conv!(size_t,string)(de.getSize()) ~ " " 
+			~ conv!(int,string)(count));
 		for(int i = 0; i < count; i++) {
 			assert(count-1-i == de.popFront());
 			assert(count-1-i == de.getSize(), 
@@ -216,6 +248,9 @@ unittest {
 			de.pushBack(i);	
 			assert(i+1 == de.getSize());
 		}
+		assert(count == de.getSize(),
+			conv!(size_t,string)(de.getSize()) ~ " " 
+			~ conv!(int,string)(count));
 		for(int i = 0; i < count; i++) {
 			assert(count-1-i == de.popBack());
 			assert(count-1-i == de.getSize(), 
@@ -224,99 +259,118 @@ unittest {
 		assert(de.isEmpty());
 	}
 
-	for(int i = 0; i < 16; i++) {
+	for(int i = 0; i < 600; i++) {
 		Deque!(int) de = new Deque!(int)();
-		println(__LINE__, i);
-		switch(i) {
+		//println(__LINE__, i);
+		switch(i%15) {
 			case 0:
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 1:
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 2:
 				pushBackPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 3:
 				pushBackPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 4:
 				pushBackPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 5:
 				pushBackPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 6:
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 7:
+				assert(de.isEmpty());
 				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				pushBackPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				pushFrontPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				pushBackPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 8:
 				pushFrontPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 9:
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 10:
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 11:
 				pushFrontPopBack(de, 10 * (i+1));
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
+				break;
+			case 12:
+				pushBackPopFront(de, 10 * (i+1));
+				pushFrontPopBack(de, 10 * (i+1));
+				pushFrontPopFront(de, 10 * (i+1));
+				pushBackPopBack(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 13:
 				pushBackPopFront(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
-				pushFrontPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
+				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			case 14:
 				pushBackPopFront(de, 10 * (i+1));
-				pushFrontPopBack(de, 10 * (i+1));
-				pushBackPopBack(de, 10 * (i+1));
-				pushFrontPopFront(de, 10 * (i+1));
-				break;
-			case 15:
-				pushBackPopFront(de, 10 * (i+1));
 				pushBackPopBack(de, 10 * (i+1));
 				pushFrontPopBack(de, 10 * (i+1));
 				pushFrontPopFront(de, 10 * (i+1));
+				assert(de.isEmpty());
 				break;
 			default:
 				assert(false, "not reachable");
