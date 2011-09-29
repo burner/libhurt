@@ -177,11 +177,13 @@ unittest {
 	}
 
 	void pushFrontPopBack(Deque!(int) de, int count) {
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
-			assert(i+1 == de.getSize());
+			assert(i+1 == de.getSize(),
+				conv!(size_t,string)(de.getSize()) ~ " " 
+				~ conv!(int,string)(i+1));
 		}
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			assert(i == de.popBack());
 			assert(count-1-i == de.getSize(), 
 				conv!(size_t,string)(de.getSize()));
@@ -190,11 +192,11 @@ unittest {
 	}
 
 	void pushFrontPopFront(Deque!(int) de, int count) {
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
 			assert(i+1 == de.getSize());
 		}
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			assert(count-1-i == de.popFront());
 			assert(count-1-i == de.getSize(), 
 				conv!(size_t,string)(de.getSize()));
@@ -203,11 +205,11 @@ unittest {
 	}
 
 	void pushBackPopBack(Deque!(int) de, int count) {
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			de.pushBack(i);	
 			assert(i+1 == de.getSize());
 		}
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < count; i++) {
 			assert(count-1-i == de.popBack());
 			assert(count-1-i == de.getSize(), 
 				conv!(size_t,string)(de.getSize()));
@@ -217,6 +219,7 @@ unittest {
 
 	for(int i = 0; i < 16; i++) {
 		Deque!(int) de = new Deque!(int)();
+		println(__LINE__, i);
 		switch(i) {
 			case 0:
 				pushBackPopFront(de, 10 * (i+1));
