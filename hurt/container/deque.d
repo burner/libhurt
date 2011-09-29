@@ -1,7 +1,7 @@
 module hurt.container.deque;
 
-import std.stdio;
 import hurt.conv.conv;
+import hurt.io.stdio;
 import hurt.container.iterator;
 
 class Iterator(T) : hurt.container.iterator.Iterator!(T) {
@@ -157,7 +157,7 @@ class Deque(T) {
 	}
 
 	void print() {
-		writeln(this.data, " ", this.head, " ", this.tail);
+		println(this.data, this.head, this.tail);
 	}
 }
 
@@ -166,38 +166,38 @@ unittest {
 	de.pushBack(10);
 	de.pushBack(11);
 	de.pushBack(12);
-	writeln("size ", de.getSize());
+	println("size ", de.getSize());
 	de.pushFront(9);
 	de.pushFront(8);
 	de.pushFront(7);
 	de.pushFront(6);
 	de.pushBack(13);
-	writeln("size ", de.getSize());
+	println("size ", de.getSize());
 	de.pushFront(5);
 	de.pushFront(4);
 	de.pushFront(3);
 	de.pushFront(2);
-	writeln("size ", de.getSize());
+	println("size ", de.getSize());
 	de.pushFront(1);
 	de.pushFront(0);
 	de.pushFront(-1);
 	de.pushFront(-2);
-	writeln("size ", de.getSize());
+	println("size ", de.getSize());
 	de.pushFront(-3);
 	de.pushBack(14);
 	de.pushBack(15);
-	writeln("size ", de.getSize());
+	println("size ", de.getSize());
 	auto it = de.begin();
-	writeln(__LINE__, it.isValid());
+	println(__LINE__, it.isValid());
 	for(; it.isValid(); it++) {
-		write(*it, " ");
+		print(*it, " ");
 	}
-	writeln();
+	println();
 	it = de.end();
 	for(; it.isValid(); it--) {
-		write(*it, " ");
+		print(*it, " ");
 	}
-	writeln();
+	println();
 	//for(int i = 16; i < 23; i++)
 	//	de.pushBack(i);
 	//de.print();
@@ -213,12 +213,12 @@ unittest {
 	de2.pushFront(2);
 	de2.pushFront(3);
 	de2.print();
-	writeln(de2.popBack());
-	writeln(de2.popBack());
+	println(de2.popBack());
+	println(de2.popBack());
 	de2.print();
 	de2.pushFront(4);
 	de2.pushFront(5);
 	de2.print();
-	writeln(de2.popBack());
-	writeln(de2.popBack());
+	println(de2.popBack());
+	println(de2.popBack());
 }
