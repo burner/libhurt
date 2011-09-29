@@ -150,7 +150,9 @@ class Deque(T) {
 	}
 
 	size_t getSize() const { 
-		if(this.tail >= this.head) {
+		if(this.isEmpty())
+			return 0;
+		if(this.tail > this.head) {
 			return this.tail-this.head;
 		} else {
 			return this.tail + (this.data.length-this.head);
@@ -158,7 +160,10 @@ class Deque(T) {
 	}
 
 	void print() {
-		println(this.data, " ", this.head, " ", this.tail);
+		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
+		foreach(it; this.data)
+			printf("%d ", it);
+		println();
 	}
 }
 
@@ -179,6 +184,8 @@ unittest {
 	void pushFrontPopBack(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
+			if(i+1 != de.getSize())
+				de.print();
 			assert(i+1 == de.getSize(),
 				conv!(size_t,string)(de.getSize()) ~ " " 
 				~ conv!(int,string)(i+1));
