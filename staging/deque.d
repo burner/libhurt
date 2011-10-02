@@ -256,8 +256,8 @@ unittest {
 			~ conv!(int,string)(count));
 		for(int i = 0; i < count; i++) {
 			assert(i == de.popFront());
-			/*assert(count-1-i == de.getSize(), 
-				conv!(size_t,string)(de.getSize()));*/
+			assert(count-1-i == de.getSize(), 
+				conv!(size_t,string)(de.getSize()));
 		}
 		assert(de.isEmpty());
 	}
@@ -334,7 +334,7 @@ unittest {
 	}
 
 	int mul = 1;
-	for(int i = 0; i < 400; i++) {
+	for(int i = 0; i < 600; i++) {
 		Deque!(int) de = new Deque!(int)();
 		println(__LINE__, i);
 		switch(i%15) {
