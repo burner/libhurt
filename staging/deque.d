@@ -318,8 +318,8 @@ unittest {
 			assert(i+1 == de.getSize());
 			for(int j = 0; j <= i; j++) {
 				assert(de[j] == j);
-				//assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
-				//	-(j+1), de[-(j+1)], i-j));
+				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
+					-(j+1), de[-(j+1)], i-j));
 			}
 		}
 		assert(count == de.getSize(),
