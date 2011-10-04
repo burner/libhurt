@@ -257,6 +257,12 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							tmp = integerToString!(T,ulong)(value, base, 
 								alwaysSign, title);
 							//debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(arguments[argPtr] == typeid(const(ulong))) {
+							ulong value = va_arg!(ulong)(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(T,ulong)(value, base, 
+								alwaysSign, title);
+							//debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(arguments[argPtr] == typeid(long)) {
 							long value = va_arg!(long)(arg);
 							//debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
