@@ -16,11 +16,15 @@ struct Iterator(T) {
 	this(Deque!(T) deque, bool begin, size_t id) {
 		this.deque = deque;
 		this.id = id;
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
 		if(begin) {
-			this.pos = this.deque.getHeadPos();
-			this.pos++;
+			if(head+1 > this.deque.getLength() - 1)
+				this.pos = 0;
+			else 
+				this.pos = head+1;
 		} else {
-			this.pos = this.deque.getTailPos()-1;
+			this.pos = tail;
 		}
 	}
 
@@ -32,9 +36,10 @@ struct Iterator(T) {
 	}
 
 	public void opUnary(string s)() if(s == "--") {
-		this.pos--;
-		if(this.pos > this.deque.getLength()) {
+		if(this.pos == 0) {
 			this.pos = this.deque.getLength-1;
+		} else {
+			this.pos--;
 		}
 	}
 
@@ -49,11 +54,16 @@ struct Iterator(T) {
 	public bool isValid() const {
 		size_t head = this.deque.getHeadPos();
 		size_t tail = this.deque.getTailPos();
-		printfln("%d %d %d %s", head,tail,pos, !(this.pos <= head && this.pos > tail) ? "true" : "false");
-		if(tail > head) {
-			return this.pos >= head && this.pos <= tail;
+		if(head == tail) {
+			//println(__LINE__);
+			return false;
+		} else if(head < tail) {
+			//println(__LINE__);
+			return this.pos > head && this.pos <= tail;
 		} else {
-			return !(this.pos <= head && this.pos > tail);
+			size_t tmp = this.pos;
+			//println(__LINE__, tmp, head, tail, this.pos > head, this.pos <= tail);
+			return this.pos > head || this.pos <= tail;
 		}
 	}
 }
@@ -201,7 +211,7 @@ class Deque(T) {
 
 	override string toString() {
 		StringBuffer!(char) ret = new StringBuffer!(char)(this.data.length*2);
-		ret.pushBack(format!(char,char)("deque - %d %d %d [", this.head, 
+		ret.pushBack(format!(char,char)("deque - (%d) {%d} %d [", this.head, 
 			this.tail, this.data.length));
 		foreach(idx, it; this.data) {
 			if(idx == this.head)
@@ -248,15 +258,19 @@ unittest {
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid());
-			for(int j = 0; j <= i; j++, it++) {
+			for(int j = 0; j <= i; j++) {
 				assert(it.isValid());
-				assert(*it == j);
+				assert(*it == j, format("%d %d pos %d size %s", *it, j, it.pos, 
+					de.toString()));
+				it++;
 			}
 			it = de.end();
 			assert(it.isValid());
-			for(int j = 0; j <= i; j++, it--) {
+			for(int j = 0; j <= i; j++) {
 				assert(it.isValid());
-				assert(*it == i-j);
+				assert(*it == i-j, format("%d %d pos %d size %s", *it, i-j, it.pos, 
+					de.toString()));
+				it--;
 			}
 		}
 		assert(count == de.getSize(),
@@ -291,13 +305,13 @@ unittest {
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++, it++) {
 				assert(it.isValid());
-				assert(*it == j);
+				assert(*it == i-j);
 			}
 			it = de.end();
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
-				assert(*it == i-j);
+				assert(*it == j);
 			}
 		}
 		assert(count == de.getSize(),
@@ -323,16 +337,18 @@ unittest {
 			}
 			// test iterator
 			auto it = de.begin();
-			assert(it.isValid());
+			assert(it.isValid(), format("pos %d %s", it.pos, de.toString()));
 			for(int j = 0; j <= i; j++, it++) {
 				assert(it.isValid());
-				assert(*it == j);
+				//assert(*it == i-j);
+				assert(*it == i-j, format("%d %d pos %d size %s", *it, j, it.pos, 
+					de.toString()));
 			}
 			it = de.end();
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
-				assert(*it == i-j);
+				assert(*it == j);
 			}
 		}
 		assert(count == de.getSize(),

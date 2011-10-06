@@ -48,7 +48,7 @@ public string makeString(TypeInfo[] arguments, void* args) {
 	return formatString!(char,char)(buf.getString(), arguments, args);
 }
 
-public immutable(S)[] format(T,S)(immutable(T)[] form, ...) {
+public immutable(S)[] format(T = char,S = char)(immutable(T)[] form, ...) {
 	return formatString!(T,S)(form, _arguments, _argptr);
 }
 
@@ -259,6 +259,12 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							//debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else if(arguments[argPtr] == typeid(const(ulong))) {
 							ulong value = va_arg!(ulong)(arg);
+							//debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
+							tmp = integerToString!(T,ulong)(value, base, 
+								alwaysSign, title);
+							//debug writeln(__FILE__,__LINE__,": ", tmp);
+						} else if(arguments[argPtr] == typeid(const(long))) {
+							long value = va_arg!(long)(arg);
 							//debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,ulong)(value, base, 
 								alwaysSign, title);
