@@ -107,15 +107,29 @@ class Deque(T) {
 	}
 
 	private void growCapacity() {
-		T[] n = new T[this.data.length];
+		T[] n = new T[this.data.length*2];
+		assert(n !is null);
 		size_t oldNLength = n.length;
 		if(this.tail > this.head) {
-			n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
-		} else {
-			n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
-			this.head = this.head + oldNLength +1;
+			println(__LINE__, this.toString());
+			foreach(size_t idx, T it; this.data[this.head .. this.tail+1]) {
+				n[this.head+idx] = it;
+			}
+			//n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
+		} else { // this.head >= this.tail
+			println(__LINE__, this.toString());
+			foreach(size_t idx, T it; this.data[0 .. this.tail+1]) {
+				n[idx] = it;
+			}
+			foreach(size_t idx, T it; this.data[head .. $]) {
+				n[this.data.length + idx] = it;
+			}
+			//n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
+			this.head = this.data.length +1;
 		}
 		this.data = n;
+		println(__LINE__, this.toString());
+		assert(this.data !is null);
 	}
 
 	T popFront() {
@@ -140,6 +154,9 @@ class Deque(T) {
 		if((this.head-1) % this.data.length == this.tail) {
 			this.growCapacity();
 		}	
+		assert(this.head < this.data.length, format("%d %d", this.head, 
+			this.data.length));
+
 		this.data[this.head] = toPush;
 		//this.head = (this.head-1) % this.data.length;
 		if((this.head-1) < 0) {
@@ -260,16 +277,16 @@ unittest {
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++) {
 				assert(it.isValid());
-				assert(*it == j, format("%d %d pos %d size %s", *it, j, it.pos, 
-					de.toString()));
+				assert(*it == j, format("%d %d pos %d size %s", *it, j, 
+					it.pos, de.toString()));
 				it++;
 			}
 			it = de.end();
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++) {
 				assert(it.isValid());
-				assert(*it == i-j, format("%d %d pos %d size %s", *it, i-j, it.pos, 
-					de.toString()));
+				assert(*it == i-j, format("%d %d pos %d size %s", *it, i-j, 
+					it.pos, de.toString()));
 				it--;
 			}
 		}
@@ -328,9 +345,9 @@ unittest {
 	void pushFrontPopFront(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
-			assert(i+1 == de.getSize());
+			assert(i+1 == de.getSize(), format("%d %d", i+1, de.getSize()));
 			for(int j = 0; j <= i; j++) {
-				assert(de[j] == i-j);
+				assert(de[j] == i-j, format("%d %d", de[j], i-j));
 				assert(de[-(j+1)] == j, 
 					format!(char,char)("de[%d]=%d ==%d %s", 
 					-(j+1), de[-(j+1)], j, de.toString()));
@@ -341,8 +358,8 @@ unittest {
 			for(int j = 0; j <= i; j++, it++) {
 				assert(it.isValid());
 				//assert(*it == i-j);
-				assert(*it == i-j, format("%d %d pos %d size %s", *it, j, it.pos, 
-					de.toString()));
+				assert(*it == i-j, format("%d %d pos %d size %s", *it, j, 
+					it.pos, de.toString()));
 			}
 			it = de.end();
 			assert(it.isValid());
@@ -399,7 +416,7 @@ unittest {
 	int mul = 1;
 	for(int i = 0; i < 600; i++) {
 		Deque!(int) de = new Deque!(int)();
-		println(__LINE__, i);
+		println(__LINE__, mul * (i+1));
 		switch(i%15) {
 			case 0:
 				pushBackPopFront(de, mul * (i+1));
