@@ -109,7 +109,7 @@ class Deque(T) {
 	private void growCapacity() {
 		T[] n = new T[this.data.length*2];
 		assert(n !is null);
-		size_t oldNLength = n.length;
+		size_t oldNLength = this.getSize();
 		if(this.tail > this.head) {
 			println(__LINE__, this.toString());
 			foreach(size_t idx, T it; this.data[this.head .. this.tail+1]) {
@@ -125,9 +125,11 @@ class Deque(T) {
 				n[this.data.length + idx] = it;
 			}
 			//n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
-			this.head = this.head + this.data.length - 1;
+			this.head = this.head + this.data.length -1;
 		}
 		this.data = n;
+		size_t size = this.getSize();
+		assert(oldNLength == size, format("%d %d", oldNLength, size));
 		println(__LINE__, this.toString());
 		assert(this.data !is null);
 	}
@@ -210,12 +212,17 @@ class Deque(T) {
 	}
 
 	size_t getSize() const { 
+		//printfln("%s", this.toString());
 		if(this.isEmpty())
 			return 0;
 		if(this.tail > this.head) {
 			return this.tail-this.head;
 		} else {
-			return this.tail + (this.data.length-this.head);
+			if((this.head+1) == this.data.length) {
+				return this.tail + 1;
+			} else {
+				return this.tail + (this.data.length-(this.head+1));
+			}
 		}
 	}
 
@@ -226,7 +233,7 @@ class Deque(T) {
 		println();
 	}
 
-	override string toString() {
+	override string toString() const {
 		StringBuffer!(char) ret = new StringBuffer!(char)(this.data.length*2);
 		ret.pushBack(format!(char,char)("deque - (%d) {%d} %d [", this.head, 
 			this.tail, this.data.length));
@@ -345,10 +352,9 @@ unittest {
 	void pushFrontPopFront(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
-			assert(i+1 == de.getSize(), format("%d %d %s", i+1, de.getSize(), 
-				de.toString()));
+			assert(i+1 == de.getSize(), format("%d %d %s", i+1, de.getSize(), de.toString()));
 			for(int j = 0; j <= i; j++) {
-				assert(de[j] == i-j, format("i %d j %d %d %d %s", i, j, de[j], i-j, 
+				assert(de[j] == i-j, format("i %d j %d %d != %d %s", i, j, de[j], i-j, 
 					de.toString()));
 				assert(de[-(j+1)] == j, 
 					format!(char,char)("de[%d]=%d ==%d %s", 
