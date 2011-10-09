@@ -125,7 +125,7 @@ class Deque(T) {
 				n[this.data.length + idx] = it;
 			}
 			//n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
-			this.head = this.data.length +1;
+			this.head = this.head + this.data.length - 1;
 		}
 		this.data = n;
 		println(__LINE__, this.toString());
@@ -345,9 +345,11 @@ unittest {
 	void pushFrontPopFront(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
-			assert(i+1 == de.getSize(), format("%d %d", i+1, de.getSize()));
+			assert(i+1 == de.getSize(), format("%d %d %s", i+1, de.getSize(), 
+				de.toString()));
 			for(int j = 0; j <= i; j++) {
-				assert(de[j] == i-j, format("%d %d", de[j], i-j));
+				assert(de[j] == i-j, format("i %d j %d %d %d %s", i, j, de[j], i-j, 
+					de.toString()));
 				assert(de[-(j+1)] == j, 
 					format!(char,char)("de[%d]=%d ==%d %s", 
 					-(j+1), de[-(j+1)], j, de.toString()));
