@@ -111,26 +111,27 @@ class Deque(T) {
 		assert(n !is null);
 		size_t oldNLength = this.getSize();
 		if(this.tail > this.head) {
-			println(__LINE__, this.toString());
+			//println(__LINE__, this.toString());
 			foreach(size_t idx, T it; this.data[this.head .. this.tail+1]) {
 				n[this.head+idx] = it;
 			}
 			//n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
 		} else { // this.head >= this.tail
-			println(__LINE__, this.toString());
+			//println(__LINE__, this.toString());
 			foreach(size_t idx, T it; this.data[0 .. this.tail+1]) {
 				n[idx] = it;
 			}
 			foreach(size_t idx, T it; this.data[head .. $]) {
-				n[this.data.length + idx] = it;
+				n[1 + this.data.length + idx] = it;
 			}
 			//n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
-			this.head = this.head + this.data.length -1;
+			//this.head = this.head + this.data.length -1;
+			this.head = this.head + this.data.length;
 		}
 		this.data = n;
 		size_t size = this.getSize();
 		assert(oldNLength == size, format("%d %d", oldNLength, size));
-		println(__LINE__, this.toString());
+		//println(__LINE__, this.toString());
 		assert(this.data !is null);
 	}
 
@@ -218,11 +219,7 @@ class Deque(T) {
 		if(this.tail > this.head) {
 			return this.tail-this.head;
 		} else {
-			if((this.head+1) == this.data.length) {
-				return this.tail + 1;
-			} else {
-				return this.tail + (this.data.length-(this.head+1));
-			}
+			return this.tail + (this.data.length-this.head);
 		}
 	}
 
