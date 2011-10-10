@@ -421,115 +421,115 @@ unittest {
 	int mul = 1;
 	for(int i = 0; i < 600; i++) {
 		Deque!(int) de = new Deque!(int)();
-		println(__LINE__, mul * (i+1));
+		println(__LINE__, mul * (i/10+1));
 		switch(i%15) {
 			case 0:
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 1:
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 2:
-				pushBackPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 3:
-				pushBackPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 4:
-				pushBackPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 5:
-				pushBackPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 6:
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 7:
 				assert(de.isEmpty());
-				pushFrontPopFront(de, mul * (i+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
-				pushBackPopBack(de, mul * (i+1));
+				pushBackPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
-				pushFrontPopBack(de, mul * (i+1));
+				pushFrontPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
-				pushBackPopFront(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 8:
-				pushFrontPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 9:
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 10:
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 11:
-				pushFrontPopBack(de, mul * (i+1));
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 12:
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 13:
-				pushBackPopFront(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			case 14:
-				pushBackPopFront(de, mul * (i+1));
-				pushBackPopBack(de, mul * (i+1));
-				pushFrontPopBack(de, mul * (i+1));
-				pushFrontPopFront(de, mul * (i+1));
+				pushBackPopFront(de, mul * (i/10+1));
+				pushBackPopBack(de, mul * (i/10+1));
+				pushFrontPopBack(de, mul * (i/10+1));
+				pushFrontPopFront(de, mul * (i/10+1));
 				assert(de.isEmpty());
 				break;
 			default:
