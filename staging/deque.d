@@ -68,41 +68,41 @@ struct Iterator(T) {
 	}
 }
 
-class Deque(T) {
+public class Deque(T) {
 	private T[] data;
 	private long head, tail;
 
-	this() {
+	public this() {
 		this(16);	
 	}
 
-	this(size_t size) {
+	public this(size_t size) {
 		this.data = new T[size];
 		this.head = 0;
 		this.tail = 0;
 	}
 
-	protected size_t getHeadPos() const {
+	package size_t getHeadPos() const {
 		return this.head;
 	}
 
-	protected T getValue(size_t idx) {
+	package T getValue(size_t idx) {
 		return this.data[idx];
 	}
 
-	protected size_t getTailPos() const {
+	package size_t getTailPos() const {
 		return this.tail;
 	}
 
-	protected size_t getLength() const {
+	package size_t getLength() const {
 		return this.data.length;
 	}
 
-	Iterator!(T) begin() {
+	public Iterator!(T) begin() {
 		return Iterator!(T)(this, true, size_t.max);
 	}
 
-	Iterator!(T) end() {
+	public Iterator!(T) end() {
 		return Iterator!(T)(this, false, size_t.max);
 	}
 
@@ -111,31 +111,61 @@ class Deque(T) {
 		assert(n !is null);
 		size_t oldNLength = this.getSize();
 		if(this.tail > this.head) {
-			//println(__LINE__, this.toString());
 			foreach(size_t idx, T it; this.data[this.head .. this.tail+1]) {
 				n[this.head+idx] = it;
 			}
-			//n = this.data[0..this.tail+1] ~ n ~ this.data[$-this.head..$];
 		} else { // this.head >= this.tail
-			//println(__LINE__, this.toString());
 			foreach(size_t idx, T it; this.data[0 .. this.tail+1]) {
 				n[idx] = it;
 			}
 			foreach(size_t idx, T it; this.data[head .. $]) {
 				n[1 + this.data.length + idx] = it;
 			}
-			//n = this.data[0..this.head+1] ~ n ~ this.data[this.tail+1..$];
-			//this.head = this.head + this.data.length -1;
 			this.head = this.head + this.data.length;
 		}
 		this.data = n;
 		size_t size = this.getSize();
 		assert(oldNLength == size, format("%d %d", oldNLength, size));
-		//println(__LINE__, this.toString());
 		assert(this.data !is null);
 	}
 
-	T popFront() {
+	public Deque!(T) insert(const long idx, T data) {
+		// check if the array needs to grow
+		if( ((this.head-1) % this.data.length == this.tail) ||
+				((this.tail+1) % this.data.length == this.head) ) {
+			this.growCapacity();
+		}
+
+		size_t insertIdx = this.getIdx(idx);
+		size_t headDis = distance!(typeof(this.head))(this.head, insertIdx);
+		size_t tailDis = distance!(typeof(this.head))(this.tail, insertIdx);
+
+		if(this.head < this.tail) {
+			if(headDis < tailDis && this.head > 0) { // move front headTail n
+
+			} else if(headDis < tailDis && this.head == 0) { // move back headTail n
+
+			} else if(headDis >= tailDis && this.tail < this.data.length-1) { 
+				// move back tailHead n
+
+			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
+				// move front tailHead n
+
+			} else {
+				assert(false, "this is a invalid case");
+			}
+		} else {
+			if(insertIdx >= this.head) { // move head left by one
+
+			} else { // move tail forward by one
+
+			}
+		}
+
+		return this;
+	}
+
+	public T popFront() {
 		if(this.head == this.tail)
 			assert(0, "empty");
 		this.head = (this.head+1) % this.data.length;
@@ -143,7 +173,7 @@ class Deque(T) {
 		return ret;
 	}
 
-	T popBack() {
+	public T popBack() {
 		if(this.head == this.tail)
 			assert(0, "empty");
 		T ret = this.data[this.tail];
@@ -153,7 +183,7 @@ class Deque(T) {
 		return ret;
 	}
 
-	void pushFront(T toPush) {
+	public void pushFront(T toPush) {
 		if((this.head-1) % this.data.length == this.tail) {
 			this.growCapacity();
 		}	
@@ -161,7 +191,6 @@ class Deque(T) {
 			this.data.length));
 
 		this.data[this.head] = toPush;
-		//this.head = (this.head-1) % this.data.length;
 		if((this.head-1) < 0) {
 			this.head = this.data.length-1;
 		} else {
@@ -169,7 +198,7 @@ class Deque(T) {
 		}
 	}
 
-	void pushBack(T toPush) {
+	public void pushBack(T toPush) {
 		if((this.tail+1) % this.data.length == this.head) {
 			this.growCapacity();
 		}	
@@ -177,43 +206,43 @@ class Deque(T) {
 		this.data[this.tail] = toPush;
 	}
 
-	T opIndex(long idx) {
-		//println(__LINE__, this.head, this.tail);
-		if(idx > 0 &&  idx >= this.getSize()) {
-			throw new OutOfRangeException(
-				format!(char,char)("idx %d head %d tail %d data.size %d len %d",
-				idx, this.head, this.head, this.data.length, this.getSize()));
-		} else if(idx < 0 &&  abs(idx)-1 > this.getSize()) {
+	private size_t getIdx(const long idx) const {
+		if( (idx > 0 && idx >= this.getSize()) || this.isEmpty() ||
+				(idx < 0 &&  abs(idx) > this.getSize()) ) {
 			throw new OutOfRangeException(
 				format!(char,char)("idx %d head %d tail %d data.size %d len %d",
 				idx, this.head, this.head, this.data.length, this.getSize()));
 		}
 
 		if(idx >= 0) {
-			return this.data[(this.head + idx + 1) % this.data.length];
+			return (this.head + idx + 1) % this.data.length;
 		} else {
 			if(this.head < this.tail) {
 				// plus one because the tail moves after insert
-				return this.data[this.tail - abs(idx) + 1];
+				return this.tail - abs(idx) + 1;
 			} else {
 				if(this.tail - abs(idx) + 1 < 0) {
 					long tmp = abs(this.tail - abs(idx) +1);
-					return this.data[$ - tmp];
+					return this.data.length - tmp;
 				} else {
-					return this.data[this.tail - abs(idx) + 1];
+					return this.tail - abs(idx) + 1;
 				}
 
 			}
 		}
 		assert(false, "not reachable");
+
 	}
 
-	bool isEmpty() const {
+	public T opIndex(const long idx) {
+		return this.data[this.getIdx(idx)];
+	}
+
+	public bool isEmpty() const {
 		return this.head == this.tail;
 	}
 
-	size_t getSize() const { 
-		//printfln("%s", this.toString());
+	public size_t getSize() const { 
 		if(this.isEmpty())
 			return 0;
 		if(this.tail > this.head) {
@@ -223,14 +252,14 @@ class Deque(T) {
 		}
 	}
 
-	void print() {
+	package void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
 			printf("%d ", it);
 		println();
 	}
 
-	override string toString() const {
+	public override string toString() const {
 		StringBuffer!(char) ret = new StringBuffer!(char)(this.data.length*2);
 		ret.pushBack(format!(char,char)("deque - (%d) {%d} %d [", this.head, 
 			this.tail, this.data.length));
@@ -250,7 +279,37 @@ class Deque(T) {
 
 unittest {
 	Deque!(int) deIT = new Deque!(int);
+	bool fail = false;
+	try {
+		int a = deIT[0];
+	} catch(OutOfRangeException e) {
+		fail = true;
+	} 
+	assert(fail);
+	try {
+		int a = deIT[-1];
+	} catch(OutOfRangeException e) {
+		fail = true;
+	} 
+	assert(fail);
+
 	deIT.pushBack(10);
+	fail = false;
+	try {
+		int a = deIT[1];
+	} catch(OutOfRangeException e) {
+		fail = true;
+	}
+	assert(fail);
+
+	fail = false;
+	try {
+		int a = deIT[-2];
+	} catch(OutOfRangeException e) {
+		fail = true;
+	}
+	assert(fail, format("%d", deIT.getSize()));
+
 	assert(deIT.getSize() == 1);
 	assert(deIT[0] == 10, conv!(int,string)(deIT[0]));
 	assert(deIT[-1] == 10, deIT.toString());

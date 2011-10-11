@@ -1,5 +1,8 @@
 module hurt.math.mathutil;
 
+import hurt.conv.conv;
+import hurt.string.formatter;
+
 public pure bool isNumeric(T)() {
 	static if(isInteger!T() || isFloat!T()) {
 		return true;
@@ -9,9 +12,12 @@ public pure bool isNumeric(T)() {
 }
 
 public pure bool isInteger(T)() {
-	static if(is(T == byte) || is(T == short) || is(T == int) || 
-			is(T == long) || is(T == ubyte) || is(T == ushort) || is(T == uint) 
-			|| is(T == ulong)) {
+	static if(is(T == byte) || is(T == short) || is(T == int) || is(T == long)
+			|| is(T == ubyte) || is(T == ushort) || is(T == uint) || 
+			is(T == ulong) || is(T == const(byte)) || is(T == const(short)) || 
+			is(T == const(int)) || is(T == const(long)) || is(T == const(ubyte)) 
+			|| is(T == const(ushort)) || is(T == const(uint)) || 
+			is(T == const(ulong))) {
 		return true;
 	} else {
 		return false;
@@ -19,7 +25,9 @@ public pure bool isInteger(T)() {
 }
 
 public pure bool isFloat(T)() {
-	static if(is(T == float) || is(T == double) || is(T == real)) {
+	static if(is(T == float) || is(T == double) || is(T == real) ||
+			is(T == const(float)) || is(T == const(double)) || 
+			is(T == const(real))) {
 		return true;
 	} else {
 		return false;
@@ -37,6 +45,12 @@ public pure T min(T)(T t, T s) if(isNumeric!(T)()) {
 public pure T abs(T)(T t) if(isNumeric!(T)()) {
 	return t < 0 ? -t : t;
 }
+
+public pure T distance(T)(T t, T s) if(isNumeric!(T)()) {
+	return conv!(real,T)(sqrt( (t-s) * (t-s) ));
+}
+
+public pure extern(C) double sqrt(double);
 
 public pure bool equal(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
 	if(smaller(t,s))
@@ -62,7 +76,7 @@ public pure bool bigger(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
 		return false;
 	if(equal(t,s))
 		return false;
-	return !smaller(s,t);
+	return !smaller(t,s);
 }
 
 unittest {
@@ -80,7 +94,11 @@ unittest {
 	assert(!bigger!(uint,ulong)(10u,100000000));
 	assert(!bigger!(ushort,long)(10,100000000));
 	assert(!bigger!(short,long)(-10,100000000));
-	assert(bigger!(short,long)(-10,-100000000));
+	assert(!smaller!(short,long)(-10,-100000000));
+	assert(!equal!(short,long)(-10,-100000000));
+	assert(bigger!(short,long)(-10,-100000000), format("%b %b", 
+		smaller!(short,long)(-10, -100000000),
+		equal!(short,long)(-10, -100000000)));
 	assert(bigger!(byte,long)(-10,-100000000));
 	assert(equal!(short,long)(-10,-10));
 	assert(equal!(byte,long)(-10,-10));

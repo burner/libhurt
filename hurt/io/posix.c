@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
+#include <math.h>
 
 int writeC(int fd, const void *buf, size_t count) {
 	return write(fd, buf, count);
@@ -39,4 +40,8 @@ long readC(const int fd, void *buf, const long count) {
 
 int getErrno() {
 	return errno;
+}
+
+double sqrtC(double x) {
+	return sqrt(x);
 }
