@@ -80,7 +80,7 @@ public pure bool bigger(T,S)(T t, S s) if(isNumeric!(T)() && isNumeric!(S)()) {
 }
 
 unittest {
-	assert(10 == max(10, 9));
+	assert(10 == max(10, 9), conv!(int,string)(max(10,9)));
 	assert(10 == min(10, 11));
 	assert(10 == abs(10));
 	assert(10 == abs(-10));

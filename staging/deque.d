@@ -70,7 +70,8 @@ struct Iterator(T) {
 
 public class Deque(T) {
 	private T[] data;
-	private long head, tail;
+	private long head; // insert first than move
+	private long tail; // move first than insert
 
 	public this() {
 		this(16);	
@@ -129,6 +130,24 @@ public class Deque(T) {
 		assert(this.data !is null);
 	}
 
+	private void moveFront(const size_t idx) {
+		for(size_t i = this.head-1; i < idx; i++) {
+			this.data[i] = this.data[i+1];	
+		}
+		if((this.head-1) < 0) {
+			this.head = this.data.length-1;
+		} else {
+			this.head--;	
+		}
+	}
+
+	private void moveBack(const size_t idx) {
+		for(size_t i = this.tail+1; i > idx; i--) {
+			this.data[i] = this.data[i-1];
+		}
+		this.tail = (this.tail+1) % this.data.length;
+	}
+
 	public Deque!(T) insert(const long idx, T data) {
 		// check if the array needs to grow
 		if( ((this.head-1) % this.data.length == this.tail) ||
@@ -141,24 +160,44 @@ public class Deque(T) {
 		size_t tailDis = distance!(typeof(this.head))(this.tail, insertIdx);
 
 		if(this.head < this.tail) {
-			if(headDis < tailDis && this.head > 0) { // move front headTail n
-
-			} else if(headDis < tailDis && this.head == 0) { // move back headTail n
-
+			if(headDis < tailDis && this.head > 0) { 
+				// move front headTail n
+				this.moveFront(insertIdx);
+				this.data[insertIdx] = data;
+			} else if(headDis < tailDis && this.head == 0) { 
+				// move back headTail n
+				this.moveBack(insertIdx);
+				this.data[insertIdx] = data;
 			} else if(headDis >= tailDis && this.tail < this.data.length-1) { 
 				// move back tailHead n
-
+				this.moveBack(insertIdx);
+				this.data[insertIdx] = data;
 			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
 				// move front tailHead n
-
+				this.moveFront(insertIdx);
+				this.data[insertIdx] = data;
+			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
+				// move front tailHead n
+				this.moveBack(insertIdx);
+				this.data[insertIdx] = data;
 			} else {
-				assert(false, "this is a invalid case");
+				assert(false, format("this is a invalid case %d, %s", 
+					insertIdx, this.toString()));
 			}
 		} else {
-			if(insertIdx >= this.head) { // move head left by one
-
-			} else { // move tail forward by one
-
+			if(insertIdx > this.head) { // move head left by one
+				for(size_t i = this.head-1; i < insertIdx; i++) {
+					this.data[i] = this.data[i+1];
+				}
+				this.head--;	
+			} else if(insertIdx <= this.tail) { // move tail backward by one
+				for(size_t i = this.tail; i > insertIdx; i--) {
+					this.data[i+1] = this.data[i];
+				}
+				this.tail++;
+			} else {
+				assert(false, format("this is a invalid case %d, %s", 
+					insertIdx, this.toString()));
 			}
 		}
 
@@ -252,6 +291,10 @@ public class Deque(T) {
 		}
 	}
 
+	public void clean() {
+		this.head = this.tail = 0;
+	}
+
 	package void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
@@ -278,6 +321,22 @@ public class Deque(T) {
 }
 
 unittest {
+	Deque!(int) di = new Deque!(int);
+	di.pushBack(1);
+	di.pushBack(3);
+	di.insert(1, 2);
+	assert(di[0] == 1);
+	assert(di[1] == 2);
+	assert(di[2] == 3);
+	println(di.toString());
+	di.clean();
+	di.pushFront(3);
+	di.pushFront(1);
+	di.insert(1, 2);
+	assert(di[0] == 1, di.toString());
+	assert(di[1] == 2, di.toString());
+	assert(di[2] == 3, di.toString());
+
 	Deque!(int) deIT = new Deque!(int);
 	bool fail = false;
 	try {
