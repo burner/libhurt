@@ -162,22 +162,27 @@ public class Deque(T) {
 		if(this.head < this.tail) {
 			if(headDis < tailDis && this.head > 0) { 
 				// move front headTail n
+				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveFront(insertIdx);
 				this.data[insertIdx] = data;
 			} else if(headDis < tailDis && this.head == 0) { 
 				// move back headTail n
+				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
 				this.data[insertIdx] = data;
 			} else if(headDis >= tailDis && this.tail < this.data.length-1) { 
 				// move back tailHead n
+				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
 				this.data[insertIdx] = data;
 			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
 				// move front tailHead n
+				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveFront(insertIdx);
 				this.data[insertIdx] = data;
 			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
 				// move front tailHead n
+				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
 				this.data[insertIdx] = data;
 			} else {
@@ -186,15 +191,20 @@ public class Deque(T) {
 			}
 		} else {
 			if(insertIdx > this.head) { // move head left by one
+				printfln("%s:%d", __FILE__, __LINE__);
 				for(size_t i = this.head-1; i < insertIdx; i++) {
 					this.data[i] = this.data[i+1];
 				}
 				this.head--;	
+				this.data[insertIdx] = data;
 			} else if(insertIdx <= this.tail) { // move tail backward by one
-				for(size_t i = this.tail; i > insertIdx; i--) {
-					this.data[i+1] = this.data[i];
+				printfln("%s:%d", __FILE__, __LINE__);
+				printfln("%d %s", insertIdx, this.toString());
+				for(size_t i = this.tail+1; i > insertIdx; i--) {
+					this.data[i] = this.data[i-1];
 				}
 				this.tail++;
+				this.data[insertIdx] = data;
 			} else {
 				assert(false, format("this is a invalid case %d, %s", 
 					insertIdx, this.toString()));
@@ -336,6 +346,72 @@ unittest {
 	assert(di[0] == 1, di.toString());
 	assert(di[1] == 2, di.toString());
 	assert(di[2] == 3, di.toString());
+	di = new Deque!(int);
+	di.pushFront(3);
+	di.pushFront(1);
+	di.insert(1, 2);
+	assert(di[0] == 1, di.toString());
+	assert(di[1] == 2, di.toString());
+	assert(di[2] == 3, di.toString());
+	di = new Deque!(int);
+	di.pushBack(1);
+	di.pushBack(2);
+	di.pushBack(4);
+	di.insert(2, 3);
+	assert(di[0] == 1, di.toString());
+	assert(di[1] == 2, di.toString());
+	assert(di[2] == 3, di.toString());
+	assert(di[3] == 4, di.toString());
+	di.pushBack(5);
+	di.pushBack(6);
+	di.pushBack(7);
+	di.pushBack(9);
+	assert(di[0] == 1, di.toString());
+	assert(di[1] == 2, di.toString());
+	assert(di[2] == 3, di.toString());
+	assert(di[3] == 4, di.toString());
+	assert(di[4] == 5, di.toString());
+	assert(di[5] == 6, di.toString());
+	assert(di[6] == 7, di.toString());
+	assert(di[7] == 9, di.toString());
+	di.insert(7, 8);
+	assert(di[7] == 8, di.toString());
+	assert(di[8] == 9, di.toString());
+	di.pushFront(0);
+	di.pushFront(-1);
+	di.pushFront(-3);
+	di.insert(0, -2);
+	assert(di[0] == -3, di.toString());
+	assert(di[1] == -2, di.toString());
+	assert(di[2] == -1, di.toString());
+	assert(di[3] == 0, di.toString());
+	assert(di[4] == 1, di.toString());
+	assert(di[5] == 2, di.toString());
+	assert(di[6] == 3, di.toString());
+	assert(di[7] == 4, di.toString());
+	di = new Deque!(int)();
+	di.pushBack(0);
+	di.pushBack(1);
+	di.pushBack(3);
+	di.pushBack(4);
+	assert(0 == di.popFront());
+	di.insert(0,2);
+	assert(di[0] == 1, di.toString());
+	assert(di[1] == 2, di.toString());
+	assert(di[2] == 3, di.toString());
+	assert(di[3] == 4, di.toString());
+	di = new Deque!(int)();
+	di.pushBack(0);
+	di.pushBack(2);
+	di.pushBack(3);
+	di.pushBack(4);
+	di.insert(1,1);
+	assert(di[0] == 0, di.toString());
+	assert(di[1] == 1, di.toString());
+	assert(di[2] == 2, di.toString());
+	assert(di[3] == 3, di.toString());
+	assert(di[4] == 4, di.toString());
+
 
 	Deque!(int) deIT = new Deque!(int);
 	bool fail = false;
@@ -467,9 +543,11 @@ unittest {
 	void pushFrontPopFront(Deque!(int) de, int count) {
 		for(int i = 0; i < count; i++) {
 			de.pushFront(i);	
-			assert(i+1 == de.getSize(), format("%d %d %s", i+1, de.getSize(), de.toString()));
+			assert(i+1 == de.getSize(), 
+				format("%d %d %s", i+1, de.getSize(), de.toString()));
 			for(int j = 0; j <= i; j++) {
-				assert(de[j] == i-j, format("i %d j %d %d != %d %s", i, j, de[j], i-j, 
+				assert(de[j] == i-j, 
+					format("i %d j %d %d != %d %s", i, j, de[j], i-j, 
 					de.toString()));
 				assert(de[-(j+1)] == j, 
 					format!(char,char)("de[%d]=%d ==%d %s", 
@@ -539,7 +617,7 @@ unittest {
 	int mul = 1;
 	for(int i = 0; i < 600; i++) {
 		Deque!(int) de = new Deque!(int)();
-		println(__LINE__, mul * (i/10+1));
+		//println(__LINE__, mul * (i/10+1));
 		switch(i%15) {
 			case 0:
 				pushBackPopFront(de, mul * (i/10+1));
