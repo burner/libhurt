@@ -160,12 +160,12 @@ public class Deque(T) {
 		size_t tailDis = distance!(typeof(this.head))(this.tail, insertIdx);
 
 		if(this.head < this.tail) {
-			if(headDis < tailDis && this.head > 0) { 
+			if(this.head > 0) { 
 				// move front headTail n
 				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveFront(insertIdx);
 				this.data[insertIdx] = data;
-			} else if(headDis < tailDis && this.head == 0) { 
+			} else if(this.head == 0 &&) { 
 				// move back headTail n
 				printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
