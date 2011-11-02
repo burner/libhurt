@@ -162,27 +162,12 @@ public class Deque(T) {
 		if(this.head < this.tail) {
 			if(this.head > 0) { 
 				// move front headTail n
-				printfln("%s:%d", __FILE__, __LINE__);
+				//printfln("%s:%d", __FILE__, __LINE__);
 				this.moveFront(insertIdx);
 				this.data[insertIdx] = data;
-			} else if(this.head == 0 &&) { 
+			} else if(this.head == 0) { 
 				// move back headTail n
-				printfln("%s:%d", __FILE__, __LINE__);
-				this.moveBack(insertIdx);
-				this.data[insertIdx] = data;
-			} else if(headDis >= tailDis && this.tail < this.data.length-1) { 
-				// move back tailHead n
-				printfln("%s:%d", __FILE__, __LINE__);
-				this.moveBack(insertIdx);
-				this.data[insertIdx] = data;
-			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
-				// move front tailHead n
-				printfln("%s:%d", __FILE__, __LINE__);
-				this.moveFront(insertIdx);
-				this.data[insertIdx] = data;
-			} else if(headDis >= tailDis && this.tail == this.data.length-1) {
-				// move front tailHead n
-				printfln("%s:%d", __FILE__, __LINE__);
+				//printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
 				this.data[insertIdx] = data;
 			} else {
@@ -191,15 +176,16 @@ public class Deque(T) {
 			}
 		} else {
 			if(insertIdx > this.head) { // move head left by one
-				printfln("%s:%d", __FILE__, __LINE__);
-				for(size_t i = this.head-1; i < insertIdx; i++) {
+				//printfln("%s:%d %s", __FILE__, __LINE__, this.toString());
+				for(size_t i = this.head; i < insertIdx; i++) {
 					this.data[i] = this.data[i+1];
 				}
 				this.head--;	
-				this.data[insertIdx] = data;
+				//printfln("%s:%d %s", __FILE__, __LINE__, this.toString());
+				this.data[insertIdx-1] = data;
 			} else if(insertIdx <= this.tail) { // move tail backward by one
-				printfln("%s:%d", __FILE__, __LINE__);
-				printfln("%d %s", insertIdx, this.toString());
+				//printfln("%s:%d", __FILE__, __LINE__);
+				//printfln("%d %s", insertIdx, this.toString());
 				for(size_t i = this.tail+1; i > insertIdx; i--) {
 					this.data[i] = this.data[i-1];
 				}
@@ -338,7 +324,6 @@ unittest {
 	assert(di[0] == 1);
 	assert(di[1] == 2);
 	assert(di[2] == 3);
-	println(di.toString());
 	di.clean();
 	di.pushFront(3);
 	di.pushFront(1);
@@ -374,13 +359,14 @@ unittest {
 	assert(di[5] == 6, di.toString());
 	assert(di[6] == 7, di.toString());
 	assert(di[7] == 9, di.toString());
-	di.insert(7, 8);
+	//di.insert(7, 8);
+	di.insert(-1, 8);
 	assert(di[7] == 8, di.toString());
 	assert(di[8] == 9, di.toString());
 	di.pushFront(0);
 	di.pushFront(-1);
 	di.pushFront(-3);
-	di.insert(0, -2);
+	di.insert(1, -2);
 	assert(di[0] == -3, di.toString());
 	assert(di[1] == -2, di.toString());
 	assert(di[2] == -1, di.toString());
