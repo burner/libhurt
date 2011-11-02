@@ -162,12 +162,10 @@ public class Deque(T) {
 		if(this.head < this.tail) {
 			if(this.head > 0) { 
 				// move front headTail n
-				//printfln("%s:%d", __FILE__, __LINE__);
 				this.moveFront(insertIdx);
 				this.data[insertIdx] = data;
 			} else if(this.head == 0) { 
 				// move back headTail n
-				//printfln("%s:%d", __FILE__, __LINE__);
 				this.moveBack(insertIdx);
 				this.data[insertIdx] = data;
 			} else {
@@ -176,16 +174,12 @@ public class Deque(T) {
 			}
 		} else {
 			if(insertIdx > this.head) { // move head left by one
-				//printfln("%s:%d %s", __FILE__, __LINE__, this.toString());
 				for(size_t i = this.head; i < insertIdx; i++) {
 					this.data[i] = this.data[i+1];
 				}
 				this.head--;	
-				//printfln("%s:%d %s", __FILE__, __LINE__, this.toString());
 				this.data[insertIdx-1] = data;
 			} else if(insertIdx <= this.tail) { // move tail backward by one
-				//printfln("%s:%d", __FILE__, __LINE__);
-				//printfln("%d %s", insertIdx, this.toString());
 				for(size_t i = this.tail+1; i > insertIdx; i--) {
 					this.data[i] = this.data[i-1];
 				}
@@ -273,14 +267,20 @@ public class Deque(T) {
 		return this.data[this.getIdx(idx)];
 	}
 
+	public int opIndexAssign(T value, const size_t idx) {
+		size_t assignIdx = this.getIdx(idx);
+		this.data[assignIdx] = value;
+		return 1;
+	}
+
 	public bool isEmpty() const {
 		return this.head == this.tail;
 	}
 
 	public size_t getSize() const { 
-		if(this.isEmpty())
+		if(this.isEmpty()) {
 			return 0;
-		if(this.tail > this.head) {
+		} else if(this.tail > this.head) {
 			return this.tail-this.head;
 		} else {
 			return this.tail + (this.data.length-this.head);
@@ -397,6 +397,8 @@ unittest {
 	assert(di[2] == 2, di.toString());
 	assert(di[3] == 3, di.toString());
 	assert(di[4] == 4, di.toString());
+	di[4] = 99;
+	assert(di[4] == 99, di.toString());
 
 
 	Deque!(int) deIT = new Deque!(int);
