@@ -232,6 +232,15 @@ public class Deque(T) {
 		return ret;
 	}
 
+	public bool contains(const T toFind) const {
+		Iterator!(T) b = this.begin();	
+		for(; b.isValid(); b++) {
+			if(toFind == *b)
+				return true;
+		}
+		return false;
+	}
+
 	public void pushFront(T toPush) {
 		if((this.head-1) % this.data.length == this.tail) {
 			this.growCapacity();
