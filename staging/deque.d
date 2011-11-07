@@ -28,6 +28,10 @@ struct Iterator(T) {
 		}
 	}
 
+	package size_t getPos() const {
+		return this.pos;
+	}
+
 	public void opUnary(string s)() if(s == "++") {
 		this.pos++;
 		if(this.pos >= this.deque.getLength()) {
@@ -62,7 +66,8 @@ struct Iterator(T) {
 			return this.pos > head && this.pos <= tail;
 		} else {
 			size_t tmp = this.pos;
-			//println(__LINE__, tmp, head, tail, this.pos > head, this.pos <= tail);
+			//println(__LINE__, tmp, head, tail, this.pos > head, 
+			//	this.pos <= tail);
 			return this.pos > head || this.pos <= tail;
 		}
 	}
@@ -194,6 +199,20 @@ public class Deque(T) {
 		return this;
 	}
 
+	public T remove(const long idx) {
+		size_t toRemove = getIdx(idx);
+		if(idx == 0 || abs(idx) == this.getSize()-1) {
+			return this.popFront();
+		} else if(idx == this.getSize() || idx == -1) {
+			return this.popBack();
+		} else if(this.head < this.tail) {
+
+		}
+
+
+		assert(0);
+	}
+
 	public T popFront() {
 		if(this.head == this.tail)
 			assert(0, "empty");
@@ -212,7 +231,7 @@ public class Deque(T) {
 		return ret;
 	}
 
-	public bool contains(const T toFind) const {
+	public bool contains(const T toFind) {
 		Iterator!(T) b = this.begin();	
 		for(; b.isValid(); b++) {
 			if(toFind == *b)
@@ -284,6 +303,28 @@ public class Deque(T) {
 
 	public bool isEmpty() const {
 		return this.head == this.tail;
+	}
+
+	int opApply(int delegate(ref size_t, ref T) dg) {
+		int result;
+		Iterator!(T) it = this.begin();
+		for(size_t idx = 0; it.isValid() && result; it++, idx++) {
+			size_t pos = it.getPos();
+			T value = this.data[pos];
+			result = dg(idx, value);
+		}
+		return result;
+	}
+
+	int opApply(int delegate(ref T) dg) {
+		int result;
+		Iterator!(T) it = this.begin();
+		for(; it.isValid() && result; it++) {
+			size_t pos = it.getPos();
+			T value = this.data[pos];
+			result = dg(value);
+		}
+		return result;
 	}
 
 	public size_t getSize() const { 
@@ -465,6 +506,14 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			foreach(size_t idx, int t; de) {
+				assert(t == idx);
+			}
+			size_t idx = 0;
+			foreach(int t; de) {
+				assert(t == idx);
+				idx++;
+			}
 			assert(i+1 == de.getSize());
 
 			// test iterator
@@ -483,6 +532,9 @@ unittest {
 				assert(*it == i-j, format("%d %d pos %d size %s", *it, i-j, 
 					it.pos, de.toString()));
 				it--;
+			}
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
 			}
 		}
 		assert(count == de.getSize(),
@@ -506,6 +558,14 @@ unittest {
 				assert(de[-(j+1)] == j, format!(char,char)("j %d %d %d %s", 
 					-(j+1), de[-(j+1)], i-j, de.toString()));
 			}
+			foreach(size_t idx, int t; de) {
+				assert(t == i-idx);
+			}
+			size_t idx = 0;
+			foreach(int t; de) {
+				assert(t == i-idx);
+				idx++;
+			}
 			assert(i+1 == de.getSize());
 			if(i+1 != de.getSize())
 				de.print();
@@ -524,6 +584,9 @@ unittest {
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
 				assert(*it == j);
+			}
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
 			}
 		}
 		assert(count == de.getSize(),
@@ -550,6 +613,14 @@ unittest {
 					format!(char,char)("de[%d]=%d ==%d %s", 
 					-(j+1), de[-(j+1)], j, de.toString()));
 			}
+			foreach(size_t idx, int t; de) {
+				assert(t == i-idx);
+			}
+			size_t idx = 0;
+			foreach(int t; de) {
+				assert(t == i-idx);
+				idx++;
+			}
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid(), format("pos %d %s", it.pos, de.toString()));
@@ -564,6 +635,9 @@ unittest {
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
 				assert(*it == j);
+			}
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
 			}
 		}
 		assert(count == de.getSize(),
@@ -586,6 +660,14 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			foreach(size_t idx, int t; de) {
+				assert(t == idx);
+			}
+			size_t idx = 0;
+			foreach(int t; de) {
+				assert(t == idx);
+				idx++;
+			}
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid());
@@ -598,6 +680,9 @@ unittest {
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
 				assert(*it == i-j);
+			}
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
 			}
 		}
 		assert(count == de.getSize(),
