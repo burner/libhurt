@@ -215,7 +215,8 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 					case 'd': {// signed integer
 						//debug writeln(__FILE__,__LINE__,": integer");
 						immutable(T)[] tmp;
-						if(arguments[argPtr] == typeid(int) || arguments[argPtr] == typeid(const(int))) {
+						if(arguments[argPtr] == typeid(int) || arguments[argPtr] == typeid(const(int))
+								|| arguments[argPtr] == typeid(immutable(int))) {
 							int value = va_arg!(int)(arg);
 							//debug writeln(__FILE__,__LINE__,": ", value, alwaysSign);
 							tmp = integerToString!(T,int)(value, base, 
