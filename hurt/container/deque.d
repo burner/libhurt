@@ -331,6 +331,28 @@ public class Deque(T) {
 		return this.head == this.tail;
 	}
 
+	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
+		int result;
+		Iterator!(T) it = this.end();
+		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
+			size_t pos = it.getPos();
+			T value = this.data[pos];
+			result = dg(idx, value);
+		}
+		return result;
+	}
+
+	int opApplyReverse(int delegate(ref T) dg) {
+		int result;
+		Iterator!(T) it = this.end();
+		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
+			size_t pos = it.getPos();
+			T value = this.data[pos];
+			result = dg(value);
+		}
+		return result;
+	}
+
 	int opApply(int delegate(ref size_t, ref T) dg) {
 		int result;
 		Iterator!(T) it = this.begin();
