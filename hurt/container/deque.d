@@ -567,6 +567,11 @@ unittest {
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
 			}
+
+			foreach_reverse(size_t idx, int t; de) {
+				assert(t == i-idx);
+			}
+
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == idx);
@@ -627,9 +632,15 @@ unittest {
 				assert(de[-(j+1)] == j, format!(char,char)("j %d %d %d %s", 
 					-(j+1), de[-(j+1)], i-j, de.toString()));
 			}
+
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
 			}
+
+			foreach_reverse(size_t idx, int t; de) {
+				assert(t == idx);
+			}
+
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
@@ -696,6 +707,9 @@ unittest {
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
 			}
+			foreach_reverse(size_t idx, int t; de) {
+				assert(t == idx);
+			}
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
@@ -753,6 +767,9 @@ unittest {
 			}
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
+			}
+			foreach_reverse(size_t idx, int t; de) {
+				assert(t == i-idx);
 			}
 			size_t idx = 0;
 			foreach(int t; de) {
@@ -921,6 +938,7 @@ unittest {
 		//println("deque test done");
 	}
 }
+
 
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
