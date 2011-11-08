@@ -1,12 +1,12 @@
 module hurt.container.deque;
 
+import hurt.container.iterator;
+import hurt.conv.conv;
 import hurt.exception.outofrangeexception;
 import hurt.io.stdio;
 import hurt.math.mathutil;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
-import hurt.conv.conv;
-import hurt.container.iterator;
 
 struct Iterator(T) {
 	private size_t pos;
@@ -939,7 +939,8 @@ unittest {
 	}
 }
 
-
+/*
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
 }
+*/
