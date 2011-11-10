@@ -88,6 +88,13 @@ public class Deque(T) {
 		this.tail = 0;
 	}
 
+	public this(Deque!(T) toCopy) {
+		this(toCopy.getSize());
+		foreach(it; toCopy) {
+			this.pushBack(it);
+		}
+	}
+
 	package size_t getHeadPos() const {
 		return this.head;
 	}
