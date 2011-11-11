@@ -89,8 +89,15 @@ public class Deque(T) {
 	}
 
 	public this(Deque!(T) toCopy) {
-		this(toCopy.getSize());
-		foreach(it; toCopy) {
+		this.data = toCopy.data.dup;
+		this.head = toCopy.head;
+		this.tail = toCopy.tail;
+	}
+
+	public this(T[] arr) {
+		this(arr.length*2);
+		assert(this.data.length == arr.length*2);
+		foreach(it; arr) {
 			this.pushBack(it);
 		}
 	}
@@ -243,7 +250,8 @@ public class Deque(T) {
 			}
 		}
 
-		assert(0,format("idx=%d toRemove=%d %s", idx, toRemove, this.toString()));
+		assert(0,format("idx=%d toRemove=%d %s", idx, toRemove, 
+			this.toString()));
 	}
 
 	public T popFront() {
@@ -396,6 +404,24 @@ public class Deque(T) {
 		this.head = this.tail = 0;
 	}
 
+	public override bool opEquals(Object o) {
+		Deque!(T) d = cast(Deque!(T))o;
+		if(this.getSize() != d.getSize()) {
+			/*printfln("%s %d %d!=%d %s %s", __FILE__, __LINE__, 
+				this.getSize(), d.getSize(), this.toString(), d.toString());*/
+			return false;
+		}
+		Iterator!(T) it = d.begin();
+		for(size_t idx = 0; it.isValid(); it++, idx++) {
+			if(this[idx] != *it) {
+				/*printfln("%s %d %d!=%d", __FILE__, __LINE__, *it, 
+					this[idx]);*/
+				return false;
+			}
+		}
+		return true;
+	}
+
 	package void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
@@ -423,6 +449,8 @@ public class Deque(T) {
 
 unittest {
 	Deque!(int) di = new Deque!(int);
+	Deque!(int) dj = new Deque!(int)(di);
+	assert(di == dj);
 	di.pushBack(1);
 	di.pushBack(3);
 	di.insert(1, 2);
@@ -436,6 +464,11 @@ unittest {
 	assert(di[0] == 1, di.toString());
 	assert(di[1] == 2, di.toString());
 	assert(di[2] == 3, di.toString());
+	di = new Deque!(int)([10,9,8,7,6,5,4,3,2,1,0]);
+	for(int i = 0; i < 11; i++) {
+		assert(di.contains(i));
+	}
+
 	di = new Deque!(int);
 	di.pushFront(3);
 	di.pushFront(1);
@@ -502,6 +535,8 @@ unittest {
 	assert(di[2] == 2, di.toString());
 	assert(di[3] == 3, di.toString());
 	assert(di[4] == 4, di.toString());
+	dj = new Deque!(int)(di);
+	assert(di == dj);
 	di[4] = 99;
 	assert(di[4] == 99, di.toString());
 	assert(di.remove(0) == 0, di.toString());
@@ -607,6 +642,8 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -676,6 +713,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -741,6 +781,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -800,6 +843,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -946,7 +992,7 @@ unittest {
 	}
 }
 
-
+/*
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
-}
+}*/
