@@ -166,6 +166,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							intToSInt = true;
 							idx++;
 						}
+						continue;
 					case 'l': // to cent
 						if(idx+1 < form.length && form[idx+1] == 'n') {
 							assert(0, "long to cent not yet implemented");
@@ -173,6 +174,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							assert(0, "long to ucent not yet implemented");
 
 						}
+						continue;
 					case 'L': // to long double aka real
 						if(idx+1 < form.length && form[idx+1] == 'a') {
 							idx++;
@@ -193,6 +195,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 						} else if(idx+1 < form.length && form[idx+1] == 'G') {
 							idx++;
 						}
+						continue;
 					case 'j': // int to int.max or uint.max
 						break;
 					case 'z': // int to size_t.max or ssize_t 
@@ -201,6 +204,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 						break;
 					case '\'': // thousand interleaf
 						kInterleaf = true;
+						continue;
 					case 'x': // unsigned integer as hex 
 						base = 16;
 						goto case 'd';
@@ -210,6 +214,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 						goto case 'd';
 					case 'o': // unsigned integer as octal
 						base = 8;
+						goto case 'd';
 					case 'u': // unsigned integer as decimal
 					case 'i': // unsigned integer
 					case 'd': {// signed integer
@@ -399,6 +404,7 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 					case 'e': // double as exponent 1.4e44
 						expCap = false;
 						skipExpCap = true;
+						goto case 'E';
 					case 'E': // double as exponent 1.4E44
 						//debug writeln(__FILE__,__LINE__,": Exponent ", precision, " ", padding, " ", arguments[argPtr].toString(), arg);
 						immutable(T)[] tmp;
