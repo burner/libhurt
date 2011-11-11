@@ -308,8 +308,9 @@ public class Deque(T) {
 		if( (idx > 0 && idx >= this.getSize()) || this.isEmpty() ||
 				(idx < 0 &&  abs(idx) > this.getSize()) ) {
 			throw new OutOfRangeException(
-				format!(char,char)("idx %d head %d tail %d data.size %d len %d",
-				idx, this.head, this.head, this.data.length, this.getSize()));
+				format!(char,char)
+					("idx %d head %d tail %d data.size %d len %d", idx, 
+					this.head, this.head, this.data.length, this.getSize()));
 		}
 
 		if(idx >= 0) {
@@ -347,47 +348,35 @@ public class Deque(T) {
 	}
 
 	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
-		int result;
-		Iterator!(T) it = this.end();
-		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(idx, value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[this.getIdx(this.getSize() - 1 -idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApplyReverse(int delegate(ref T) dg) {
-		int result;
-		Iterator!(T) it = this.end();
-		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApply(int delegate(ref size_t, ref T) dg) {
-		int result;
-		Iterator!(T) it = this.begin();
-		for(size_t idx = 0; it.isValid() && result; it++, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(idx, value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[this.getIdx(idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApply(int delegate(ref T) dg) {
-		int result;
-		Iterator!(T) it = this.begin();
-		for(; it.isValid() && result; it++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	public size_t getSize() const { 
@@ -606,9 +595,19 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			int h = 0;
+			foreach(int t; de) {
+				h++;
+			}
+			h--;
+			assert(h == i, format("%d %d",h,i));
+			h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d",h,i));
 
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == i-idx);
@@ -619,6 +618,8 @@ unittest {
 				assert(t == idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx, i));
 			assert(i+1 == de.getSize());
 
 			// test iterator
@@ -677,19 +678,29 @@ unittest {
 					-(j+1), de[-(j+1)], i-j, de.toString()));
 			}
 
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
 
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i,format("%d %d", idx,i));
 			assert(i+1 == de.getSize());
 			if(i+1 != de.getSize())
 				de.print();
@@ -751,17 +762,28 @@ unittest {
 					format!(char,char)("de[%d]=%d ==%d %s", 
 					-(j+1), de[-(j+1)], j, de.toString()));
 			}
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx,i));
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid(), format("pos %d %s", it.pos, de.toString()));
@@ -815,17 +837,27 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx,i));
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid());
