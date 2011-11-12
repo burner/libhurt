@@ -250,4 +250,5 @@ unittest {
 	assert(split!(char)("he llo  ", ' ') == ["he","llo"]);
 	assert(split!(char)("  he llo  ", ' ') == ["he","llo"]);
 	assert(split!(char)("  he llo world  ", ' ') == ["he","llo","world"]);
+	assert(split!(char)("55he5llo5world55", '5') == ["he","llo","world"]);
 }
