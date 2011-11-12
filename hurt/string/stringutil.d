@@ -218,7 +218,7 @@ public pure T isDigit(T)(T ch)
 	return ch >= '0' && ch <= '9';
 }
 
-public pure immutable(T)[][] split(T)(immutable(T)[] str, T splitSymbol) {
+public pure immutable(T)[][] split(T)(immutable(T)[] str, T splitSymbol = ' ') {
 	int splitCnt = 0;
 	foreach(T it; str) {
 		if(it == splitSymbol) {
