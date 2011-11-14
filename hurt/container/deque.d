@@ -337,6 +337,10 @@ public class Deque(T) {
 		return this.data[this.getIdx(idx)];
 	}
 
+	public const(T) opIndexConst(const long idx) const {
+		return this.data[this.getIdx(idx)];
+	}
+
 	public int opIndexAssign(T value, const size_t idx) {
 		size_t assignIdx = this.getIdx(idx);
 		this.data[assignIdx] = value;
@@ -396,15 +400,11 @@ public class Deque(T) {
 	public override bool opEquals(Object o) {
 		Deque!(T) d = cast(Deque!(T))o;
 		if(this.getSize() != d.getSize()) {
-			/*printfln("%s %d %d!=%d %s %s", __FILE__, __LINE__, 
-				this.getSize(), d.getSize(), this.toString(), d.toString());*/
 			return false;
 		}
 		Iterator!(T) it = d.begin();
 		for(size_t idx = 0; it.isValid(); it++, idx++) {
 			if(this[idx] != *it) {
-				/*printfln("%s %d %d!=%d", __FILE__, __LINE__, *it, 
-					this[idx]);*/
 				return false;
 			}
 		}
