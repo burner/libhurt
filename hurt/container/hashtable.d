@@ -87,7 +87,7 @@ class HashTable(T) : ISR!(T) {
 	private size_t size;
 	private bool duplication;
 
-	static size_t defaultHashFunc(const T data) {
+	static size_t defaultHashFunc(T data) {
 		static if(is(T : long) || is(T : int) || is(T : byte) || is(T : char)) {
 			return cast(size_t)data;
 		} else static if(is(T : long[]) || is(T : int[]) || is(T : byte[])

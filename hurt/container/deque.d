@@ -88,6 +88,20 @@ public class Deque(T) {
 		this.tail = 0;
 	}
 
+	public this(Deque!(T) toCopy) {
+		this.data = toCopy.data.dup;
+		this.head = toCopy.head;
+		this.tail = toCopy.tail;
+	}
+
+	public this(T[] arr) {
+		this(arr.length*2);
+		assert(this.data.length == arr.length*2);
+		foreach(it; arr) {
+			this.pushBack(it);
+		}
+	}
+
 	package size_t getHeadPos() const {
 		return this.head;
 	}
@@ -236,7 +250,8 @@ public class Deque(T) {
 			}
 		}
 
-		assert(0,format("idx=%d toRemove=%d %s", idx, toRemove, this.toString()));
+		assert(0,format("idx=%d toRemove=%d %s", idx, toRemove, 
+			this.toString()));
 	}
 
 	public T popFront() {
@@ -293,8 +308,9 @@ public class Deque(T) {
 		if( (idx > 0 && idx >= this.getSize()) || this.isEmpty() ||
 				(idx < 0 &&  abs(idx) > this.getSize()) ) {
 			throw new OutOfRangeException(
-				format!(char,char)("idx %d head %d tail %d data.size %d len %d",
-				idx, this.head, this.head, this.data.length, this.getSize()));
+				format!(char,char)
+					("idx %d head %d tail %d data.size %d len %d", idx, 
+					this.head, this.head, this.data.length, this.getSize()));
 		}
 
 		if(idx >= 0) {
@@ -332,47 +348,35 @@ public class Deque(T) {
 	}
 
 	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
-		int result;
-		Iterator!(T) it = this.end();
-		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(idx, value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[this.getIdx(this.getSize() - 1 -idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApplyReverse(int delegate(ref T) dg) {
-		int result;
-		Iterator!(T) it = this.end();
-		for(size_t idx = 0; it.isValid() && result; it--, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApply(int delegate(ref size_t, ref T) dg) {
-		int result;
-		Iterator!(T) it = this.begin();
-		for(size_t idx = 0; it.isValid() && result; it++, idx++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(idx, value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[this.getIdx(idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	int opApply(int delegate(ref T) dg) {
-		int result;
-		Iterator!(T) it = this.begin();
-		for(; it.isValid() && result; it++) {
-			size_t pos = it.getPos();
-			T value = this.data[pos];
-			result = dg(value);
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(idx)]))
+				return r;
 		}
-		return result;
+		return 0;
 	}
 
 	public size_t getSize() const { 
@@ -387,6 +391,24 @@ public class Deque(T) {
 
 	public void clean() {
 		this.head = this.tail = 0;
+	}
+
+	public override bool opEquals(Object o) {
+		Deque!(T) d = cast(Deque!(T))o;
+		if(this.getSize() != d.getSize()) {
+			/*printfln("%s %d %d!=%d %s %s", __FILE__, __LINE__, 
+				this.getSize(), d.getSize(), this.toString(), d.toString());*/
+			return false;
+		}
+		Iterator!(T) it = d.begin();
+		for(size_t idx = 0; it.isValid(); it++, idx++) {
+			if(this[idx] != *it) {
+				/*printfln("%s %d %d!=%d", __FILE__, __LINE__, *it, 
+					this[idx]);*/
+				return false;
+			}
+		}
+		return true;
 	}
 
 	package void print() const {
@@ -416,6 +438,8 @@ public class Deque(T) {
 
 unittest {
 	Deque!(int) di = new Deque!(int);
+	Deque!(int) dj = new Deque!(int)(di);
+	assert(di == dj);
 	di.pushBack(1);
 	di.pushBack(3);
 	di.insert(1, 2);
@@ -429,6 +453,11 @@ unittest {
 	assert(di[0] == 1, di.toString());
 	assert(di[1] == 2, di.toString());
 	assert(di[2] == 3, di.toString());
+	di = new Deque!(int)([10,9,8,7,6,5,4,3,2,1,0]);
+	for(int i = 0; i < 11; i++) {
+		assert(di.contains(i));
+	}
+
 	di = new Deque!(int);
 	di.pushFront(3);
 	di.pushFront(1);
@@ -495,6 +524,8 @@ unittest {
 	assert(di[2] == 2, di.toString());
 	assert(di[3] == 3, di.toString());
 	assert(di[4] == 4, di.toString());
+	dj = new Deque!(int)(di);
+	assert(di == dj);
 	di[4] = 99;
 	assert(di[4] == 99, di.toString());
 	assert(di.remove(0) == 0, di.toString());
@@ -564,9 +595,19 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			int h = 0;
+			foreach(int t; de) {
+				h++;
+			}
+			h--;
+			assert(h == i, format("%d %d",h,i));
+			h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d",h,i));
 
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == i-idx);
@@ -577,6 +618,8 @@ unittest {
 				assert(t == idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx, i));
 			assert(i+1 == de.getSize());
 
 			// test iterator
@@ -600,6 +643,8 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -633,19 +678,29 @@ unittest {
 					-(j+1), de[-(j+1)], i-j, de.toString()));
 			}
 
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
 
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i,format("%d %d", idx,i));
 			assert(i+1 == de.getSize());
 			if(i+1 != de.getSize())
 				de.print();
@@ -669,6 +724,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -704,17 +762,28 @@ unittest {
 					format!(char,char)("de[%d]=%d ==%d %s", 
 					-(j+1), de[-(j+1)], j, de.toString()));
 			}
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == i-idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx,i));
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid(), format("pos %d %s", it.pos, de.toString()));
@@ -734,6 +803,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -765,17 +837,27 @@ unittest {
 				assert(de[-(j+1)] == i-j, format!(char,char)("j %d %d %d", 
 					-(j+1), de[-(j+1)], i-j));
 			}
+			int h = 0;
 			foreach(size_t idx, int t; de) {
 				assert(t == idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
+			h = 0;
 			foreach_reverse(size_t idx, int t; de) {
 				assert(t == i-idx);
+				h++;
 			}
+			h--;
+			assert(h == i, format("%d %d", h,i));
 			size_t idx = 0;
 			foreach(int t; de) {
 				assert(t == idx);
 				idx++;
 			}
+			idx--;
+			assert(idx == i, format("%d %d", idx,i));
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid());
@@ -793,6 +875,9 @@ unittest {
 				assert(de.contains(j));
 			}
 		}
+		Deque!(int) dh = new Deque!(int)(de);
+		assert(dh == de);
+
 		assert(count == de.getSize(),
 			conv!(size_t,string)(de.getSize()) ~ " " 
 			~ conv!(int,string)(count));
@@ -942,5 +1027,6 @@ unittest {
 /*
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
+<<<<<<< HEAD
 }
 */

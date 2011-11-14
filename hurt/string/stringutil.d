@@ -13,14 +13,12 @@ import core.stdc.string/*, std.algorithm*/;
  * empty, a string containing only $(D '\0') is returned.
  */
 immutable(char)* toStringz(const(char)[] s)
-in
-{
+in {
     // The assert below contradicts the unittests!
     //assert(memchr(s.ptr, 0, s.length) == null,
     //text(s.length, ": `", s, "'"));
 }
-out (result)
-{
+out (result) {
     if (result)
     {
         auto slen = s.length;
@@ -29,8 +27,7 @@ out (result)
         assert(memcmp(result, s.ptr, slen) == 0);
     }
 }
-body
-{
+body {
     /+ Unfortunately, this isn't reliable.
      We could make this work if string literals are put
      in read-only memory and we test if s[] is pointing into
@@ -55,8 +52,7 @@ body
 }
 
 /// Ditto
-immutable(char)* toStringz(string s)
-{
+immutable(char)* toStringz(string s) {
     if (s.length == 0) return "".ptr;
     /* Peek past end of s[], if it's 0, no conversion necessary.
      * Note that the compiler will put a 0 past the end of static
@@ -74,8 +70,7 @@ immutable(char)* toStringz(string s)
     return toStringz(cast(const char[]) s);
 }
 
-unittest
-{
+unittest {
     debug(string) printf("string.toStringz.unittest\n");
 
     auto p = toStringz("foo");
@@ -221,4 +216,39 @@ public pure T toTitleCase(T)(T ch)
 public pure T isDigit(T)(T ch)
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
 	return ch >= '0' && ch <= '9';
+}
+
+public pure immutable(T)[][] split(T)(immutable(T)[] str, T splitSymbol = ' ') {
+	int splitCnt = 0;
+	foreach(T it; str) {
+		if(it == splitSymbol) {
+			splitCnt++;
+		}
+	}
+	immutable(T)[][] ret = new immutable(T)[][splitCnt+1];
+	size_t retPtr = 0;
+	size_t lastSplit = 0;
+	for(size_t i = 0; i < str.length; i++) {
+		if(str[i] == splitSymbol && i > lastSplit) {
+			ret[retPtr++] = str[lastSplit .. i];
+			lastSplit = i+1;
+		} else if(str[i] == splitSymbol && i == lastSplit) {
+			lastSplit = i+1;	
+		}
+	}
+	if(lastSplit < str.length) {
+			ret[retPtr++] = str[lastSplit .. $];
+	}
+	return ret[0 .. retPtr];
+}
+
+// split unittest
+unittest {
+	assert(split!(char)("he llo", ' ') == ["he","llo"]);
+	assert(split!(char)(" he llo", ' ') == ["he","llo"]);
+	assert(split!(char)("  he llo", ' ') == ["he","llo"]);
+	assert(split!(char)("he llo  ", ' ') == ["he","llo"]);
+	assert(split!(char)("  he llo  ", ' ') == ["he","llo"]);
+	assert(split!(char)("  he llo world  ", ' ') == ["he","llo","world"]);
+	assert(split!(char)("55he5llo5world55", '5') == ["he","llo","world"]);
 }
