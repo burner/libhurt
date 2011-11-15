@@ -121,7 +121,8 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 								//debug writeln(__FILE__,__LINE__,": ", 
 									//padding, " " , arg);
 							} else {
-								throw new IllegalArgumentException("Expected 										an int not an " 
+								throw new IllegalArgumentException(
+									"Expected an int not an " 
 									~ arguments[argPtr].toString());
 							}
 						}
@@ -350,10 +351,11 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 						}
 						break parse;
 					case 's': // string
-						if(arguments[argPtr] == typeid(immutable(char)[])) {
+						if(arguments[argPtr] == typeid(immutable(char)[]) ||
+								arguments[argPtr] == typeid(const(immutable(char)[]))) {
 							immutable(char)[] value = va_arg!(immutable(char)[])(arg);
 							immutable(T) paddingChar = padding0 ? '0' : ' ';
-							//debug writeln(__FILE__,__LINE__,": ", padding);
+							//debug writeln(__FILE__,__LINE__,": ", value);
 							if(value.length < padding && !leftAlign) {
 								for(size_t i = 0; i < padding - value.length; 
 										i++) {

@@ -9,6 +9,7 @@ void main() {
 	println("hello world", 4);
 	println("hello world", 4);
 	println(new Tmp());
+	assert("(10 h)" == format("(%d %s)", 10, "h"));
 	assert("hello" == format!(char,char)("hello"));
 	assert("hello5" == format!(char,char)("hello%d", 5), format!(char,char)("hello%d", 5));
 	assert("hello  5" == format!(char,char)("hello%*d", 3, 5), format!(char,char)("hello%*d", 3, 5));
