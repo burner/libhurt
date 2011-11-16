@@ -61,6 +61,10 @@ class MapItem(T,S) {
 		return this.key;
 	}
 
+	public void setData(S data) {
+		this.data = data;
+	}
+
 	public S getData() {
 		return this.data;
 	}
