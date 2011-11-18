@@ -353,7 +353,8 @@ public class Deque(T) {
 
 	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
-			if(int r = dg(idx, this.data[this.getIdx(this.getSize() - 1 -idx)]))
+			if(int r = dg(idx, this.data[
+				this.getIdx(this.getSize() - 1 -idx)] ))
 				return r;
 		}
 		return 0;
