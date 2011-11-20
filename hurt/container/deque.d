@@ -3,6 +3,7 @@ module hurt.container.deque;
 import hurt.container.iterator;
 import hurt.conv.conv;
 import hurt.exception.outofrangeexception;
+import hurt.container.iterator;
 import hurt.io.stdio;
 import hurt.math.mathutil;
 import hurt.string.formatter;
@@ -73,7 +74,7 @@ struct Iterator(T) {
 	}
 }
 
-public class Deque(T) {
+public class Deque(T) : Iterable!(T) {
 	private T[] data;
 	private long head; // insert first than move
 	private long tail; // move first than insert
@@ -254,11 +255,26 @@ public class Deque(T) {
 			this.toString()));
 	}
 
+	public T front() {
+		if(this.head == this.tail)
+			assert(0, "empty");
+		long head = (this.head+1) % this.data.length;
+		T ret = this.data[head];
+		return ret;
+	}
+
 	public T popFront() {
 		if(this.head == this.tail)
 			assert(0, "empty");
 		this.head = (this.head+1) % this.data.length;
 		T ret = this.data[this.head];
+		return ret;
+	}
+
+	public T back() {
+		if(this.head == this.tail)
+			assert(0, "empty");
+		T ret = this.data[this.tail];
 		return ret;
 	}
 
@@ -335,6 +351,14 @@ public class Deque(T) {
 
 	public T opIndex(const long idx) {
 		return this.data[this.getIdx(idx)];
+	}
+
+	public T get(const long idx) {
+		if(idx >= this.getSize()) {
+			return this.back();
+		} else {
+			return this.data[this.getIdx(idx)];
+		}
 	}
 
 	public const(T) opIndexConst(const long idx) const {
@@ -424,12 +448,21 @@ public class Deque(T) {
 		ret.pushBack(format!(char,char)("deque - (%d) {%d} %d [", this.head, 
 			this.tail, this.data.length));
 		foreach(idx, it; this.data) {
-			if(idx == this.head)
-				ret.pushBack(format!(char,char)("(%d),",it));
-			else if(idx == this.tail)
-				ret.pushBack(format!(char,char)("{%d},",it));
-			else
-				ret.pushBack(format!(char,char)("%d,",it));
+			static if(is(T == int)) {
+				if(idx == this.head)
+					ret.pushBack(format!(char,char)("(%d),",it));
+				else if(idx == this.tail)
+					ret.pushBack(format!(char,char)("{%d},",it));
+				else
+					ret.pushBack(format!(char,char)("%d,",it));
+			} else static if(is(T : Object)) {
+				if(idx == this.head)
+					ret.pushBack(format("(%s),",typeid(it)));
+				else if(idx == this.tail)
+					ret.pushBack(format("{%s},",typeid(it)));
+				else
+					ret.pushBack(format("%s,",typeid(it)));
+			}
 		}
 		ret.popBack();
 		ret.pushBack("]");
