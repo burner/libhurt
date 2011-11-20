@@ -21,6 +21,15 @@ public size_t printfln(immutable(char)[] form, ...) {
 	return writeC(0, str.ptr, str.length);
 }
 
+public size_t printfln(immutable(char)[] form, TypeInfo[] arguments, 
+		void* args) {
+	string str = formatString!(char,char)(form, arguments, args);
+	str ~= "\n";
+	if(str.length == 0)
+		return 0;
+	return writeC(0, str.ptr, str.length);
+}
+
 public size_t printf(immutable(char)[] form, ...) {
 	string str = formatString!(char,char)(form, _arguments, _argptr);
 	if(str.length == 0)

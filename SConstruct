@@ -89,6 +89,7 @@ hurt/util/datetime.d
 hurt/util/getopt.d
 hurt/util/milli.c
 hurt/util/random.d
+hurt/util/slog.d
 hurt/util/stacktrace.d
 hurt/util/util.d
 ''')

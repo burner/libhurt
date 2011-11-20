@@ -89,6 +89,15 @@ size_t find(T)(in T[] arr, in T toSearch) {
 	return arr.length;
 }
 
+size_t rfind(T)(in T[] arr, in T toSearch) {
+	foreach_reverse(idx, it; arr) {
+		if(it == toSearch) {
+			return idx;
+		}
+	}
+	return arr.length;
+}
+
 /** compares to arrays. the sorting of the elements
  *  must not be same. */
 bool compare(T)(in T[] a, in T[] b) {
