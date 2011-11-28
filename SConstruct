@@ -1,5 +1,4 @@
 src = Split('''
-hurt/algo/sorting.d
 hurt/container/bitmap.d
 hurt/container/bst.d
 hurt/container/deque.d
@@ -88,6 +87,7 @@ hurt/util/crc32.d
 hurt/util/datetime.d
 hurt/util/getopt.d
 hurt/util/milli.c
+hurt/util/pair.d
 hurt/util/random.d
 hurt/util/slog.d
 hurt/util/stacktrace.d
