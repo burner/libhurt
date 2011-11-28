@@ -9,7 +9,7 @@ import hurt.string.utf;
 
 import std.stdio;
 
-public pure S conv(T, S)(T t) {
+public pure S conv(T, S)(T t, string file = __FILE__, int line = __LINE__) {
 	static if( is(T == string) ) {			// string
 		static if( is(S == int) ) {
 			return stringToInt!(int,char)(t);	
@@ -54,7 +54,7 @@ public pure S conv(T, S)(T t) {
 	} else static if(isFloat!T() && isInteger!S()) {
 		return tToS!(T,S)(t);
 	} else static if(isInteger!T() && isInteger!S()) {	// integer to integer
-		return tToS!(T,S)(t);
+		return tToS!(T,S)(t, file, line);
 	} else static if( is(T == int) ) {		// int
 		static if( is(S == char) ) {
 			return byteToChar!(char)(t);

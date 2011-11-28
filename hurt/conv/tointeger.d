@@ -87,14 +87,15 @@ public pure uint ulongToUint(ulong from) {
 	}
 }
 
-public pure S tToS(T,S)(T t) if(isNumeric!(T) && isNumeric!(S)) {
+public pure S tToS(T,S)(T t, string file = __FILE__, int line = __LINE__) 
+		if(isNumeric!(T) && isNumeric!(S)) {
 	if(smaller!(T,S)(t,S.min)) {
-		throw new ValueRangeException(__FILE__ ~ ":" 
-			~ conv!(int,string)(__LINE__) ~ " " ~ conv!(T,string)(t) ~ 
+		throw new ValueRangeException(file ~ ":" 
+			~ conv!(int,string)(line) ~ " " ~ conv!(T,string)(t) ~ 
 			" doesn't fit, value is to small for " ~ conv!(S,string)(S.min));
 	} else if(bigger!(T,S)(t,S.max)) {
-		throw new ValueRangeException(__FILE__ ~ ":" 
-			~ conv!(int,string)(__LINE__) ~ " " ~ conv!(T,string)(t) ~ 
+		throw new ValueRangeException(file ~ ":" 
+			~ conv!(int,string)(line) ~ " " ~ conv!(T,string)(t) ~ 
 			" doesn't fit, value is to big for " ~ conv!(S,string)(S.max));
 	} else {
 		return cast(S)t;
