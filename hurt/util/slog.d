@@ -9,7 +9,11 @@ import core.vararg;
 
 private string cropFileName(string filename) {
 	size_t idx = rfind!(char)(filename, '/');
-	return filename[idx+1 .. $];
+	if(idx > filename.length) {
+		return filename[idx+1 .. $];
+	} else {
+		return filename;
+	}
 }
 
 public void log(string File = __FILE__, int Line = __LINE__)() {

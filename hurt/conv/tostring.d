@@ -13,7 +13,7 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10,
 	if(base > 16) { // only till base 16 aka hex
 		return null;
 	}
-	T[64] tmp;
+	T[128] tmp;
 	uint tmpptr = 0;
 	if(src == 0) 
 		return "0";
@@ -46,7 +46,8 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10,
 		tmp[1..tmpptr].reverse;
 		return tmp[0..tmpptr].idup;
 	} else {
-		return tmp[0..tmpptr].reverse.idup;
+		T[] r = tmp[0..tmpptr].reverse;
+		return r.idup;
 	}
 }
 

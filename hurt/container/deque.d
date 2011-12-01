@@ -9,6 +9,69 @@ import hurt.math.mathutil;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
 
+import hurt.util.slog;
+
+struct ConstIterator(T) {
+	private size_t pos;
+	private size_t id;
+	private Deque!(T) deque;
+
+	this(Deque!(T) deque, const bool begin, const size_t id) {
+		this.deque = deque;
+		this.id = id;
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
+		if(begin) {
+			if(head+1 > this.deque.getLength() - 1)
+				this.pos = 0;
+			else 
+				this.pos = head+1;
+		} else {
+			this.pos = tail;
+		}
+	}
+
+	package size_t getPos() const {
+		return this.pos;
+	}
+
+	public void opUnary(string s)() if(s == "++") {
+		this.pos++;
+		if(this.pos >= this.deque.getLength()) {
+			this.pos = 0;
+		}
+	}
+
+	public void opUnary(string s)() if(s == "--") {
+		if(this.pos == 0) {
+			this.pos = this.deque.getLength-1;
+		} else {
+			this.pos--;
+		}
+	}
+
+	public const(T) opUnary(string s)() if(s == "*") {
+		return this.deque.getValue(this.pos);
+	}
+
+	public bool opEquals(ref const Iterator!(T) it) const {
+		return this.id == it.id;
+	}	
+
+	public bool isValid() const {
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
+		if(head == tail) {
+			return false;
+		} else if(head < tail) {
+			return this.pos > head && this.pos <= tail;
+		} else {
+			size_t tmp = this.pos;
+			return this.pos > head || this.pos <= tail;
+		}
+	}
+}
+
 struct Iterator(T) {
 	private size_t pos;
 	private size_t id;
@@ -60,15 +123,11 @@ struct Iterator(T) {
 		size_t head = this.deque.getHeadPos();
 		size_t tail = this.deque.getTailPos();
 		if(head == tail) {
-			//println(__LINE__);
 			return false;
 		} else if(head < tail) {
-			//println(__LINE__);
 			return this.pos > head && this.pos <= tail;
 		} else {
 			size_t tmp = this.pos;
-			//println(__LINE__, tmp, head, tail, this.pos > head, 
-			//	this.pos <= tail);
 			return this.pos > head || this.pos <= tail;
 		}
 	}
@@ -107,7 +166,11 @@ public class Deque(T) : Iterable!(T) {
 		return this.head;
 	}
 
-	package T getValue(size_t idx) {
+	package T getValue(const size_t idx) {
+		return this.data[idx];
+	}
+
+	package const(T) getConstValue(const size_t idx) const {
 		return this.data[idx];
 	}
 
@@ -125,6 +188,14 @@ public class Deque(T) : Iterable!(T) {
 
 	public Iterator!(T) end() {
 		return Iterator!(T)(this, false, size_t.max);
+	}
+
+	public ConstIterator!(T) cBegin() {
+		return ConstIterator!(T)(this, true, size_t.max);
+	}
+
+	public ConstIterator!(T) cEnd() {
+		return ConstIterator!(T)(this, false, size_t.max);
 	}
 
 	private void growCapacity() {
@@ -176,8 +247,6 @@ public class Deque(T) : Iterable!(T) {
 		}
 
 		size_t insertIdx = this.getIdx(idx);
-		size_t headDis = distance!(typeof(this.head))(this.head, insertIdx);
-		size_t tailDis = distance!(typeof(this.head))(this.tail, insertIdx);
 
 		if(this.head < this.tail) {
 			if(this.head > 0) { 
@@ -289,7 +358,7 @@ public class Deque(T) : Iterable!(T) {
 	}
 
 	public bool contains(const T toFind) {
-		Iterator!(T) b = this.begin();	
+		ConstIterator!(T) b = this.cBegin();	
 		for(; b.isValid(); b++) {
 			if(toFind == *b)
 				return true;
@@ -520,7 +589,6 @@ unittest {
 	assert(di[5] == 6, di.toString());
 	assert(di[6] == 7, di.toString());
 	assert(di[7] == 9, di.toString());
-	//di.insert(7, 8);
 	di.insert(-1, 8);
 	assert(di[7] == 8, di.toString());
 	assert(di[8] == 9, di.toString());
@@ -657,7 +725,7 @@ unittest {
 			assert(i+1 == de.getSize());
 
 			// test iterator
-			auto it = de.begin();
+			Iterator!(int) it = de.begin();
 			assert(it.isValid());
 			for(int j = 0; j <= i; j++) {
 				assert(it.isValid());
@@ -676,6 +744,27 @@ unittest {
 			for(int j = 0; j <= i; j++) {
 				assert(de.contains(j));
 			}
+
+			ConstIterator!(int) cit = de.cBegin();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == j, format("%d %d pos %d size %s", *cit, j, 
+					cit.pos, de.toString()));
+				cit++;
+			}
+			cit = de.cEnd();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == i-j, format("%d %d pos %d size %s", *cit, i-j, 
+					cit.pos, de.toString()));
+				cit--;
+			}
+
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
+			}
 		}
 		Deque!(int) dh = new Deque!(int)(de);
 		assert(dh == de);
@@ -690,12 +779,10 @@ unittest {
 		assert(de.isEmpty());
 
 		for(int j = 0; j < count; j++) {
-			//printfln("%d", j);
 			de.pushBack(j);
 		}
 		assert(de.getSize() == count);
 		for(int j = 0; j < count; j++) {
-			//printfln("%d %d", j, reArr[j%reArr.length] % de.getSize());
 			de.remove(reArr[j % reArr.length] % de.getSize());	
 		}
 		assert(de.isEmpty());
@@ -741,6 +828,7 @@ unittest {
 			assert(i+1 == de.getSize(),
 				conv!(size_t,string)(de.getSize()) ~ " " 
 				~ conv!(int,string)(i+1));
+
 			// test iterator
 			auto it = de.begin();
 			assert(it.isValid());
@@ -753,6 +841,27 @@ unittest {
 			for(int j = 0; j <= i; j++, it--) {
 				assert(it.isValid());
 				assert(*it == j);
+			}
+
+			ConstIterator!(int) cit = de.cBegin();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == i-j, format("%d %d pos %d size %s", *cit, j, 
+					cit.pos, de.toString()));
+				cit++;
+			}
+			cit = de.cEnd();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == j, format("%d %d pos %d size %s", *cit, i-j, 
+					cit.pos, de.toString()));
+				cit--;
+			}
+
+			for(int j = 0; j <= i; j++) {
+				assert(de.contains(j));
 			}
 			for(int j = 0; j <= i; j++) {
 				assert(de.contains(j));
@@ -772,12 +881,10 @@ unittest {
 		assert(de.isEmpty());
 
 		for(int j = 0; j < count; j++) {
-			//printfln("%d", j);
 			de.pushFront(j);
 		}
 		assert(de.getSize() == count);
 		for(int j = 0; j < count; j++) {
-			//printfln("%d %d", j, reArr[j%reArr.length] % de.getSize());
 			de.remove(reArr[j % reArr.length] % de.getSize());	
 		}
 		assert(de.isEmpty());
@@ -823,7 +930,6 @@ unittest {
 			assert(it.isValid(), format("pos %d %s", it.pos, de.toString()));
 			for(int j = 0; j <= i; j++, it++) {
 				assert(it.isValid());
-				//assert(*it == i-j);
 				assert(*it == i-j, format("%d %d pos %d size %s", *it, j, 
 					it.pos, de.toString()));
 			}
@@ -833,6 +939,24 @@ unittest {
 				assert(it.isValid());
 				assert(*it == j);
 			}
+
+			ConstIterator!(int) cit = de.cBegin();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == i-j, format("%d %d pos %d size %s", *cit, j, 
+					cit.pos, de.toString()));
+				cit++;
+			}
+			cit = de.cEnd();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == j, format("%d %d pos %d size %s", *cit, i-j, 
+					cit.pos, de.toString()));
+				cit--;
+			}
+
 			for(int j = 0; j <= i; j++) {
 				assert(de.contains(j));
 			}
@@ -851,12 +975,10 @@ unittest {
 		assert(de.isEmpty());
 
 		for(int j = 0; j < count; j++) {
-			//printfln("%d", j);
 			de.pushFront(j);
 		}
 		assert(de.getSize() == count);
 		for(int j = 0; j < count; j++) {
-			//printfln("%d %d", j, reArr[j%reArr.length] % de.getSize());
 			de.remove(reArr[j % reArr.length] % de.getSize());	
 		}
 		assert(de.isEmpty());
@@ -905,6 +1027,23 @@ unittest {
 				assert(it.isValid());
 				assert(*it == i-j);
 			}
+
+			ConstIterator!(int) cit = de.cBegin();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == j, format("%d %d pos %d size %s", *cit, j, 
+					cit.pos, de.toString()));
+				cit++;
+			}
+			cit = de.cEnd();
+			assert(cit.isValid());
+			for(int j = 0; j <= i; j++) {
+				assert(cit.isValid());
+				assert(*cit == i-j, format("%d %d pos %d size %s", *cit, i-j, 
+					cit.pos, de.toString()));
+				cit--;
+			}
 			for(int j = 0; j <= i; j++) {
 				assert(de.contains(j));
 			}
@@ -923,12 +1062,10 @@ unittest {
 		assert(de.isEmpty());
 
 		for(int j = 0; j < count; j++) {
-			//printfln("%d", j);
 			de.pushBack(j);
 		}
 		assert(de.getSize() == count);
 		for(int j = 0; j < count; j++) {
-			//printfln("%d %d", j, reArr[j%reArr.length] % de.getSize());
 			de.remove(reArr[j % reArr.length] % de.getSize());	
 		}
 		assert(de.isEmpty());
@@ -937,7 +1074,6 @@ unittest {
 	int mul = 10;
 	for(int i = 0; i < 50; i++) {
 		Deque!(int) de = new Deque!(int)();
-		//println(__LINE__, i);
 		switch(i%15) {
 			case 0:
 				pushBackPopFront(de, mul * (i/9+1));
@@ -1052,15 +1188,9 @@ unittest {
 				assert(false, "not reachable " ~ conv!(int,string)(i));
 		}
 	}
-
-	debug {
-		//println("deque test done");
-	}
 }
-
 /*
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
-<<<<<<< HEAD
 }
 */
