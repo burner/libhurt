@@ -4,8 +4,9 @@ import hurt.container.isr;
 import hurt.container.tree;
 
 import hurt.conv.conv;
+import hurt.io.stdio;
 
-import std.stdio;
+//import std.stdio;
  
 class BinarySearchTree(T) : Tree!(T) { 
 	private bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , 
@@ -133,12 +134,12 @@ class BinarySearchTree(T) : Tree!(T) {
 
 bool compare(T)(BinarySearchTree!(T) t, T[T] s) {
 	if(t.getSize() != s.length) {
-		writeln(__LINE__, " size wrong");
+		println(__LINE__, "size wrong");
 		return false;
 	}
 	foreach(it; s.values) {
 		if(t.search(it) is null) {
-			writeln(__LINE__, " size wrong");
+			println(__LINE__, "size wrong");
 			return false;
 		}
 	}
