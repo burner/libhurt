@@ -16,6 +16,14 @@ struct ConstIterator(T) {
 	private size_t id;
 	private Deque!(T) deque;
 
+	this(Deque!(T) deque, const size_t id, size_t pos) {
+		this.deque = deque;
+		this.id = id;
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
+		this.pos = pos;
+	}
+
 	this(Deque!(T) deque, const bool begin, const size_t id) {
 		this.deque = deque;
 		this.id = id;
@@ -76,6 +84,14 @@ struct Iterator(T) {
 	private size_t pos;
 	private size_t id;
 	private Deque!(T) deque;
+
+	this(Deque!(T) deque, const size_t id, size_t pos) {
+		this.deque = deque;
+		this.id = id;
+		size_t head = this.deque.getHeadPos();
+		size_t tail = this.deque.getTailPos();
+		this.pos = pos;
+	}
 
 	this(Deque!(T) deque, const bool begin, const size_t id) {
 		this.deque = deque;
@@ -180,6 +196,14 @@ public class Deque(T) : Iterable!(T) {
 
 	package size_t getLength() const {
 		return this.data.length;
+	}
+
+	public Iterator!(T) iterator(const size_t pos) {
+		return Iterator!(T)(this, size_t.max, this.getIdx(pos));
+	}
+
+	public ConstIterator!(T) cIterator(const size_t pos) {
+		return ConstIterator!(T)(this, size_t.max, this.getIdx(pos));
 	}
 
 	public Iterator!(T) begin() {
