@@ -221,6 +221,12 @@ unittest {
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 
+	Map!(int,int) ttt = new Map!(int,int)();
+	ttt.insert(-1, 2);
+	assert(ttt.find(-1) !is null);
+	assert(ttt.find(-1).getData() == 2);
+
+
 	Map!(string,int)[] sa = new Map!(string,int)[3];
 	sa[0] = new Map!(string,int)(ISRType.RBTree);
 	sa[1] = new Map!(string,int)(ISRType.BinarySearchTree);
