@@ -86,11 +86,35 @@ public class MapSet(T,S) {
 			return 0u;
 		}
 	}
+
+	public size_t getSize() {
+		size_t ret = 0;
+		ISRIterator!(MapItem!(T,Set!(S))) it = this.map.begin();
+		for(; it.isValid(); it++) {
+			ret += (*it).getData().getSize();
+		}
+		return ret;
+	}
+
+	public bool contains(T t, S s) {
+		MapItem!(T,Set!(S)) mi = this.map.find(t);
+		if(mi !is null) {
+			return mi.getData().contains(s);
+		} else {
+			return false;
+		}
+	}
 }
 
 unittest {
 	MapSet!(int,int) ms = new MapSet!(int,int)();
 	assert(ms.insert(1,1));
+	assert(ms.getSize() == 1);
+	assert(ms.getMapSize() == 1);
+	assert(ms.getSetSize(1) == 1);
+	assert(ms.getSetSize(0) == 0);
+	assert(ms.contains(1,1));
+	assert(!ms.contains(1,2));
 	assert(ms.insert(2,1));
 	assert(ms.insert(2,2));
 	assert(ms.insert(1,2));
