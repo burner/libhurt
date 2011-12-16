@@ -3,6 +3,9 @@ module hurt.container.mapset;
 import hurt.container.map;
 import hurt.container.set;
 import hurt.container.isr;
+import hurt.string.formatter;
+import hurt.io.stdio;
+import hurt.string.stringbuffer;
 
 public class MapSet(T,S) {
 	// the map
@@ -68,7 +71,12 @@ public class MapSet(T,S) {
 		if(m !is null) { // remove the symbol
 			size_t setSize = m.getData().getSize();
 			m.getData().remove(s);
-			return setSize != m.getData().getSize();
+			if(m.getData().getSize() == 0) {
+				this.map.remove(t);
+				return true;
+			} else {
+				return setSize != m.getData().getSize();
+			}
 		} else { // no mapitem no remove
 			return false;
 		}
@@ -94,6 +102,10 @@ public class MapSet(T,S) {
 			ret += it.getData().getData().getSize();
 		}
 		return ret;
+	}
+
+	public bool isEmpty() const {
+		return this.map.getSize() == 0;
 	}
 
 	/** Check if the set of map t contains s
@@ -126,8 +138,47 @@ public class MapSet(T,S) {
 		return it !is null;
 	}
 
+	int opApply(int delegate(ref T, ref S) dg) {
+		ISRIterator!(MapItem!(T,Set!(S))) it = this.map.begin();
+		for(; it.isValid(); it++) {
+			ISRIterator!(S) jt = (*it).getData().begin();
+			for(; jt.isValid(); jt++) {
+				T key = (*it).getKey();
+				S data = *jt;
+				if(int r = dg(key, data)) {
+					return r;
+				}
+			}
+		}
+		return 0;
+	}
+
 	package Map!(T,Set!(S)) getMap() {
 		return this.map;
+	}
+
+	public override bool opEquals(Object o) {
+		return Equals(this, o);
+	}
+
+	public void clear() {
+		this.map.clear();
+	}
+
+	/** I'm pretty sure this only works for int.
+	 */
+	public override string toString() {
+		StringBuffer!(char) ret = new StringBuffer!(char)();
+		ISRIterator!(MapItem!(T,Set!(S))) it = this.map.begin();
+		for(; it.isValid(); it++) {
+			ret.pushBack(format("%d:", (*it).getKey()));
+			ISRIterator!(S) jt = (*it).getData().begin();
+			for(; jt.isValid(); jt++) {
+				ret.pushBack(format("%d ", *jt));
+			}
+			ret.pushBack("\n");
+		}
+		return ret.getString();
 	}
 }
 
@@ -135,7 +186,8 @@ public class MapSet(T,S) {
  * Error: template instance hurt.container.isr.ISRIterator!(MapItem).
  * ISRIterator.opUnary!("++") recursive expansion
  */
-public bool Equals(T,S)(MapSet!(T,S) ms, MapSet!(T,S) ns) {
+private bool Equals(T,S)(MapSet!(T,S) ms, Object o) {
+	MapSet!(T,S) ns = cast(MapSet!(T,S))o;
 	ISRIterator!(MapItem!(T,Set!(S))) it = ns.getMap().begin();
 	for(; it.isValid(); it++) {
 		ISRIterator!(S) jt = (*it).getData().begin();
@@ -162,7 +214,7 @@ unittest {
 	assert(ms.insert(1,1));
 	MapSet!(int,int) ms2 = new MapSet!(int,int)();
 	assert(ms2.insert(1,1));
-	assert(Equals(ms, ms2));
+	assert(ms == ms2);
 	assert(ms2.containsElement(1));
 	assert(ms.getSize() == 1);
 	assert(ms.getMapSize() == 1);
@@ -203,6 +255,109 @@ unittest {
 	mss[6] = new MapSet!(int,int)(ISRType.HashTable, ISRType.RBTree);
 	mss[7] = new MapSet!(int,int)(ISRType.HashTable, ISRType.BinarySearchTree);
 	mss[8] = new MapSet!(int,int)(ISRType.HashTable, ISRType.HashTable);
+	for(size_t i = 0; i < 5; i++) {
+		foreach(MapSet!(int,int) ht; mss) {
+			ht.clear();
+			assert(ht.isEmpty(), format("%u", ht.getSize()));
+		}
+		for(size_t j = 1; j < mss.length; j++) {
+			assert(mss[j] == mss[j-1], format("%s %s", mss[j].toString(),
+				mss[j-1].toString()));
+		}
+		for(size_t j = 0; j < mss.length; j++) {
+			switch(i) {
+				case 0:
+					foreach(int k; data[0]) {
+						mss[j].insert(k,k);
+					}
+					foreach(int k; data[0]) {
+						assert(mss[j].contains(k,k));
+					}
+					break;
+				case 1:
+					foreach(int k; data[1]) {
+						mss[j].insert(0,k);
+					}
+					foreach(int k; data[1]) {
+						assert(mss[j].contains(0,k));
+					}
+					break;
+				case 2:
+					foreach(int k; data[2]) {
+						mss[j].insert(0,k);
+					}
+					foreach(int k; data[2]) {
+						assert(mss[j].contains(0,k));
+					}
+					break;
+				case 3:
+					foreach(int k; data[3]) {
+						mss[j].insert(0,k);
+					}
+					foreach(int k; data[3]) {
+						assert(mss[j].contains(0,k));
+					}
+					break;
+				case 4:
+					foreach(int r; rand) {
+						foreach(int k; data[3]) {
+							mss[j].insert(r,k);
+						}
+					}
+					foreach(int r; rand) {
+						foreach(int k; data[3]) {
+							assert(mss[j].contains(r,k));
+						}
+					}
+					break;
+				default:
+					assert(false, format("%d", i));
+			}
+		}
+		for(size_t j = 1; j < mss.length; j++) {
+			assert(!mss[j].isEmpty());
+			assert(mss[j] == mss[j-1], format("%s %s", mss[j].toString(),
+				mss[j-1].toString()));
+		}
+		for(size_t j = 0; j < mss.length; j++) {
+			switch(i) {
+				case 0:
+					foreach(int k; data[0]) {
+						mss[j].remove(k,k);
+					}
+					break;
+				case 1:
+					foreach(int k; data[1]) {
+						mss[j].remove(0,k);
+					}
+					break;
+				case 2:
+					foreach(int k; data[2]) {
+						mss[j].remove(0,k);
+					}
+					break;
+				case 3:
+					foreach(int k; data[3]) {
+						mss[j].remove(0,k);
+					}
+					break;
+				case 4:
+					foreach(int r; rand) {
+						foreach(int k; data[3]) {
+							mss[j].remove(r,k);
+						}
+					}
+					break;
+				default:
+					assert(false);
+			}
+		}
+		for(size_t j = 1; j < mss.length; j++) {
+			assert(mss[j].isEmpty(), format("%u", mss[j].getSize()));
+			assert(mss[j] == mss[j-1], format("%s %s", mss[j].toString(),
+				mss[j-1].toString()));
+		}
+	}
 }
 
 void main() {

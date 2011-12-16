@@ -8,6 +8,7 @@ hurt/container/isr.d
 hurt/container/iterator.d
 hurt/container/list.d
 hurt/container/map.d
+hurt/container/mapset.d
 hurt/container/multimap.d
 hurt/container/pairlist.d
 hurt/container/rbtree.d

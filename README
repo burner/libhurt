@@ -16,10 +16,13 @@ Features:
 		Map
 		MultiMap
 		Set
+		MapSet (looks like Map!(T,Set!(S)) )
 
 		Single Linked List
+		Double Linked List
 		Stack
 		Vector
+		Deque ( Double ended random acces Vector )
 
 	Convert:
 		Numbertypes to string
