@@ -74,6 +74,16 @@ struct Args {
 		return true;
 	}
 
+	/** For every option you want parsed call this function.
+	 * @author Robert "BuRnEr" Schadek
+	 *  
+	 * @param last Last must be set to true for the last option set.
+	 *   If last is set to true and an option with name -h or --help
+	 *   has been passed previously the help is printed
+	 *  
+	 * @return The Args struct so you can concat the setOption process
+	 *   with a simple dot.
+	 */
 	public Args setOption(T)(string opShort, string opLong, string desc, 
 			ref T value, bool last = false) {
 		if(opShort is null || opShort.length == 0 || 
