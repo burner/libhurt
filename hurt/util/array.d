@@ -1,6 +1,7 @@
 module hurt.util.array;
 
 import hurt.conv.conv;
+import hurt.string.formatter;
 import hurt.exception.nullexception;
 import hurt.exception.outofrangeexception;
 
@@ -96,6 +97,46 @@ size_t rfind(T)(in T[] arr, in T toSearch) {
 		}
 	}
 	return arr.length;
+}
+
+size_t findArr(T)(in T[] arr, immutable(T)[] toSearch, size_t i = 0) {
+	if(toSearch is null || toSearch.length == 0) {
+		return arr.length;
+	}
+	//outer: foreach(size_t idx, T it; arr) {
+	outer: for(size_t idx = i; idx < arr.length; idx++) {
+		T it = arr[idx];
+		if(idx + toSearch.length > arr.length) {
+			return arr.length;
+		} else if(it == toSearch[0]) {
+			for(size_t jdx = 0; jdx < toSearch.length; jdx++) {
+				if(arr[idx+jdx] != toSearch[jdx]) {
+					continue outer;
+				}
+			}
+			return idx;
+		}
+	}
+	return arr.length;
+}
+
+unittest {
+	assert(findArr!(char)("Hello", "ll") == 2, 
+		format("%d != %d",findArr!(char)("Hello", "ll") , 2));
+	assert(findArr!(char)("Hello", "Helloo") == 5, 
+		format("%d != %d",findArr!(char)("Hello", "Helloo") , 5));
+	assert(findArr!(char)("Hello", "lo") == 3,
+		format("%d != %d",findArr!(char)("Hello", "lo") , 3));
+	assert(findArr!(char)("Hello", "o") == 4,
+		format("%d != %d",findArr!(char)("Hello", "o") , 4));
+	assert(findArr!(char)("Hello", "oll") == 5,
+		format("%d != %d",findArr!(char)("Hello", "oll") , 5));
+	assert(findArr!(char)("Hello", "zzz") == 5,
+		format("%d != %d",findArr!(char)("Hello", "zzz") , 5));
+	assert(findArr!(char)("Hello", "") == 5,
+		format("%d != %d",findArr!(char)("Hello", "") , 5));
+	assert(findArr!(char)("Hello", null) == 5,
+		format("%d != %d",findArr!(char)("Hello", null) , 5));
 }
 
 /** compares to arrays. the sorting of the elements
