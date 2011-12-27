@@ -133,7 +133,7 @@ public pure bool isString(T)() {
 /** Trim blanks and tabs from the beginning and end of a str. */
 public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	uint low = 0;
-	while(str[low] == ' ' || str[low] == '\t')
+	while(str[low] == ' ' || str[low] == '\t' || str[low] == '\n')
 		low++;
 
 	version(X86) {
@@ -142,10 +142,15 @@ public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	version(X86_64) {
 		ulong high = str.length-1;
 	}
-	while(str[high] == ' ' || str[high] == '\t')
+	while(str[high] == ' ' || str[high] == '\t' || str[high] == '\n')
 		high--;
 
 	return str[low..high+1].idup;	
+}
+
+unittest {
+	assert("hello" == trim("hello\n\n"), trim("hello\n\n"));
+	assert("hello" == trim("\n \thello\n\n"));
 }
 
 public pure int hashCode(T)(immutable(T)[] str) {
