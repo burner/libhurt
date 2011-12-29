@@ -3,6 +3,7 @@ module hurt.util.getopt;
 import hurt.conv.conv;
 import hurt.container.deque;
 import hurt.container.multimap;
+import hurt.container.map;
 import hurt.container.isr;
 import hurt.io.stdio;
 import hurt.util.slog;
@@ -15,6 +16,7 @@ struct Args {
 	private Deque!(string) optionShort;
 	private Deque!(string) description;
 	private MultiMap!(string,size_t) map;
+	private Map!(size_t,string) processed;
 	private string[] optionDesc;
 	private string help;
 	private string[] args;
@@ -26,17 +28,19 @@ struct Args {
 	this(string[] args, string help = null) {
 		this.args = args;
 		this.map = new MultiMap!(string,size_t)(ISRType.BinarySearchTree);
+		this.processed = new Map!(size_t,string)(ISRType.HashTable);
 		this.description = new Deque!(string);
 		this.optionLong = new Deque!(string);
 		this.optionShort = new Deque!(string);
 		this.optionType = new Deque!(string);
 		foreach(idx, it; args[1..$]) {
+			this.processed.insert(idx+1, it);
 			this.map.insert(it, idx+1);
 		}
-		hurt.container.multimap.Iterator!(string,size_t) it = map.begin();
+		/*hurt.container.multimap.Iterator!(string,size_t) it = map.begin();
 		for(; it.isValid(); it++) {
 			printfln("%s => %d", it.getKey(), it.getData());
-		}
+		}*/
 
 		this.help = help;
 	}
@@ -115,35 +119,34 @@ struct Args {
 				else
 					l = z;
 			}
-			log();
 			if(!l.isValid()) {
 				return this;
 			}
-			log();
 
 			if(this.args is null || this.args.length == 1) {
 				return this;
 			}
-			log();
 
 			static if(is(T == bool)) {
 				if(l.isValid() && l.getData() < this.args.length-1 &&
-						this.notAnOption(this.args[l.getData()+1]) &&
-						(this.args[l.getData()+1] == "true" ||
-						 this.args[l.getData()+1] == "false") ) {
-					log();
-					value = conv!(string,bool)(this.args[l.getData()+1]);
+						this.notAnOption(this.args[l.getData()+1])) {
+
+					if(this.args[l.getData()+1] == "true" ||
+							this.args[l.getData()+1] == "false") {
+						value = conv!(string,bool)(this.args[l.getData()+1]);
+					} else {
+						throw new Exception(
+							format("passed invalid bool flag \"%s\"", 
+							this.args[l.getData()+1]));
+					}
 				} else {
-					log();
 					value = true;
 				}
 			} else {
 				if(l.isValid() && l.getData() < this.args.length-1 &&
 						this.notAnOption(this.args[l.getData()+1])) {
 					value = conv!(string,T)(this.args[l.getData()+1]);	
-					log();
 				} else {
-					log();
 					throw new Exception(
 						format("not enough arguments passed for %s etc. " ~
 						"%s %b %d %d", opLong, opShort, l.isValid(), 
@@ -161,7 +164,7 @@ struct Args {
 }
 
 void main(string[] args) {
-	string[] ar = split("./getopt -b 100 -t 200 --foo 300 --file getopt.d");
+	string[] ar = split("./getopt -b 100 -t false --foo 300 --file getopt.d");
 	Args arguments = Args(ar);
 	arguments.setHelpText("test programm to test the args parser");
 	int bar = 0;
@@ -169,12 +172,8 @@ void main(string[] args) {
 	bool tar = false;
 	string file;
 	arguments.setOption("-b", "--bar", "bar option", bar);
-	log();
 	arguments.setOption("-t", "--tar", "tar option", tar);
-	log();
 	arguments.setOption("-f", "--foo", "foo option", foo);
-	log();
 	arguments.setOption("-d", "--file", "file option", file, true);
-	log();
 	println(__LINE__,bar, foo, tar, file);
 }
