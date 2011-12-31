@@ -281,6 +281,7 @@ struct Args {
 	}
 }
 
+/*
 void main(string[] args) {
 	string[] ar = split(
 	"./getopt -b 100 -t false --foo 300 --file getopt.d 5555" ~
@@ -308,4 +309,4 @@ void main(string[] args) {
 	foreach(size_t idx, string it; arguments) {
 		printfln("%u %s", idx, it);
 	}
-}
+}*/
