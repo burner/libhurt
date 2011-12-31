@@ -253,6 +253,15 @@ class MultiMap(T,S) {
 		return new Iterator!(T,S)(this,tmp, false, false);
 	}
 
+	Iterator!(T,S) invalidIterator() {
+		auto tmp = this.tree.end();
+		Iterator!(T,S) ret = new Iterator!(T,S)(this,tmp, false, false);
+		if(ret.isValid()) {
+			ret++;
+		}
+		return ret;
+	}
+
 	Iterator!(T,S) lower(T key) {
 		this.finder.key = key;
 		ISRIterator!(Item!(T,S)) found = this.tree.searchIt(this.finder);
