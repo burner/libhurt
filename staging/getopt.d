@@ -16,7 +16,7 @@ struct Args {
 	private Deque!(string) optionShort;
 	private Deque!(string) description;
 	private MultiMap!(string,size_t) map;
-	private Map!(size_t,string) processed;
+	private Map!(size_t,string) unprocessed; // used to get the unprocessed
 	private string[] optionDesc;
 	private string help;
 	private string[] args;
@@ -28,13 +28,13 @@ struct Args {
 	this(string[] args, string help = null) {
 		this.args = args;
 		this.map = new MultiMap!(string,size_t)(ISRType.BinarySearchTree);
-		this.processed = new Map!(size_t,string)(ISRType.HashTable);
+		this.unprocessed = new Map!(size_t,string)(ISRType.HashTable);
 		this.description = new Deque!(string);
 		this.optionLong = new Deque!(string);
 		this.optionShort = new Deque!(string);
 		this.optionType = new Deque!(string);
 		foreach(idx, it; args[1..$]) {
-			this.processed.insert(idx+1, it);
+			this.unprocessed.insert(idx+1, it);
 			this.map.insert(it, idx+1);
 		}
 		/*hurt.container.multimap.Iterator!(string,size_t) it = map.begin();
@@ -81,6 +81,33 @@ struct Args {
 		return true;
 	}
 
+	public size_t getNumberOfUnprocessed() const {
+		return this.unprocessed.getSize();	
+	}
+
+	public int opApply(int delegate(ref size_t, ref string) dg) {
+		ISRIterator!(MapItem!(size_t,string)) it = this.unprocessed.begin();
+		for(; it.isValid(); it++) {
+			size_t kT = (*it).getKey();
+			string dT = (*it).getData();
+			if(int r = dg(kT,dT)) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
+	public int opApply(int delegate(ref string) dg) {
+		ISRIterator!(MapItem!(size_t,string)) it = this.unprocessed.begin();
+		for(; it.isValid(); it++) {
+			string dT = (*it).getData();
+			if(int r = dg(dT)) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
 	/** For every option you want parsed call this function.
 	 * @author Robert "BuRnEr" Schadek
 	 *  
@@ -92,7 +119,7 @@ struct Args {
 	 *   with a simple dot.
 	 */
 	public Args setOption(T)(string opShort, string opLong, string desc, 
-			ref T value, bool last = false) {
+			ref T value, bool last = false, string conflicts = null) {
 		if(opShort is null || opShort.length == 0 || 
 				opLong is null || opLong.length == 0 ||
 				desc is null || desc.length == 0) {
@@ -109,16 +136,22 @@ struct Args {
 			hurt.container.multimap.Iterator!(string,size_t) z = 
 				this.map.lower(opLong);
 			hurt.container.multimap.Iterator!(string,size_t) l;
-			if(s !is null && l !is null) {
+			//if(s !is null && l !is null) {
+			printfln("%b %b %b %b", s is null, z is null, 
+				s !is null ? s.isValid() : false, 
+				z !is null ? z.isValid() : false);
+			if(s.isValid() && z.isValid()) {
 				throw new Exception("Option passed twice at position " ~
 					conv!(size_t,string)(s.getData()) ~ " and position " ~
-					conv!(size_t,string)(l.getData()));
+					conv!(size_t,string)(z.getData()));
 			} else {
-				if(s.isValid())
+				if(s.isValid()) {
 					l = s;
-				else
+				} else {
 					l = z;
+				}
 			}
+			this.unprocessed.remove(l.getData());
 			if(!l.isValid()) {
 				return this;
 			}
@@ -134,6 +167,7 @@ struct Args {
 					if(this.args[l.getData()+1] == "true" ||
 							this.args[l.getData()+1] == "false") {
 						value = conv!(string,bool)(this.args[l.getData()+1]);
+						this.unprocessed.remove(l.getData()+1);
 					} else {
 						throw new Exception(
 							format("passed invalid bool flag \"%s\"", 
@@ -146,6 +180,7 @@ struct Args {
 				if(l.isValid() && l.getData() < this.args.length-1 &&
 						this.notAnOption(this.args[l.getData()+1])) {
 					value = conv!(string,T)(this.args[l.getData()+1]);	
+					this.unprocessed.remove(l.getData()+1);
 				} else {
 					throw new Exception(
 						format("not enough arguments passed for %s etc. " ~
@@ -164,7 +199,8 @@ struct Args {
 }
 
 void main(string[] args) {
-	string[] ar = split("./getopt -b 100 -t false --foo 300 --file getopt.d");
+	string[] ar = split(
+	"./getopt -b 100 -t false --foo 300 --file getopt.d 5555");
 	Args arguments = Args(ar);
 	arguments.setHelpText("test programm to test the args parser");
 	int bar = 0;
@@ -176,4 +212,7 @@ void main(string[] args) {
 	arguments.setOption("-f", "--foo", "foo option", foo);
 	arguments.setOption("-d", "--file", "file option", file, true);
 	println(__LINE__,bar, foo, tar, file);
+	foreach(size_t idx, string it; arguments) {
+		printfln("%u %s", idx, it);
+	}
 }
