@@ -1,6 +1,6 @@
 ﻿module math.bigintbase10;
 
-import std.stdio;
+import hurt.string.formatter;
 
 class BigIntBase10 {
 	private immutable byte NumberBase = 10;
@@ -261,6 +261,8 @@ class BigIntBase10 {
 
 	public BigIntBase10 opOpAssign(string op)(long b) {
 		switch(op) {
+			case "+":
+				goto case "+=";
 			case "+=":
 				this = Addition(this, new BigIntBase10(b));
 				return this;
@@ -273,12 +275,16 @@ class BigIntBase10 {
 				this.size = tmp.size;
 				this.sign = tmp.sign;
 				return this;
+			default:
+				assert(false, format("should not be reached op = %s", op));
 			}
 		}
 	}
 
 	public BigIntBase10 opOpAssign(string op)(BigIntBase10 b) {
 		switch(op) {
+			case "+":
+				goto case "+=";
 			case "+=":
 				this = Addition(this, b);
 				return this;

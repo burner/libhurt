@@ -225,24 +225,15 @@ public class Deque(T) : Iterable!(T) {
 	private void growCapacity() {
 		T[] n = new T[this.data.length*2];
 		assert(n !is null);
-		size_t oldNLength = this.getSize();
-		if(this.tail > this.head) {
-			foreach(size_t idx, T it; this.data[this.head .. this.tail+1]) {
-				n[this.head+idx] = it;
-			}
-		} else { // this.head >= this.tail
-			foreach(size_t idx, T it; this.data[0 .. this.tail+1]) {
-				n[idx] = it;
-			}
-			foreach(size_t idx, T it; this.data[head .. $]) {
-				n[1 + this.data.length + idx] = it;
-			}
-			this.head = this.head + this.data.length;
+		Iterator!(T) it = this.begin();
+		size_t idx = 0;
+		for(; it.isValid(); it++, idx++) {
+			n[idx] = *it;
 		}
-		this.data = n;
-		size_t size = this.getSize();
-		assert(oldNLength == size, format("%d %d", oldNLength, size));
 		assert(this.data !is null);
+		this.data = n;
+		this.head = n.length-1;
+		this.tail = idx-1;
 	}
 
 	private void moveFront(const size_t idx) {
@@ -511,6 +502,10 @@ public class Deque(T) : Iterable!(T) {
 		}
 	}
 
+	public size_t getCapacity() const {
+		return this.data.length;
+	}
+
 	public void clean() {
 		this.head = this.tail = 0;
 	}
@@ -542,19 +537,24 @@ public class Deque(T) : Iterable!(T) {
 			this.tail, this.data.length));
 		foreach(idx, it; this.data) {
 			static if(is(T == int)) {
-				if(idx == this.head)
+				if(idx == this.head) {
 					ret.pushBack(format!(char,char)("(%d),",it));
-				else if(idx == this.tail)
+				} else if(idx == this.tail) {
 					ret.pushBack(format!(char,char)("{%d},",it));
-				else
+				} else {
 					ret.pushBack(format!(char,char)("%d,",it));
+				}
 			} else static if(is(T : Object)) {
-				if(idx == this.head)
-					ret.pushBack(format("(%s),",typeid(it)));
-				else if(idx == this.tail)
-					ret.pushBack(format("{%s},",typeid(it)));
-				else
-					ret.pushBack(format("%s,",typeid(it)));
+				if(idx == this.head) {
+					ret.pushBack(format("(%s),", it !is null ? it.stringof : 
+						"null"));
+				} else if(idx == this.tail) {
+					ret.pushBack(format("{%s},", it !is null ? it.stringof : 
+						"null"));
+				} else {
+					ret.pushBack(format("%s,", it !is null ? it.stringof : 
+					"null"));
+				}
 			}
 		}
 		ret.popBack();
