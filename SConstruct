@@ -15,6 +15,7 @@ hurt/container/rbtree.d
 hurt/container/set.d
 hurt/container/stack.d
 hurt/container/tree.d
+hurt/container/trie.d
 hurt/container/vector.d
 ''')
 
