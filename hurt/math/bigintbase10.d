@@ -1,6 +1,7 @@
 ﻿module math.bigintbase10;
 
 import hurt.string.formatter;
+import hurt.io.stdio;
 
 class BigIntBase10 {
 	private immutable byte NumberBase = 10;
@@ -466,8 +467,8 @@ class BigIntBase10 {
 	
 	public void printArray() const {
 		foreach(it;this.digits) {
-			write(it, " ");
+			print(it, " ");
 		}
-		writeln();
+		println();
 	}
 }

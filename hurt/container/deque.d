@@ -381,6 +381,17 @@ public class Deque(T) : Iterable!(T) {
 		return false;
 	}
 
+	public Iterator!(T) findIt(T toFind) {
+		foreach(size_t idx, T id; this) {
+			if(id == toFind) {
+				return Iterator!(T)(this, size_t.max, this.getIdx(idx));
+			}
+		}
+		Iterator!(T) it = this.end();
+		it++;
+		return it;
+	}
+
 	public void pushFront(T toPush) {
 		if((this.head-1) % this.data.length == this.tail) {
 			this.growCapacity();
