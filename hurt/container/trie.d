@@ -15,15 +15,13 @@ private class TrieNode(T,S) {
 	}
 
 	bool insert(Deque!(S) path, size_t idx, T object) {
-		if(idx == path.getSize()-1) { // reached the end of the path
+		if(idx >= path.getSize()-1) { // reached the end of the path
 			this.member.pushBack(object);
 			return true;
-		} else if(idx < path.getSize()-1 && // path present
-				follow.contains(path[idx])) {
+		} else if(follow.contains(path[idx])) { // has a follow for the path 
 			return this.follow.find(path[idx]).getData().
 				insert(path, idx+1, object);
-		} else if(idx < path.getSize()-1 && // path not present
-				!follow.contains(path[idx])) {
+		} else if(!follow.contains(path[idx])) { // path not present 
 			TrieNode!(T,S) node = new TrieNode!(T,S)();
 			this.follow.insert(path[idx], node);
 			return node.insert(path, idx+1, object);
@@ -33,16 +31,24 @@ private class TrieNode(T,S) {
 	}
 
 	bool contains(Deque!(S) path, size_t idx) {
-		if(idx == path.getSize()-1) {
+		if(idx >= path.getSize()-1) {
 			return this.member.getSize() > 0;
 		} else {
-			return this.follow.find(path[idx]).getData().
-				contains(path, idx+1);
+			//return this.follow.find(path[idx]).getData().
+				//contains(path, idx+1);
+			MapItem!(S,TrieNode!(T,S)) mapItem = this.follow.find(path[idx]);
+			if(mapItem is null) {
+				return false;
+			}
+			assert(mapItem !is null);
+			TrieNode!(T,S) tmp =  mapItem.getData();
+			assert(tmp !is null);
+			return tmp.contains(path, idx+1);
 		}
 	}
 
 	T find(Deque!(S) path, size_t idx) {
-		if(idx == path.getSize()-1) {
+		if(idx >= path.getSize()-1) {
 			return this.member[0];
 		} else {
 			return this.follow.find(path[idx]).getData().
@@ -73,10 +79,12 @@ class Trie(T,S) {
 
 	bool contains(Deque!(S) path) {
 		// trie path must be at least one element long
+		assert(path !is null);
 		assert(path.getSize() > 0);
 		if(this.follow.contains(path[0])) { 
-			return this.follow.find(path[0]).getData().
-				contains(path, 1);
+			TrieNode!(T,S) tmp =  this.follow.find(path[0]).getData();
+			assert(tmp !is null);
+			return tmp.contains(path, 1);
 		} else {
 			return false;
 		}
@@ -84,6 +92,7 @@ class Trie(T,S) {
 
 	T find(Deque!(S) path) {
 		// trie path must be at least one element long
+		assert(path !is null);
 		assert(path.getSize() > 0);
 		if(this.follow.contains(path[0])) { 
 			return this.follow.find(path[0]).getData().
