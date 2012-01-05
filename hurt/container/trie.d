@@ -79,13 +79,13 @@ private class TrieNode(T,S) {
 			// if there are no follow items this branch doesn't contain
 			// the object search for
 			if(this.follow is null) {
-				return false;
+				throw new Exception("Object not found");
 			}
 			//return this.follow.find(path[idx]).getData().
 				//contains(path, idx+1);
 			MapItem!(S,TrieNode!(T,S)) mapItem = this.follow.find(path[idx]);
 			if(mapItem is null) {
-				return false;
+				throw new Exception("Object not found");
 			}
 			assert(mapItem !is null);
 			TrieNode!(T,S) tmp =  mapItem.getData();
@@ -300,8 +300,8 @@ unittest {
 				trie.toString()));
 		}
 	}
-	println(trie.toString());
-	println(trie.getSize());
+	//println(trie.toString());
+	//println(trie.getSize());
 }
 
 version(staging) {
