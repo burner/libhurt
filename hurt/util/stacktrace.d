@@ -34,14 +34,14 @@ public class Trace {
 
 	public static void printStats() {
 		println("\nStats of all traced function:");
-		printfln("%50s %14s %14s", "function", "calls", "time in ms");
+		printfln("%60s %8s %12s", "function", "calls", "time in ms");
 		Trace.allCallsMutex.lock();
 		Stats[] a = Trace.allCalls.values();
 		assert(a.length == Trace.allCalls.getSize());
 		sort!(Stats)(a, function(in Stats a, in Stats b) {
 			 return a.time > b.time; });
 		foreach(it; a) {
-			printfln("%50s %14d %14d", it.funcName~"() at "~ it.file ~ ":" ~ 
+			printfln("%60s %8d %12d", it.funcName~"() at "~ it.file ~ ":" ~ 
 				format!(char,char)("%5d",it.line), it.calls, it.time);
 		}
 		Trace.allCallsMutex.unlock();
