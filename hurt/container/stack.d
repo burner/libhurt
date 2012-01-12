@@ -38,6 +38,10 @@ final class Stack(T) {
 		return this.stptr < 0 ? true : false;
 	}
 
+	bool isEmpty() const {
+		return this.empty();
+	}
+
 	T top() {
 		if(this.stptr < 0) {
 			assert(0);

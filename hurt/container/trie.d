@@ -117,7 +117,7 @@ private class TrieNode(T,S) {
 	}
 }
 
-class Trie(T,S) {
+class Trie(S,T) {
 	private Map!(S,TrieNode!(T,S)) follow;
 	private size_t size;
 
