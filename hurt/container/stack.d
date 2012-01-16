@@ -78,6 +78,6 @@ final class Stack(T) {
 	}
 
 	void clear() {
-		this.stptr = 0;	
+		this.stptr = -1;	
 	}
 }
