@@ -133,8 +133,10 @@ public pure bool isString(T)() {
 /** Trim blanks and tabs from the beginning and end of a str. */
 public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	uint low = 0;
-	while(str[low] == ' ' || str[low] == '\t' || str[low] == '\n')
+	while(str.length > 0 && 
+			(str[low] == ' ' || str[low] == '\t' || str[low] == '\n')) {
 		low++;
+	}
 
 	version(X86) {
 		uint high = str.length-1;
@@ -142,8 +144,10 @@ public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	version(X86_64) {
 		ulong high = str.length-1;
 	}
-	while(str[high] == ' ' || str[high] == '\t' || str[high] == '\n')
+	while(str.length > 0 && 
+			(str[high] == ' ' || str[high] == '\t' || str[high] == '\n')) {
 		high--;
+	}
 
 	return str[low..high+1].idup;	
 }
