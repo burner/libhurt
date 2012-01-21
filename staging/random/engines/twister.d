@@ -1,16 +1,47 @@
-module hurt.util.random;
+/*******************************************************************************
 
-int rand(int low = 0, int up = int.max) {
-	immutable M = 2147483647;
-	immutable A = 16807;
-	static int seed = 1;
+        copyright:      Copyright (C) 1997--2004, Makoto Matsumoto,
+                        Takuji Nishimura, and Eric Landry; All rights reserved
+        
 
-	seed = A * ( seed % (M/A) ) - (M%A) * ( seed / (M/A) );
-	if(seed <= 0)
-		seed += M;
+        license:        BSD style: $(LICENSE)
 
-	return (seed + low) % up;
-}
+        version:        Jan 2008: Initial release
+
+        author:         KeYeR (D interface) keyer@team0xf.com
+                        fawzi (converted to engine)
+      
+*******************************************************************************/
+
+module hurt.util.random.engines.Twister;
+
+/*******************************************************************************
+
+        Wrapper for the Mersenne twister.
+        
+        The Mersenne twister is a pseudorandom number generator linked to
+        CR developed in 1997 by Makoto Matsumoto and Takuji Nishimura that
+        is based on a matrix linear recurrence over a finite binary field
+        F2. It provides for fast generation of very high quality pseudorandom
+        numbers, having been designed specifically to rectify many of the 
+        flaws found in older algorithms.
+        
+        Mersenne Twister has the following desirable properties:
+        ---
+        1. It was designed to have a period of 2^19937 - 1 (the creators
+           of the algorithm proved this property).
+           
+        2. It has a very high order of dimensional equidistribution.
+           This implies that there is negligible serial correlation between
+           successive values in the output sequence.
+           
+        3. It passes numerous tests for statistical randomness, including
+           the stringent Diehard tests.
+           
+        4. It is fast.
+        ---
+
+*******************************************************************************/
 
 struct Twister
 {
@@ -115,4 +146,45 @@ struct Twister
         seed (19650218UL);
         addEntropy(r);
     }
+    /// writes the current status in a string
+    /*char[] toString(){
+        char[] res=new char[7+(N+1)*9];
+        int i=0;
+        res[i..i+7]="Twister"[];
+        i+=7;
+        res[i]='_';
+        ++i;
+        Integer.format(res[i..i+8],mti,cast(char[])"x8");
+        i+=8;
+        foreach (val;mt){
+            res[i]='_';
+            ++i;
+            Integer.format(res[i..i+8],val,cast(char[])"x8");
+            i+=8;
+        }
+        assert(i==res.length,"unexpected size");
+        return res;
+    }
+    /// reads the current status from a string (that should have been trimmed)
+    /// returns the number of chars read
+    size_t fromString(const(char[]) s){
+        size_t i;
+        assert(s[0..7]=="Twister","unexpected kind, expected Twister");
+        i+=7;
+        assert(s[i]=='_',"no separator _ found");
+        ++i;
+        size_t ate;
+        mti=cast(uint)Integer.convert(s[i..i+8],16,&ate);
+        assert(ate==8,"unexpected read size");
+        i+=8;
+        foreach (ref val;mt){
+            assert(s[i]=='_',"no separator _ found");
+            ++i;
+            val=cast(uint)Integer.convert(s[i..i+8],16,&ate);
+            assert(ate==8,"unexpected read size");
+            i+=8;
+        }
+        return i;
+    }*/
 }
+

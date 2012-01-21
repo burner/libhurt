@@ -213,6 +213,12 @@ public pure bool isLowerCase(string str) {
 	return true;
 }
 
+unittest {
+	assert(isLowerCase("hello"));
+	assert(!isLowerCase("hellO"));
+	assert(isLowerCase(""));
+}
+
 /** Converts a [w,d]char to Title Case.	TODO check is
  *  
  * @author Robert "BuRnEr" Schadek
