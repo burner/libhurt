@@ -51,7 +51,7 @@ struct Args {
 		if(this.help !is null && this.help.length > 0) {
 			println(this.help,'\n');
 		}
-		println("--help or -h\nprint this help\n");
+		println("--help or -h\nprints this help\n");
 		size_t shIn = 0;
 		size_t lngIn = 0;
 		for(size_t idx = 0; idx < this.description.getSize(); idx++) {
@@ -209,6 +209,11 @@ struct Args {
 			}
 		}
 
+		if(last && (this.map.lower("-h").isValid() || 
+				this.map.lower("--help").isValid())) {
+			this.printHelp();
+		}
+
 		if(!l.isValid()) {
 			return this;
 		}
@@ -223,11 +228,6 @@ struct Args {
 
 		this.getArgument(opShort, opLong, value, l);
 
-		if(last && (this.map.lower("-h").isValid() || 
-				this.map.lower("--help").isValid())) {
-			this.printHelp();
-		}
-		
 		return this;
 	}
 

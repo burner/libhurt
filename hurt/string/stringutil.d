@@ -203,6 +203,16 @@ public pure bool isTitleCase(wchar ch) {
 	return false;
 }
 
+// very bad only for ascii right now
+public pure bool isLowerCase(string str) {
+	foreach(char it; str) {
+		if(it < 97 || it > 122) {
+			return false;
+		}
+	}
+	return true;
+}
+
 /** Converts a [w,d]char to Title Case.	TODO check is
  *  
  * @author Robert "BuRnEr" Schadek
