@@ -62,6 +62,10 @@ class Iterator(T,S) {
 		}
 	}
 
+	public Item!(T,S) getItem() {
+		return *this.treeIt;
+	}
+
 	public void opUnary(string s)() if(s == "++") {
 		++this.listIt;
 		if(this.listIt.isValid()) {
@@ -168,6 +172,10 @@ class Item(T,S) {
 	bool remove(hurt.container.dlst.Iterator!(S) it) {
 		this.values.remove(it);
 		return this.values.isEmpty();
+	}
+
+	DLinkedList!(S) getItems() {
+		return this.values;
 	}
 
 	size_t getSize() const {
