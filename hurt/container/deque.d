@@ -381,6 +381,15 @@ public class Deque(T) : Iterable!(T) {
 		return false;
 	}
 
+	public size_t find(T toFind) {
+		foreach(size_t idx, T item; this) {
+			if(item == toFind) {
+				return idx;
+			}
+		}
+		return this.getSize();
+	}
+
 	public Iterator!(T) findIt(T toFind) {
 		foreach(size_t idx, T id; this) {
 			if(id == toFind) {
