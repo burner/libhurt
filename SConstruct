@@ -75,6 +75,7 @@ hurt/io/stream.d
 src += Split('''
 hurt/math/bigintbase10.d
 hurt/math/mathutil.d
+hurt/math/bracket.d
 ''')
 
 src += Split('''
@@ -91,10 +92,22 @@ hurt/util/datetime.d
 hurt/util/getopt.d
 hurt/util/milli.c
 hurt/util/pair.d
-hurt/util/random.d
 hurt/util/slog.d
 hurt/util/stacktrace.d
 hurt/util/util.d
+hurt/util/random/engines/cmwc.d
+hurt/util/random/engines/twister.d
+hurt/util/random/engines/kiss.d
+hurt/util/random/engines/kisscmwc.d
+hurt/util/random/engines/sync.d
+hurt/util/random/engines/urandom.d
+hurt/util/random/engines/arraysource.d
+hurt/util/random/twister.d
+hurt/util/random/ziggurat.d
+hurt/util/random/kiss.d
+hurt/util/random/random.d
+hurt/util/random/normalsource.d
+hurt/util/random/expsource.d
 ''')
 
 lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gc -g -m64"))
