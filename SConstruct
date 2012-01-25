@@ -63,6 +63,7 @@ hurt/exception/valuerangeexception.d
 ''')
 
 src += Split('''
+hurt/io/cin.c
 hurt/io/file.d
 hurt/io/inputstream.d
 hurt/io/ioflags.d

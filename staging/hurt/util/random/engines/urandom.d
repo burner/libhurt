@@ -4,7 +4,7 @@
         version:        Initial release: July 2008
         author:         Fawzi Mohamed
 *******************************************************************************/
-module hurt.util.random.engines.URandom;
+module hurt.util.random.engines.urandom;
 
 import hurt.io.stream;
 

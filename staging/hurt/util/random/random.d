@@ -168,16 +168,16 @@ module hurt.util.random.random;
         author:         Fawzi Mohamed
 
 *******************************************************************************/
-import tango.math.random.engines.URandom;
-import tango.math.random.engines.KissCmwc;
-import tango.math.random.engines.ArraySource;
-import tango.math.random.engines.Sync;
-import tango.math.random.engines.Twister;
-import tango.math.random.NormalSource;
-import tango.math.random.ExpSource;
-import tango.math.Math;
-import tango.core.Traits;
-import hurt.time.time;
+import hurt.util.random.engines.urandom;
+import hurt.util.random.engines.kisscmwc;
+import hurt.util.random.engines.arraysource;
+import hurt.util.random.engines.sync;
+import hurt.util.random.engines.twister;
+import hurt.util.random.normalsource;
+import hurt.util.random.expsource;
+//import hurt.util.Math;
+//import hurt.util.core.Traits;
+//import hurt.util.time;
 import hurt.time.wallclock;
 
 
@@ -195,12 +195,12 @@ private T ctfe_powI(T)(T x,int p){
 }
 // ----- templateFu end --------
 
-version (Win32) {
+/*version (Win32) {
          private extern(Windows) int QueryPerformanceCounter (ulong *);
 }
 version (Posix) {
     private import tango.stdc.posix.sys.time;
-}
+}*/
 
 version(darwin) { version=has_urandom; }
 version(linux)  { version=has_urandom; }
@@ -1201,9 +1201,10 @@ final class RandomG(SourceT=DefaultEngine)
     // ---------------
     
     /// writes the current status in a string
-    immutable(char)[] toString(){
+    public override string toString() {
         return source.toString().idup;
     }
+
     /// reads the current status from a string (that should have been trimmed)
     /// returns the number of chars read
     size_t fromString(const(char[]) s){
@@ -1230,7 +1231,7 @@ final class RandomG(SourceT=DefaultEngine)
 /// make the default random number generator type
 /// (a non threadsafe random number generator) easily available
 /// you can safely expect a new instance of this to be indipendent from all the others
-alias RandomG!() Random;
+alias RandomG!(DefaultEngine) Random;
 /// default threadsafe random number generator type
 alias RandomG!(Sync!(DefaultEngine)) RandomSync;
 
@@ -1322,7 +1323,7 @@ debug(UnitTest){
     void testRandSource(RandS)(){
         auto r=new RandomG!(RandS)();
         // r.fromString("KISS99_b66dda10_49340130_8f3bf553_224b7afa_00000000_00000000"); // to reproduce a given test...
-        const(char[]) initialState=r.toString(); // so that you can reproduce things...
+        string initialState=r.toString(); // so that you can reproduce things...
         bool allStats=false; // set this to true to show all statistics (helpful to track an error)
         try{
             r.uniform!(uint);
@@ -1479,7 +1480,7 @@ debug(UnitTest){
 
 }
 
-int rand(int low = 0, int up = int.max) {
+int random(int low = 0, int up = int.max) {
 	immutable M = 2147483647;
 	immutable A = 16807;
 	static int seed = 1;

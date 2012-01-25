@@ -4,8 +4,11 @@
         version:        Initial release: July 2008
         author:         Fawzi Mohamed
 *******************************************************************************/
-module tango.math.random.engines.KISS;
-private import Integer = tango.text.convert.Integer;
+module hurt.util.random.engines.kiss;
+
+import hurt.string.formatter;
+import hurt.conv.tointeger;
+//private import Integer = tango.text.convert.Integer;
 
 /+ Kiss99 random number generator, by Marisaglia
 + a simple RNG that passes all statistical tests
@@ -69,7 +72,7 @@ struct Kiss99{
         restB=0;
     }
     /// writes the current status in a string
-    char[] toString(){
+    string toString(){
         char[] res=new char[6+6*9];
         int i=0;
         res[i..i+6]="KISS99";
@@ -77,15 +80,20 @@ struct Kiss99{
         foreach (val;[kiss_x,kiss_y,kiss_z,kiss_c,nBytes,restB]){
             res[i]='_';
             ++i;
-            Integer.format(res[i..i+8],val,cast(char[])"x8");
+            //Integer.format(res[i..i+8],val,cast(char[])"x8");
+			string valStr = format("%8x", val);
+			assert(valStr.length == 8);
+			foreach(size_t idx, char it; valStr) {
+				res[i+idx] = it;
+			}
             i+=8;
         }
         assert(i==res.length,"unexpected size");
-        return res;
+        return res.idup;
     }
     /// reads the current status from a string (that should have been trimmed)
     /// returns the number of chars read
-    size_t fromString(const(char[]) s){
+    size_t fromString(string s){
         size_t i=0;
         assert(s[i..i+4]=="KISS","unexpected kind, expected KISS");
         assert(s[i+4..i+7]=="99_","unexpected version, expected 99");
@@ -93,9 +101,10 @@ struct Kiss99{
         foreach (val;[&kiss_x,&kiss_y,&kiss_z,&kiss_c,&nBytes,&restB]){
             assert(s[i]=='_',"no separator _ found");
             ++i;
-            size_t ate;
-            *val=cast(uint)Integer.convert(s[i..i+8],16,&ate);
-            assert(ate==8,"unexpected read size");
+            //size_t ate;
+            //*val=cast(uint)Integer.convert(s[i..i+8],16,&ate);
+			*val = stringToInt!(uint,char)(s[i..i+8].idup,16);
+            //assert(ate==8,"unexpected read size");
             i+=8;
         }
         return i;

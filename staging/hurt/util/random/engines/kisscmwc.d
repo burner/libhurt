@@ -6,6 +6,9 @@
 *******************************************************************************/
 module hurt.util.random.engines.kisscmwc;
 
+import hurt.string.formatter;
+import hurt.conv.tointeger;
+
 /+ CMWC and KISS random number generators combined, for extra security wrt. plain CMWC and
 + Marisaglia, Journal of Modern Applied Statistical Methods (2003), vol.2,No.1,p 2-13
 + a simple safe and fast RNG that passes all statistical tests, has a large seed, and is reasonably fast
@@ -105,31 +108,47 @@ struct KissCmwc(uint cmwc_r=1024U,ulong cmwc_a=987769338UL){
     }
 
     /// writes the current status in a string
-    /*char[] toString(){
+    string toString() {
         char[] res=new char[11+16+(cmwc_r+9)*9];
         int i=0;
         res[i..i+11]="CMWC+KISS99"[];
         i+=11;
-        Integer.format(res[i..i+16],cmwc_a,cast(char[])"x16");
+        //Integer.format(res[i..i+16],cmwc_a,cast(char[])"x16");
+		string cmwcStr = format("%16x", cmwc_a);
+		foreach(size_t idx, char it; cmwcStr) {
+			res[i+idx] = it;
+		}
         i+=16;
         res[i]='_';
         ++i;
-        Integer.format(res[i..i+8],cmwc_r,cast(char[])"x8");
+        //Integer.format(res[i..i+8],cmwc_r,cast(char[])"x8");
+		cmwcStr = format("%8x", cmwc_a);
+		foreach(size_t idx, char it; cmwcStr) {
+			res[i+idx] = it;
+		}
         i+=8;
         foreach (val;cmwc_q){
             res[i]='_';
             ++i;
-            Integer.format(res[i..i+8],val,cast(char[])"x8");
+            //Integer.format(res[i..i+8],val,cast(char[])"x8");
+			cmwcStr = format("%8x", val);
+			foreach(size_t idx, char it; cmwcStr) {
+				res[i+idx] = it;
+			}
             i+=8;
         }
         foreach (val;[cmwc_i,cmwc_c,nBytes,restB,kiss_x,kiss_y,kiss_z,kiss_c]){
             res[i]='_';
             ++i;
-            Integer.format(res[i..i+8],val,cast(char[])"x8");
+            //Integer.format(res[i..i+8],val,cast(char[])"x8");
+			cmwcStr = format("%8x", val);
+			foreach(size_t idx, char it; cmwcStr) {
+				res[i+idx] = it;
+			}
             i+=8;
         }
         assert(i==res.length,"unexpected size");
-        return res;
+        return res.idup;
     }
     /// reads the current status from a string (that should have been trimmed)
     /// returns the number of chars read
@@ -148,20 +167,22 @@ struct KissCmwc(uint cmwc_r=1024U,ulong cmwc_a=987769338UL){
             assert(s[i]=='_',"no separator _ found");
             ++i;
             size_t ate;
-            val=cast(uint)conv!(string,int)(s[i..i+8],16,&ate);
-            assert(ate==8,"unexpected read size");
+            //val=cast(uint)conv!(string,int)(s[i..i+8],16,&ate);
+			val = stringToInt!(uint,char)(s[i..i+8].idup, 16);
+            //assert(ate==8,"unexpected read size");
             i+=8;
         }
         foreach (val;[&cmwc_i,&cmwc_c,&nBytes,&restB,&kiss_x,&kiss_y,&kiss_z,&kiss_c]){
             assert(s[i]=='_',"no separator _ found");
             ++i;
-            size_t ate;
-            *val=cast(uint)conv!(string,uint)(s[i..i+8],16,&ate);
-            assert(ate==8,"unexpected read size");
+            //size_t ate;
+            //*val=cast(uint)conv!(string,uint)(s[i..i+8],16,&ate);
+			*val = stringToInt!(uint,char)(s[i..i+8].idup, 16);
+            //assert(ate==8,"unexpected read size");
             i+=8;
         }
         return i;
-    }*/
+    }
 }
 
 /// some variations of the CMWC part, the first has a period of ~10^39461
