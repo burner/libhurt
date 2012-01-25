@@ -46,7 +46,7 @@ struct Sync(E){
         }
     }
     /// writes the current status in a string
-    char[] toString(){
+    string toString(){
         synchronized(lock){
             return "Sync"~engine.toString();
         }

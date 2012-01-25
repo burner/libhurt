@@ -11,11 +11,11 @@ hurt/util/random/kiss.d \
 hurt/util/random/random.d \
 hurt/util/random/normalsource.d \
 hurt/util/random/expsource.d \
+hurt/math/bracket.d \
 rand.d
 
 #SRC=stdin.d
 
 all:
-	gcc -m64 -c cin.c
 	dmd -debug -gc -m64 -w -unittest cin.o -version=staging $(SRC) -I. ../libhurt.a -I.. -ofrand
 	./rand
