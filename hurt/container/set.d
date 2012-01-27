@@ -97,6 +97,20 @@ class Set(T) {
 		}
 		return 0;
 	}
+
+	public bool notIntersecting(Set!(T) s) {
+		ISRIterator!(T) it = s.begin();
+		for(; it.isValid(); it++) {
+			if(this.contains(*it)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public bool intersecting(Set!(T) s) {
+		return !this.notIntersecting(s);
+	}
 }
 
 unittest {

@@ -6,6 +6,7 @@ import hurt.container.isr;
 import hurt.string.formatter;
 import hurt.io.stdio;
 import hurt.string.stringbuffer;
+import hurt.util.slog;
 
 public class MapSet(T,S) {
 	// the map
@@ -26,6 +27,22 @@ public class MapSet(T,S) {
 
 		// make the map
 		this.map = new Map!(T,Set!(S))(this.mapType);
+	}
+
+	public bool insert(T t, Set!(S) s) {
+		MapItem!(T, Set!(S)) mi = this.map.find(t);
+		if(mi is null) {
+			this.map.insert(t, s);
+			return true;
+		} else {
+			// save the old size so the return value can be competed
+			size_t oldSize = mi.getData().getSize();
+			ISRIterator!(S) it = s.begin();
+			for(; it.isValid(); it++) {
+				mi.getData().insert(*it);
+			}
+			return mi.getData().getSize() > oldSize;
+		}
 	}
 
 	public bool insert(T t, S s) {
@@ -168,6 +185,20 @@ public class MapSet(T,S) {
 
 	public Map!(T,Set!(S)) getMap() {
 		return this.map;
+	}
+
+	/** Make one set of all the sets contained in the map.
+	 */
+	public Set!(S) getSet() {
+		Set!(S) ret = new Set!(S)();
+		ISRIterator!(MapItem!(T,Set!(S))) it = this.map.begin();
+		for(; it.isValid(); it++) {
+			ISRIterator!(S) jt = (*it).getData().begin();
+			for(; jt.isValid(); jt++) {
+				ret.insert(*jt);
+			}
+		}
+		return ret;
 	}
 
 	public override bool opEquals(Object o) {
