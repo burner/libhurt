@@ -43,6 +43,14 @@ pure T[] append(T)(ref T[] arr, T toAppend) {
 	return arr;
 }
 
+unittest {
+	uint[] z;
+	append(z, 6u);
+	assert(z[0] == 6u);
+	append(z, 9u);
+	assert(z[1] == 9u);
+}
+
 pure size_t appendWithIdx(T)(ref T[] arr, size_t idx, T[] toAppend, 
 		size_t gRate = 2) {
 	if(arr is null) {
