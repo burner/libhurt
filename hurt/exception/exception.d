@@ -433,7 +433,7 @@ T enforceEx(E, T)(T value, lazy string msg = "") {
 unittest {
 	enforce(true);
 	enforce(true, "blah");
-	typedef Exception MyException;
+	alias Exception MyException;
 	try {
 		enforceEx!(MyException)(false);
 		assert(false);
