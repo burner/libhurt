@@ -22,6 +22,7 @@ struct Args {
 	private string[] optionDesc;
 	private string help;
 	private string[] args;
+	private bool helpPrinted;
 
 	static Args opCall(string[] args) {
 		return Args(args);
@@ -35,12 +36,17 @@ struct Args {
 		this.optionLong = new Deque!(string);
 		this.optionShort = new Deque!(string);
 		this.optionType = new Deque!(string);
+		this.helpPrinted = false;
 		foreach(idx, it; args[1..$]) {
 			this.unprocessed.insert(idx+1, it);
 			this.map.insert(it, idx+1);
 		}
 
 		this.help = help;
+	}
+
+	public bool wasHelpPrinted() const {
+		return this.helpPrinted;
 	}
 
 	public void setHelpText(string help) {
@@ -211,6 +217,7 @@ struct Args {
 
 		if(last && (this.map.lower("-h").isValid() || 
 				this.map.lower("--help").isValid())) {
+			this.helpPrinted = true;
 			this.printHelp();
 		}
 
