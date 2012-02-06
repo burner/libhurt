@@ -339,6 +339,16 @@ public class Deque(T) : Iterable!(T) {
 			this.toString()));
 	}
 
+	public void removeFalse(bool delegate(T toTest) test) {
+		for(size_t idx = 0; idx < this.getSize();) {
+			if(!test(this[idx])) {
+				this.remove(idx);
+			} else {
+				idx++;
+			}
+		}
+	}
+
 	public T front() {
 		if(this.head == this.tail)
 			assert(0, "empty");
@@ -482,32 +492,36 @@ public class Deque(T) : Iterable!(T) {
 	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
 			if(int r = dg(idx, this.data[
-				this.getIdx(this.getSize() - 1 -idx)] ))
+				this.getIdx(this.getSize() - 1 -idx)] )) {
 				return r;
+			}
 		}
 		return 0;
 	}
 
 	int opApplyReverse(int delegate(ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
-			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)]))
+			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)])) {
 				return r;
+			}
 		}
 		return 0;
 	}
 
 	int opApply(int delegate(ref size_t, ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
-			if(int r = dg(idx, this.data[this.getIdx(idx)]))
+			if(int r = dg(idx, this.data[this.getIdx(idx)])) {
 				return r;
+			}
 		}
 		return 0;
 	}
 
 	int opApply(int delegate(ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
-			if(int r = dg(this.data[this.getIdx(idx)]))
+			if(int r = dg(this.data[this.getIdx(idx)])) {
 				return r;
+			}
 		}
 		return 0;
 	}
@@ -1232,6 +1246,20 @@ unittest {
 				assert(false, "not reachable " ~ conv!(int,string)(i));
 		}
 	}
+}
+
+unittest {
+	Deque!(bool) bd = new Deque!(bool)([false, true, false, false, true]);
+	bd.removeFalse(delegate(bool toTest) {
+		return toTest;
+	});
+	assert(bd.getSize() == 2);
+
+	bd = new Deque!(bool)(true);
+	bd.removeFalse(delegate(bool toTest) {
+		return toTest;
+	});
+	assert(bd.getSize() == 0);
 }
 /*
 void main() {
