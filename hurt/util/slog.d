@@ -22,6 +22,15 @@ unittest {
 }
 
 version(NOLOG) {
+	public void log(string File = __FILE__, int Line = __LINE__)(bool need) {
+		return;
+	}
+
+	public void log(string File = __FILE__, int Line = __LINE__)(bool need,
+			string format, lazy ...) {
+		return;
+	}
+
 	public void log(string File = __FILE__, int Line = __LINE__)() {
 		return;
 	}
@@ -31,6 +40,22 @@ version(NOLOG) {
 		return;
 	}
 } else {
+	public void log(string File = __FILE__, int Line = __LINE__)(bool need) {
+		if(!need) {
+			return;
+		}
+		printfln("%s:%d ", cropFileName(File), Line);
+	}
+	
+	public void log(string File = __FILE__, int Line = __LINE__)
+			(bool need, string format, lazy ...) {
+		if(!need) {
+			return;
+		}
+		printf("%s:%d ", cropFileName(File), Line);
+		printfln(format, _arguments, _argptr);
+	}
+
 	public void log(string File = __FILE__, int Line = __LINE__)() {
 		printfln("%s:%d ", cropFileName(File), Line);
 	}
@@ -43,6 +68,15 @@ version(NOLOG) {
 }
 
 version(NOWARN) {
+	public void warn(string File = __FILE__, int Line = __LINE__)(bool need) {
+		return;
+	}
+
+	public void warn(string File = __FILE__, int Line = __LINE__)
+			(bool need, string format, lazy ...) {
+		return;
+	}
+
 	public void warn(string File = __FILE__, int Line = __LINE__)() {
 		return;
 	}
@@ -52,6 +86,22 @@ version(NOWARN) {
 		return;
 	}
 } else {
+	public void warn(string File = __FILE__, int Line = __LINE__)(bool need) {
+		if(!need) {
+			return;
+		}
+		printfln("%s:%d WARNING", cropFileName(File), Line);
+	}
+
+	public void warn(string File = __FILE__, int Line = __LINE__)
+			(bool need, string format, lazy ...) {
+		if(!need) {
+			return;
+		}
+		printf("%s:%d WARNING ", cropFileName(File), Line);
+		printfln(format, _arguments, _argptr);
+	}
+
 	public void warn(string File = __FILE__, int Line = __LINE__)() {
 		printfln("%s:%d WARNING", cropFileName(File), Line);
 	}

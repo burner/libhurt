@@ -144,6 +144,18 @@ class Map(T,S) {
 		}
 	}
 
+	int opApply(int delegate(ref T, ref S) dg) {
+		ISRIterator!(MapItem!(T,S)) it = this.begin();
+		for(; it.isValid(); it++) {
+			T key = (*it).getKey();
+			S value = (*it).getData();
+			if(int r = dg(key,value)) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
 	S[] values() {
 		S[] ret = new S[this.getSize()];
 		size_t idx = 0;
