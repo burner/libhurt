@@ -1,4 +1,5 @@
 all: 
+	./IncreBuildId.sh
 	scons -j3
 
 clean:
