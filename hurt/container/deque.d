@@ -372,6 +372,19 @@ public class Deque(T) : Iterable!(T) {
 		return ret;
 	}
 
+	public T popBack(size_t cnt) {
+		if(this.getSize() < cnt) {
+			throw new OutOfRangeException(
+				format(" Deque size of %u not big enough to pop %u",
+				this.getSize(), cnt));
+		}
+		T last;
+		for(size_t i = 0; i < cnt; i++) {
+			last = this.popBack();
+		}
+		return last;
+	}
+
 	public T popBack() {
 		if(this.head == this.tail)
 			assert(0, "empty");

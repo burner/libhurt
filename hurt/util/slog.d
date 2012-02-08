@@ -98,17 +98,17 @@ version(NOWARN) {
 		if(!need) {
 			return;
 		}
-		printf("%s:%d WARNING ", cropFileName(File), Line);
+		printf("%s:%d WARN ", cropFileName(File), Line);
 		printfln(format, _arguments, _argptr);
 	}
 
 	public void warn(string File = __FILE__, int Line = __LINE__)() {
-		printfln("%s:%d WARNING", cropFileName(File), Line);
+		printfln("%s:%d WARN", cropFileName(File), Line);
 	}
 
 	public void warn(string File = __FILE__, int Line = __LINE__)
 			(string format, ...) {
-		printf("%s:%d WARNING ", cropFileName(File), Line);
+		printf("%s:%d WARN ", cropFileName(File), Line);
 		printfln(format, _arguments, _argptr);
 	}
 }
