@@ -100,7 +100,7 @@ S linearSearch(T,S)(in Range!(T,S) r[], T key) {
 	throw new Exception("failed to find the range");
 }
 
-S binarySearch(T,S)(in Range!(T,S) r[], T key) {
+S binarySearch(T,S)(in Range!(T,S) r[], T key, S notFound) {
 	size_t l = 0;	
 	size_t h = r.length-1;	
 	size_t m;	
@@ -108,7 +108,7 @@ S binarySearch(T,S)(in Range!(T,S) r[], T key) {
 		m = l + ((h - l) / 2);
 		//printfln("%d %d %d %d", l, m, h, cast(int)r[m].first);
 		if(h < l) {
-			throw new Exception("failed to find the range");
+			return notFound;
 		}
 
 		if((r[m].first == key) ||
@@ -121,7 +121,7 @@ S binarySearch(T,S)(in Range!(T,S) r[], T key) {
 		else
 			l = m+1;
 	}
-	throw new Exception("failed to find the range");
+	return notFound;
 }
 
 unittest {
@@ -152,26 +152,10 @@ unittest {
 	}
 	//println();
 	
-	try {
-		assert(0 == binarySearch!(dchar,size_t)(inputRange, '\t'));
-	} catch(Exception e) {
-		assert(false, e.msg);
-	}
-	try {
-		assert(49 == binarySearch!(dchar,size_t)(inputRange, '}'));
-	} catch(Exception e) {
-		assert(false, e.msg);
-	}
-	try {
-		assert(17 == binarySearch!(dchar,size_t)(inputRange, '5'));
-	} catch(Exception e) {
-		assert(false, e.msg);
-	}
-	try {
-		assert(36 == binarySearch!(dchar,size_t)(inputRange, 'i'));
-	} catch(Exception e) {
-		assert(false, e.msg);
-	}
+	assert(0 == binarySearch!(dchar,size_t)(inputRange, '\t', -1));
+	assert(49 == binarySearch!(dchar,size_t)(inputRange, '}', -1));
+	assert(17 == binarySearch!(dchar,size_t)(inputRange, '5', -1));
+	assert(36 == binarySearch!(dchar,size_t)(inputRange, 'i', -1));
 }
 
 unittest {
@@ -179,15 +163,11 @@ unittest {
 	m[0] = Range!(dchar,int)('a', 'b', 1);
 	m[1] = Range!(dchar,int)('d', 2);
 	m[2] = Range!(dchar,int)('e','h', 3);
-	assert(1 == binarySearch!(dchar,int)(m, 'a'));
-	assert(1 == binarySearch!(dchar,int)(m, 'b'));
-	assert(2 == binarySearch!(dchar,int)(m, 'd'));
-	assert(3 == binarySearch!(dchar,int)(m, 'h'));
-	assert(3 == binarySearch!(dchar,int)(m, 'f'));
-	assert(3 == binarySearch!(dchar,int)(m, 'e'));
-	bool cougth = false;
-	try {
-		assert(3 == binarySearch!(dchar,int)(m, 'z'));
-	} catch(Exception e) { cougth = true;}
-	assert(cougth);
+	assert(1 == binarySearch!(dchar,int)(m, 'a', -1));
+	assert(1 == binarySearch!(dchar,int)(m, 'b', -1));
+	assert(2 == binarySearch!(dchar,int)(m, 'd', -1));
+	assert(3 == binarySearch!(dchar,int)(m, 'h', -1));
+	assert(3 == binarySearch!(dchar,int)(m, 'f', -1));
+	assert(3 == binarySearch!(dchar,int)(m, 'e', -1));
+	assert(-1 == binarySearch!(dchar,int)(m, 'z', -1));
 }
