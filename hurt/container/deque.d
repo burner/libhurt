@@ -349,6 +349,16 @@ public class Deque(T) : Iterable!(T) {
 		}
 	}
 
+	public size_t count(bool delegate(T toTest) test) {
+		size_t ret = 0;
+		foreach(size_t idx, T it; this) {
+			if(test(it)) {
+				ret++;
+			}
+		}
+		return ret;
+	}
+
 	public T front() {
 		if(this.head == this.tail)
 			assert(0, "empty");
