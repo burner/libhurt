@@ -140,7 +140,7 @@ unittest {
 	assert(-1 == binarySearch(a, 7, -1));
 }
 
-S binarySearchRange(T,S)(in Range!(T,S) r[], T key, S notFound) {
+S binarySearchRange(T,S)(in Range!(T,S) r[], const T key, S notFound) {
 	size_t l = 0;	
 	if(r.length == 0 || r is null) {
 		return notFound;
