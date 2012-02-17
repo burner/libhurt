@@ -89,6 +89,10 @@ struct Args {
 		return this.unprocessed.getSize();	
 	}
 
+	public Map!(size_t,string) getUnprocessed() {
+		return this.unprocessed;
+	}
+
 	public int opApply(int delegate(ref size_t, ref string) dg) {
 		ISRIterator!(MapItem!(size_t,string)) it = this.unprocessed.begin();
 		for(; it.isValid(); it++) {

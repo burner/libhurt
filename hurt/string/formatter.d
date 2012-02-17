@@ -19,7 +19,8 @@ static this() {
 	buf = new StringBuffer!(char)(32);
 }
 
-public string makeString(TypeInfo[] arguments, void* args) {
+public string makeString(int line = __LINE__, string file = __FILE__)(
+		TypeInfo[] arguments, void* args) {
 	buf.clear();
 	foreach(it;arguments) {
 		if(it == typeid(char) || it == typeid(wchar) 
@@ -45,15 +46,17 @@ public string makeString(TypeInfo[] arguments, void* args) {
 			buf.pushBack("%a ");
 		}
 	}
-	return formatString!(char,char)(buf.getString(), arguments, args);
+	return formatString!(char,char,line,file)(buf.getString(), arguments, args);
 }
 
-public immutable(S)[] format(T = char,S = char)(immutable(T)[] form, ...) {
-	return formatString!(T,S)(form, _arguments, _argptr);
+public immutable(S)[] format(T = char,S = char, int line = __LINE__,
+		string file = __FILE__)(immutable(T)[] form, ...) {
+	return formatString!(T,S,line,file)(form, _arguments, _argptr);
 }
 
-public immutable(S)[] formatString(T,S)(immutable(T)[] form, 
-		TypeInfo[] arguments, void* arg)
+public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
+		string file = __FILE__)(immutable(T)[] form, TypeInfo[] arguments, 
+		void* arg)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 	//writeln(_arguments);
@@ -123,7 +126,9 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							} else {
 								throw new IllegalArgumentException(
 									"Expected an int not an " 
-									~ arguments[argPtr].toString());
+									~ arguments[argPtr].toString() ~ 
+									": called from " ~ file ~ ":" ~
+									conv!(int,string)(line));
 							}
 						}
 						break;
@@ -136,9 +141,11 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 								argPtr++;
 								//debug writeln(__FILE__,__LINE__,": ", precision, " ", arg);
 							} else {
-								throw new IllegalArgumentException("Expected 
-									an int not an " 
-									~ arguments[argPtr].toString());
+								throw new IllegalArgumentException(
+									"Expected an int not an " 
+									~ arguments[argPtr].toString() ~ 
+									": called from " ~ file ~ ":" ~
+									conv!(int,string)(line));
 							}
 							break;
 						}
@@ -283,8 +290,10 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 								alwaysSign, title);
 							//debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
-							throw new FormatError("an int was expected but 
-								value was a " ~ (arguments[argPtr].toString()));
+							throw new FormatError("an int was expected but " ~
+								"value was a " ~ (arguments[argPtr].toString()) ~ 
+								": called from " ~ file ~ ":" ~
+								conv!(int,string)(line));
 						}
 						argPtr++;
 
@@ -430,7 +439,9 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							//debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
 							throw new FormatError("an float was expected but value was a " 
-								~ (arguments[argPtr].toString()));
+								~ (arguments[argPtr].toString()) ~ 
+								": called from " ~ file ~ ":" ~
+								conv!(int,string)(line));
 						}
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
@@ -469,7 +480,9 @@ public immutable(S)[] formatString(T,S)(immutable(T)[] form,
 							//debug writeln(__FILE__,__LINE__,": ", tmp);
 						} else {
 							throw new FormatError("an float was expected but value was a " 
-								~ (arguments[argPtr].toString()));
+								~ (arguments[argPtr].toString()) ~ 
+								": called from " ~ file ~ ":" ~
+								conv!(int,string)(line));
 						}
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';

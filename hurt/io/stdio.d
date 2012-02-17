@@ -16,7 +16,8 @@ static this() {
 	hurt.io.stdio.buf = new StringBuffer!(char)(32);	
 }
 
-public size_t printfln(immutable(char)[] form, ...) {
+public size_t printfln(int line = __LINE__, string file = __FILE__)
+		(immutable(char)[] form, ...) {
 	string str = formatString!(char,char)(form, _arguments, _argptr);
 	str ~= "\n";
 	if(str.length == 0)
@@ -24,8 +25,8 @@ public size_t printfln(immutable(char)[] form, ...) {
 	return writeC(0, str.ptr, str.length);
 }
 
-public size_t printfln(immutable(char)[] form, TypeInfo[] arguments, 
-		void* args) {
+public size_t printfln(int line = __LINE__, string file = __FILE__)
+		(immutable(char)[] form, TypeInfo[] arguments, void* args) {
 	string str = formatString!(char,char)(form, arguments, args);
 	str ~= "\n";
 	if(str.length == 0)
@@ -33,14 +34,15 @@ public size_t printfln(immutable(char)[] form, TypeInfo[] arguments,
 	return writeC(0, str.ptr, str.length);
 }
 
-public size_t printf(immutable(char)[] form, ...) {
+public size_t printf(int line = __LINE__, string file = __FILE__)
+		(immutable(char)[] form, ...) {
 	string str = formatString!(char,char)(form, _arguments, _argptr);
 	if(str.length == 0)
 		return 0;
 	return writeC(0, str.ptr, str.length);
 }
 
-public size_t print(...) {
+public size_t print(int line = __LINE__, string file = __FILE__)(...) {
 	//writeln(buf.getString());
 	string str = makeString(_arguments, _argptr);
 	if(str.length == 0)
@@ -50,7 +52,7 @@ public size_t print(...) {
 	return writeC(0, str.ptr, str.length);
 }
 
-public size_t println(...) {
+public size_t println(int line = __LINE__, string file = __FILE__)(...) {
 	//writeln(buf.getString());
 	string str = makeString(_arguments, _argptr);	
 
