@@ -4,7 +4,7 @@ import hurt.conv.conv;
 import hurt.container.vector;
 import hurt.container.deque;
 
-/* This sort function implements a iterativ quicksort.
+/** This sort function implements a iterativ quicksort.
  * you can put any kind of container that implements the [] operator. If you 
  * don't pass the bounds the length property muss be implemented and the range
  * needs to start with 0.
