@@ -178,7 +178,7 @@ class Vector(T) : Iterable!(T) {
 		return result;
 	}
 
-	public typeof(this.index) getSize() const {
+	public size_t getSize() const {
 		return this.index+1;
 	}
 

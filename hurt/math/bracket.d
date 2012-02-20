@@ -10,6 +10,80 @@ module hurt.math.bracket;
 
 import std.math;
 
+template floatTraits(T) {
+    // EXPMASK is a ushort mask to select the exponent portion (without sign)
+    // EXPPOS_SHORT is the index of the exponent when represented as a ushort array.
+    // SIGNPOS_BYTE is the index of the sign when represented as a ubyte array.
+    // RECIP_EPSILON is the value such that (smallest_subnormal) * RECIP_EPSILON == T.min_normal
+    enum T RECIP_EPSILON = (1/T.epsilon);
+    static if (T.mant_dig == 24)
+    { // float
+        enum ushort EXPMASK = 0x7F80;
+        enum ushort EXPBIAS = 0x3F00;
+        enum uint EXPMASK_INT = 0x7F80_0000;
+        enum uint MANTISSAMASK_INT = 0x007F_FFFF;
+        version(LittleEndian) {
+            enum EXPPOS_SHORT = 1;
+        } else {
+            enum EXPPOS_SHORT = 0;
+        }
+    }
+    else static if (T.mant_dig == 53) // double, or real==double
+    {
+        enum ushort EXPMASK = 0x7FF0;
+        enum ushort EXPBIAS = 0x3FE0;
+        enum uint EXPMASK_INT = 0x7FF0_0000;
+        enum uint MANTISSAMASK_INT = 0x000F_FFFF; // for the MSB only
+        version(LittleEndian) {
+            enum EXPPOS_SHORT = 3;
+            enum SIGNPOS_BYTE = 7;
+        } else {
+            enum EXPPOS_SHORT = 0;
+            enum SIGNPOS_BYTE = 0;
+        }
+    }
+    else static if (T.mant_dig == 64) // real80
+    {
+        enum ushort EXPMASK = 0x7FFF;
+        enum ushort EXPBIAS = 0x3FFE;
+        version(LittleEndian)
+        {
+            enum EXPPOS_SHORT = 4;
+            enum SIGNPOS_BYTE = 9;
+        }
+        else
+        {
+            enum EXPPOS_SHORT = 0;
+            enum SIGNPOS_BYTE = 0;
+        }
+    } else static if (T.mant_dig == 113){ // quadruple
+        enum ushort EXPMASK = 0x7FFF;
+        version(LittleEndian)
+        {
+            enum EXPPOS_SHORT = 7;
+            enum SIGNPOS_BYTE = 15;
+        }
+        else
+        {
+            enum EXPPOS_SHORT = 0;
+            enum SIGNPOS_BYTE = 0;
+        }
+    } else static if (T.mant_dig == 106) { // doubledouble
+        enum ushort EXPMASK = 0x7FF0;
+        // the exponent byte is not unique
+        version(LittleEndian)
+        {
+            enum EXPPOS_SHORT = 7; // [3] is also an exp short
+            enum SIGNPOS_BYTE = 15;
+        }
+        else
+        {
+            enum EXPPOS_SHORT = 0; // [4] is also an exp short
+            enum SIGNPOS_BYTE = 0;
+        }
+    }
+}
+
 T ieeeMean(T)(T x, T y)
 in {
     // both x and y must have the same sign, and must not be NaN.

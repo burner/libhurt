@@ -2882,7 +2882,7 @@ class SliceStream : FilterStream {
 		if(bounded)
 			assert(pos <= high - low);
 		else
-			assert(pos <= s.size - low);
+			assert(pos <= (cast()s).size - low);
 	}
 
 	override size_t readBlock (void *buffer, size_t size) {
