@@ -143,7 +143,7 @@ class HashTable(T) : ISR!(T) {
 			size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.duplication = duplication;
 		this.hashFunc = hashFunc;
-		this.table = new Node!(T)[16];
+		this.table = new Node!(T)[128];
 	}
 
 	ISRIterator!(T) searchIt(T data) {

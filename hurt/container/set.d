@@ -19,7 +19,12 @@ class Set(T) {
 		this.makeMap();
 	}
 
-	private void makeMap() {
+	this(size_t size) {
+		this.type = ISRType.HashTable;
+		this.makeMap(size);
+	}
+
+	private void makeMap(size_t size = 16) {
 		if(this.type == ISRType.RBTree) {
 			this.map = new RBTree!(T)();
 		} else if(this.type == ISRType.BinarySearchTree) {
@@ -62,7 +67,12 @@ class Set(T) {
 	}
 
 	public Set!(T) dup() {
-		Set!(T) ret = new Set!(T)(this.type);
+		Set!(T) ret;
+		if(this.type == ISRType.HashTable) {
+			ret = new Set!(T)(this.getSize());
+		} else {
+			ret = new Set!(T)(this.type);
+		}
 		ISRIterator!(T) it = this.begin();
 
 		for(;it.isValid(); it++)
