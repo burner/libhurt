@@ -9,8 +9,15 @@ import hurt.math.mathutil;
 import std.stdio;
 //import std.conv;
 
+public pure T hexStrToInt(T=int,S=char)(immutable(S)[] str) {
+	return conv!(long,T)(toLong!(S)(str));
+}
+
 public pure T stringToInt(T,S)(immutable(S)[] str, int multi = 10) 
 		if(is(S == char) || is(S == wchar) || is(S == dchar)) {
+	if(multi == 16) {
+		return conv!(long,T)(toLong!(S)(str));
+	}
 	T ret = 0;
 	T mul = 1;	
 	T tmp;
@@ -29,7 +36,7 @@ public pure T stringToInt(T,S)(immutable(S)[] str, int multi = 10)
 			} else if(it == '+') {
 				continue;
 			} else {
-				assert(0, "is not digit nor sign");
+				assert(0, "is not digit nor sign " ~ it);
 			}
 		}
 
@@ -42,6 +49,104 @@ public pure T stringToInt(T,S)(immutable(S)[] str, int multi = 10)
 		return -ret;
 	else
 		return ret;
+}
+
+public pure long toLong(T)(immutable(T)[] digits, uint radix=0) {
+	size_t len;
+	
+	auto x = parse(digits, radix, &len);
+	if(len < digits.length) {
+		throw new Exception ("Integer.toLong :: invalid literal");
+	}
+	return x;
+}
+
+public pure long parse(T, U=uint)(immutable(T)[] digits, U radix=0, size_t* ate=null) {
+	return parse!(T)(digits, radix, ate);
+}
+
+public pure long parse(T)(T[] digits, uint radix=0, size_t* ate=null) {
+	bool sign;
+
+	auto eaten = trim(digits, sign, radix);
+	auto value = convert(digits[eaten..$], radix, ate);
+
+	// check *ate > 0 to make sure we don't parse "-" as 0.
+	if(ate && *ate > 0) {
+		*ate += eaten;
+	}
+
+	return cast(long) (sign ? -value : value);
+}
+
+public pure ulong convert(T, U=uint)(immutable(T)[] digits, U radix=10, size_t* ate=null) {
+	return convert!(T)(digits, radix, ate);
+}
+
+public pure ulong convert(T)(immutable(T)[] digits, uint radix=10, size_t* ate=null) {
+	uint  eaten;
+	ulong value;
+	T[] run = digits.dup;
+
+	foreach(c; run) {
+		if(c >= '0' && c <= '9') {
+		} else {
+			if(c >= 'a' && c <= 'z') {
+				c -= 39;
+			} else {
+				if(c >= 'A' && c <= 'Z') {
+					c -= 7;
+				} else {
+					break;
+				}
+			}
+		}
+
+		if((c -= '0') < radix) {
+			value = value * radix + c;
+			++eaten;
+		} else {
+			break;
+		}
+	}
+
+	if(ate) {
+		*ate = eaten;
+	}
+
+	return value;
+}
+
+public pure size_t trim(T, U=uint)(immutable(T)[] digits, ref bool sign, ref U radix) {
+	return trim!(T)(digits, sign, radix);
+}
+
+public pure size_t trim(T)(immutable(T)[] digits, ref bool sign, ref uint radix) {
+	size_t idx = 0;
+	radix = 10;
+	bool nBreak = false;
+	foreach(T c; digits) {
+		if(c == '-') {
+			sign = true;
+		} else if(c == '+') {
+			sign = false;
+		} else if(c == ' ' || c == '\t') {
+		} else if(c == 'x' || c == 'X') {
+			radix = 16;
+			nBreak = true;
+		} else if(c == 'b' || c == 'B') {
+			radix = 2;
+			nBreak = true;
+		} else if(c == 'o' || c == 'O') {
+			radix = 8;
+			nBreak = true;
+		}
+		idx++;
+		if(nBreak) {
+			break;
+		}
+	}
+	return idx;
 }
 
 unittest {
