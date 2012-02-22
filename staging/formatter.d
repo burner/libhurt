@@ -1,5 +1,6 @@
 module hurt.string.formatter;
 
+import hurt.io.file;
 import hurt.conv.conv;
 import hurt.conv.tostring;
 import hurt.util.array;
@@ -725,6 +726,23 @@ unittest {
 
 version(staging) {
 void main() {
+	//for(int k = 0; k < 8; k++) {
+		//for(int i = 0; i < 10; i++) {
+			//for(int j = 0; j < 10; j++) {
+				//string s = format("%c[%d;%d;%dm", cast(char)0x1B, k, 30+j, 40 + i);
+				//string g = format("Hello %d %d %d\n", k, i, j);
+				//string s = "^[5;34;42m In color";
+				//writeC(0, s.ptr, s.length);
+				//writeC(0, g.ptr, g.length);
+			//}
+		//}
+	//}
+	string s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 1, 31, 49);
+	//string g = format("Hello %d %d %d\n", k, i, j);
+	writeC(0, s.ptr, s.length);
+	s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 0, 31, 49);
+	writeC(0, s.ptr, s.length);
+	//writeC(0, g.ptr, g.length);
 	return;
 }
 }
