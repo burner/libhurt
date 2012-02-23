@@ -105,6 +105,9 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 			int padding = 0;
 			int base = 10;
 			int precision = 6;
+			int foreground = -1;
+			int background = -1;
+			int attribute = -1;
 			int leftPad = 0;
 			bool ptrToUInt = false;
 			bool title = false;
@@ -180,6 +183,141 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							}
 						}
 						break;
+					}
+					case '?': {
+						idx++;
+						if(idx < form.length && form[idx] == '*') {
+							if(convertsTo!(int)(arguments[argPtr])) {
+								if(isTypeOf!(int)(arguments[argPtr])) {
+									attribute = va_arg!(int)(arg);
+								} else if(isTypeOf!(long)(arguments[argPtr])) {
+									attribute = conv!(long,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(byte)(arguments[argPtr])) {
+									attribute = conv!(byte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(short)(arguments[argPtr])) {
+									attribute = conv!(short,int)
+										(va_arg!(short)(arg));
+								} else if(isTypeOf!(ulong)(arguments[argPtr])) {
+									attribute = conv!(ulong,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(ubyte)(arguments[argPtr])) {
+									attribute = conv!(ubyte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(ushort)
+										(arguments[argPtr])) {
+									attribute = conv!(ushort,int)
+										(va_arg!(short)(arg));
+								}
+								argPtr++;
+							} else {
+								throw new IllegalArgumentException(
+									"Expected an int not an " 
+									~ arguments[argPtr].toString() ~ 
+									": called from " ~ file ~ ":" ~
+									conv!(int,string)(line));
+							}
+							break;
+						}
+						size_t lowIdx = idx;
+						while(idx < form.length 
+								&& isDigit!(T)(form[idx])) {
+							idx++;
+						}
+						attribute = conv!(immutable(T)[],int)(
+							form[lowIdx..idx]);
+						continue;
+					}
+					case '&': {
+						idx++;
+						if(idx < form.length && form[idx] == '*') {
+							if(convertsTo!(int)(arguments[argPtr])) {
+								if(isTypeOf!(int)(arguments[argPtr])) {
+									background = va_arg!(int)(arg);
+								} else if(isTypeOf!(long)(arguments[argPtr])) {
+									background = conv!(long,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(byte)(arguments[argPtr])) {
+									background = conv!(byte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(short)(arguments[argPtr])) {
+									background = conv!(short,int)
+										(va_arg!(short)(arg));
+								} else if(isTypeOf!(ulong)(arguments[argPtr])) {
+									background = conv!(ulong,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(ubyte)(arguments[argPtr])) {
+									background = conv!(ubyte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(ushort)
+										(arguments[argPtr])) {
+									background = conv!(ushort,int)
+										(va_arg!(short)(arg));
+								}
+								argPtr++;
+							} else {
+								throw new IllegalArgumentException(
+									"Expected an int not an " 
+									~ arguments[argPtr].toString() ~ 
+									": called from " ~ file ~ ":" ~
+									conv!(int,string)(line));
+							}
+							break;
+						}
+						size_t lowIdx = idx;
+						while(idx < form.length 
+								&& isDigit!(T)(form[idx])) {
+							idx++;
+						}
+						background = conv!(immutable(T)[],int)(
+							form[lowIdx..idx]);
+						continue;
+					}
+					case '!': {
+						idx++;
+						if(idx < form.length && form[idx] == '*') {
+							if(convertsTo!(int)(arguments[argPtr])) {
+								if(isTypeOf!(int)(arguments[argPtr])) {
+									foreground = va_arg!(int)(arg);
+								} else if(isTypeOf!(long)(arguments[argPtr])) {
+									foreground = conv!(long,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(byte)(arguments[argPtr])) {
+									foreground = conv!(byte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(short)(arguments[argPtr])) {
+									foreground = conv!(short,int)
+										(va_arg!(short)(arg));
+								} else if(isTypeOf!(ulong)(arguments[argPtr])) {
+									foreground = conv!(ulong,int)
+										(va_arg!(long)(arg));
+								} else if(isTypeOf!(ubyte)(arguments[argPtr])) {
+									foreground = conv!(ubyte,int)
+										(va_arg!(byte)(arg));
+								} else if(isTypeOf!(ushort)
+										(arguments[argPtr])) {
+									foreground = conv!(ushort,int)
+										(va_arg!(short)(arg));
+								}
+								argPtr++;
+							} else {
+								throw new IllegalArgumentException(
+									"Expected an int not an " 
+									~ arguments[argPtr].toString() ~ 
+									": called from " ~ file ~ ":" ~
+									conv!(int,string)(line));
+							}
+							break;
+						}
+						size_t lowIdx = idx;
+						while(idx < form.length 
+								&& isDigit!(T)(form[idx])) {
+							idx++;
+						}
+						foreground = conv!(immutable(T)[],int)(
+							form[lowIdx..idx]);
+						continue;
 					}
 					case '.': {
 						idx++;
@@ -737,7 +875,9 @@ void main() {
 			//}
 		//}
 	//}
-	string s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 1, 31, 49);
+	string s = format("%c[%d;%d;%dmHello %c[%d;%d;%dmHello\n", 
+		cast(char)0x1B, 1, 31, 49,
+		cast(char)0x1B, 0, 30, 50);
 	//string g = format("Hello %d %d %d\n", k, i, j);
 	writeC(0, s.ptr, s.length);
 	s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 0, 31, 49);
