@@ -2,6 +2,8 @@ module hurt.algo.binaryrangesearch;
 
 import hurt.algo.sorting;
 import hurt.io.stdio;
+import hurt.container.vector;
+import hurt.util.slog;
 
 struct Range(T,S) {
 	S value;
@@ -100,13 +102,26 @@ S linearSearch(T,S)(in Range!(T,S) r[], T key) {
 	throw new Exception("failed to find the range");
 }
 
+T binarySearch(T)(Vector!(T) r, T key, T notFound, ref bool found) {
+	return binarySearch!(T)(r.getData(), key, notFound, r.getSize(), found);
+}
 T binarySearch(T)(T[] r, T key, T notFound) {
+	bool trash;
+	return binarySearch!(T)(r, key, notFound, r.length, trash);
+}
+
+T binarySearch(T)(T[] r, T key, T notFound, size_t high, ref bool found) {
 	size_t l = 0;	
 	if(r is null || r.length == 0) {
+		found = false;
 		return notFound;
+	} else if(r.length-1 == 0) {
+		return r[0] == key ? r[0] : notFound;
 	}
-	size_t h = r.length-1;	
+	//size_t h = (high == size_t.max ? r.length-1 : high);
+	size_t h = high-1;
 	if(h == size_t.max) {
+		found = false;
 		return notFound;
 	}
 	size_t m;
@@ -115,10 +130,12 @@ T binarySearch(T)(T[] r, T key, T notFound) {
 		m = l + ((h - l) / 2);
 		//printfln("%u %d %d %d", cnt++, l, m, h);
 		if(h < l) {
+			found = false;
 			return notFound;
 		}
 
 		if(r[m] == key) {
+			found = true;
 			return r[m];
 		}
 
@@ -128,6 +145,7 @@ T binarySearch(T)(T[] r, T key, T notFound) {
 			l = m+1;
 		}
 	}
+	found = false;
 	return notFound;
 }
 

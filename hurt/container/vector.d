@@ -25,11 +25,13 @@ class Vector(T) : Iterable!(T) {
 	}
 
 	public this(Vector!(T) old) {
-		this.data = new T[old.getSize()-1];
+		/*this.data = new T[old.getSize()-1];
 		this.index = -1;
 		for(size_t i = 0; i < old.getSize(); i++) {
 			this.append(old.get(i));
-		}
+		}*/
+		this.data = old.getData().dup;
+		this.index = old.getSize()-1;
 	}
 
 	public this(DLinkedList!(T) ll) {
@@ -211,6 +213,10 @@ class Vector(T) : Iterable!(T) {
 			return null;
 		}
 		return this.data[0..this.index+1].dup;
+	}
+
+	public T[] getData() {
+		return this.data;
 	}
 
 	public void clean() {

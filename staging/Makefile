@@ -1,7 +1,7 @@
-SRC=formatter.d
+#SRC=formatter.d
 
-#SRC=ctstr.d
+SRC=fset.d
 
 all:
-	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -offormatter
-	./formatter
+	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -offset
+	./fset
