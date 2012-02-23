@@ -1,12 +1,15 @@
 module hurt.container.map;
 
 import hurt.algo.sorting;
+import hurt.container.binvec;
 import hurt.container.bst;
 import hurt.container.hashtable;
 import hurt.container.isr;
 import hurt.container.rbtree;
 import hurt.container.tree;
 import hurt.conv.conv;
+import hurt.string.formatter;
+import hurt.util.slog;
 
 import std.stdio;
 import std.traits, std.typetuple;
@@ -94,6 +97,8 @@ class Map(T,S) {
 			this.map = new BinarySearchTree!(MapItem!(T,S))();
 		} else if(this.type == ISRType.HashTable) {
 			this.map = new HashTable!(MapItem!(T,S))();
+		} else if(this.type == ISRType.BinVec) {
+			this.map = new BinVec!(MapItem!(T,S))();
 		}
 	}
 
@@ -136,10 +141,13 @@ class Map(T,S) {
 	public void remove(ISRIterator!(MapItem!(T,S)) it, bool dir = true) {
 		if(it.isValid()) {
 			MapItem!(T,S) value = *it;
-			if(dir)
-				it++;
-			else
+			if(dir) {
+				if(this.type != ISRType.BinVec) {
+					it++;
+				}
+			} else {
 				it--;
+			}
 			this.remove(value.key);
 		}
 	}
@@ -240,13 +248,16 @@ unittest {
 	assert(ttt.find(-1).getData() == 2);
 
 
-	Map!(string,int)[] sa = new Map!(string,int)[3];
+	int g = 4;
+	Map!(string,int)[] sa = new Map!(string,int)[g];
 	sa[0] = new Map!(string,int)(ISRType.RBTree);
 	sa[1] = new Map!(string,int)(ISRType.BinarySearchTree);
 	sa[2] = new Map!(string,int)(ISRType.HashTable);
+	sa[3] = new Map!(string,int)(ISRType.BinVec);
 	sa[0].insert("foo", 1337);
 	sa[1].insert("foo", 1337);
 	sa[2].insert("foo", 1337);
+	sa[3].insert("foo", 1337);
 	assert(sa[0].contains("foo"));
 	assert(sa[1].contains("foo"));
 	assert(sa[1].contains("foo"));
@@ -273,22 +284,25 @@ unittest {
 	assert(ct.contains(new Compare(44)));
 	assert((*ct.begin()).key == new Compare(44));
 	assert((*ct.begin()).data == "44");
-	sa[0].clear(); sa[1].clear(); sa[2].clear();
+	sa[0].clear(); sa[1].clear(); sa[2].clear(); sa[3].clear();
 	for(int j = 0; j < 5; j++) {
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					sa[i].insert(conv!(int,string)(jt), jt);
 					assert(sa[i].getSize() == idx+1, 
-						conv!(size_t,string)(idx+1) 
-						~ " " ~ conv!(size_t,string)(sa[i].getSize()));
+						format("%d %u %u", i, sa[i].getSize(), idx+1));
+						/*conv!(size_t,string)(idx+1) 
+						~ " " ~ conv!(size_t,string)(sa[i].getSize()));*/
 					assert(sa[i].contains(conv!(int,string)(jt)), 
 						conv!(int,string)(jt));
 					sa[i].remove(conv!(int,string)(jt));
 					assert(!sa[i].contains(conv!(int,string)(jt)), 
 						conv!(int,string)(jt));
-					assert(sa[i].getSize() == idx, conv!(size_t,string)(idx) 
-						~ " " ~ conv!(size_t,string)(sa[i].getSize()));
+					assert(sa[i].getSize() == idx, 
+						format("%d %u %u", i, idx, sa[i].getSize()));
+						/*conv!(size_t,string)(idx) ~ " " ~ 
+						conv!(size_t,string)(sa[i].getSize()));*/
 					sa[i].insert(conv!(int,string)(jt), jt);
 					assert(sa[i].getSize() == idx+1, 
 						conv!(size_t,string)(idx+1) 
@@ -307,6 +321,10 @@ unittest {
 						case 2:
 							assert(sa[0] == sa[1] && sa[0] == sa[2] && 
 								sa[1] == sa[2]);
+							break;
+						case 3:
+							assert(sa[0] == sa[1] && sa[0] == sa[2] && 
+								sa[1] == sa[2] && sa[0] == sa[3]);
 							break;
 						default:
 							assert(0);
@@ -334,10 +352,10 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				sa[0].clear(); sa[1].clear(); sa[2].clear();
+				sa[0].clear(); sa[1].clear(); sa[2].clear(); sa[3].clear();
 				break;
 			case 1:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach(idx,jt;it) {
 						sa[i].remove(conv!(int,string)(jt));
 						foreach(ht; it[idx+1..$])
@@ -348,7 +366,7 @@ unittest {
 				}
 				break;
 			case 2:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach_reverse(idx,jt;it) {
 						sa[i].remove(conv!(int,string)(jt));
 						foreach(ht; it[idx+1..$])
@@ -359,17 +377,26 @@ unittest {
 				}
 				break;
 			case 3: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = sa[i].begin();
+					assert(sa[i].getSize() == 0 || gt.isValid());
+					size_t oldSize = sa[i].getSize();
+					int cnt = 0;
 					while(gt.isValid()) {
+						cnt++;
+						//log("%d", i);
 						sa[i].remove(gt);
 					}
+					assert(sa[i].isEmpty(), format("%d %u cnt %d oldSize %u", 
+						i, sa[i].getSize(), cnt, oldSize));
 				}
 				break;
 			} case 4: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = sa[i].end();
+					int c = 0;
 					while(gt.isValid()) {
+						//log("%d %d",i, c++);
 						sa[i].remove(gt, false);
 					}
 				}
@@ -378,18 +405,21 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2]);
+			assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2] &&
+				sa[0] == sa[3], format("%d %u %u %u %u", j, sa[0].getSize(),
+				sa[1].getSize(), sa[2].getSize(), sa[3].getSize()));
 			assert(sa[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(sa[0].getSize()));
 		}
 	
-		Map!(int,int)[] sai = new Map!(int,int)[3];
+		Map!(int,int)[] sai = new Map!(int,int)[g];
 		sai[0] = new Map!(int,int)(ISRType.RBTree);
 		sai[1] = new Map!(int,int)(ISRType.BinarySearchTree);
 		sai[2] = new Map!(int,int)(ISRType.HashTable);
+		sai[3] = new Map!(int,int)(ISRType.BinVec);
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					sai[i].insert(jt, jt);
 					assert(sai[i].getSize() == idx+1, 
 						conv!(size_t,string)(idx+1) 
@@ -420,6 +450,10 @@ unittest {
 							assert(sai[0] == sai[1] && sai[0] == sai[2] && 
 								sai[1] == sai[2]);
 							break;
+						case 3:
+							assert(sai[0] == sai[1] && sai[0] == sai[2] && 
+								sai[1] == sai[2] && sai[0] == sai[3]);
+							break;
 						default:
 							assert(0);
 					}
@@ -446,10 +480,10 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				sai[0].clear(); sai[1].clear(); sai[2].clear();
+				sai[0].clear(); sai[1].clear(); sai[2].clear(); sai[3].clear();
 				break;
 			case 1:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach(idx,jt;it) {
 						sai[i].remove(jt);
 						foreach(ht; it[idx+1..$])
@@ -460,7 +494,7 @@ unittest {
 				}
 				break;
 			case 2:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach_reverse(idx,jt;it) {
 						sai[i].remove(jt);
 						foreach(ht; it[idx+1..$])
@@ -471,7 +505,7 @@ unittest {
 				}
 				break;
 			case 3: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = sai[i].begin();
 					while(gt.isValid()) {
 						sai[i].remove(gt);
@@ -480,7 +514,7 @@ unittest {
 				break;
 			}
 			case 4: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = sai[i].end();
 					while(gt.isValid()) {
 						sai[i].remove(gt, false);
@@ -491,18 +525,20 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2]);
+			assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2] &&
+				sai[0] == sai[3]);
 			assert(sai[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(sai[0].getSize()));
 		}
 	
-		Map!(Compare,int)[] saj = new Map!(Compare,int)[3];
+		Map!(Compare,int)[] saj = new Map!(Compare,int)[g];
 		saj[0] = new Map!(Compare,int)(ISRType.RBTree);
 		saj[1] = new Map!(Compare,int)(ISRType.BinarySearchTree);
 		saj[2] = new Map!(Compare,int)(ISRType.HashTable);
+		saj[3] = new Map!(Compare,int)(ISRType.BinVec);
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					saj[i].insert(new Compare(jt), jt);
 					assert(saj[i].getSize() == idx+1, 
 						conv!(size_t,string)(idx+1) 
@@ -533,6 +569,10 @@ unittest {
 							assert(saj[0] == saj[1] && saj[0] == saj[2] && 
 								saj[1] == saj[2]);
 							break;
+						case 3:
+							assert(saj[0] == saj[1] && saj[0] == saj[2] && 
+								saj[1] == saj[2] && saj[0] == saj[3]);
+							break;
 						default:
 							assert(0);
 					}
@@ -559,10 +599,10 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				saj[0].clear(); saj[1].clear(); saj[2].clear();
+				saj[0].clear(); saj[1].clear(); saj[2].clear(); saj[3].clear();
 				break;
 			case 1:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach(idx,jt;it) {
 						saj[i].remove(new Compare(jt));
 						foreach(ht; it[idx+1..$])
@@ -573,7 +613,7 @@ unittest {
 				}
 				break;
 			case 2:
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					foreach_reverse(idx,jt;it) {
 						saj[i].remove(new Compare(jt));
 						foreach(ht; it[idx+1..$])
@@ -584,7 +624,7 @@ unittest {
 				}
 				break;
 			case 3: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = saj[i].begin();
 					while(gt.isValid()) {
 						saj[i].remove(gt);
@@ -593,7 +633,7 @@ unittest {
 				break;
 			}
 			case 4: {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					auto gt = saj[i].end();
 					while(gt.isValid()) {
 						saj[i].remove(gt, false);
@@ -604,7 +644,8 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2]);
+			assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2] &&
+				saj[0] == saj[3]);
 			assert(saj[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(saj[0].getSize()));
 		}

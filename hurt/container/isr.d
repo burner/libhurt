@@ -3,9 +3,10 @@ module hurt.container.isr;
 //isr stands for insert search remove
 
 enum ISRType {
-	RBTree,
+	BinVec,
 	BinarySearchTree,
-	HashTable
+	HashTable,
+	RBTree
 }
 
 abstract class ISRNode(T) {

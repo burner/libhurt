@@ -102,7 +102,7 @@ S linearSearch(T,S)(in Range!(T,S) r[], T key) {
 	throw new Exception("failed to find the range");
 }
 
-T binarySearch(T)(Vector!(T) r, T key, T notFound, ref bool found, 
+T binarySearchVec(T)(Vector!(T) r, T key, T notFound, ref bool found, 
 		ref size_t idx) {
 	return binarySearch!(T)(r.getData(), key, notFound, r.getSize(), found,
 		idx);

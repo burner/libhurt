@@ -1,5 +1,6 @@
 module hurt.container.set;
 
+import hurt.container.binvec;
 import hurt.container.bst;
 import hurt.container.hashtable;
 import hurt.container.isr;
@@ -31,6 +32,8 @@ class Set(T) {
 			this.map = new BinarySearchTree!(T)();
 		} else if(this.type == ISRType.HashTable) {
 			this.map = new HashTable!(T)();
+		} else if(this.type == ISRType.BinVec) {
+			this.map = new BinVec!(T)();
 		}
 	}
 
@@ -134,13 +137,15 @@ unittest {
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 
-	Set!(int)[] sa = new Set!(int)[3];
+	int g = 4;
+	Set!(int)[] sa = new Set!(int)[g];
 	sa[0] = new Set!(int)(ISRType.RBTree);
 	sa[1] = new Set!(int)(ISRType.BinarySearchTree);
 	sa[2] = new Set!(int)(ISRType.HashTable);
+	sa[3] = new Set!(int)(ISRType.BinVec);
 	foreach(it;lot) {
 		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
+			for(int i = 0; i < g; i++) {
 				assert(sa[i].insert(jt), conv!(int,string)(jt));
 				assert(sa[i].getSize() == idx+1, conv!(size_t,string)(idx+1) 
 					~ " " ~ conv!(size_t,string)(sa[i].getSize()));
@@ -178,14 +183,17 @@ unittest {
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
+			assert(sa[1] == sa[3]);
+			assert(sa[2] == sa[3]);
 		}
 		sa[0].clear();
 		sa[1].clear();
 		sa[2].clear();
+		sa[3].clear();
 	}
 	foreach(it;lot) {
 		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
+			for(int i = 0; i < g; i++) {
 				sa[i].insert(jt), conv!(int,string)(jt);
 				assert(sa[i].contains(jt), conv!(int,string)(jt));
 				assert(sa[i].remove(jt), conv!(int,string)(jt));
@@ -212,14 +220,18 @@ unittest {
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
+			assert(sa[1] == sa[3]);
+			assert(sa[2] == sa[3]);
 		}
 		foreach(idx,jt;it) {
-			for(int i = 0; i < 3; i++) {
+			for(int i = 0; i < g; i++) {
 				sa[i].remove(jt);
 			}
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
+			assert(sa[1] == sa[3]);
+			assert(sa[2] == sa[3]);
 		}
 	}
 }

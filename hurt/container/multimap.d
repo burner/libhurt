@@ -1,12 +1,13 @@
 module hurt.container.multimap;
 
-import hurt.container.isr;
-import hurt.container.rbtree;
+import hurt.container.binvec;
 import hurt.container.bst;
-import hurt.container.hashtable;
-import hurt.conv.conv;
-import hurt.container.iterator;
 import hurt.container.dlst;
+import hurt.container.hashtable;
+import hurt.container.isr;
+import hurt.container.iterator;
+import hurt.container.rbtree;
+import hurt.conv.conv;
 import hurt.exception.invaliditeratorexception;
 import hurt.util.array;
 
@@ -233,6 +234,8 @@ class MultiMap(T,S) {
 			this.tree = new BinarySearchTree!(Item!(T,S))();
 		} else if(this.type == ISRType.HashTable) {
 			this.tree = new HashTable!(Item!(T,S))();
+		} else if(this.type == ISRType.BinVec) {
+			this.tree = new BinVec!(Item!(T,S))();
 		}
 	}
 
@@ -252,6 +255,7 @@ class MultiMap(T,S) {
 	}
 
 	Iterator!(T,S) begin() {
+		assert(this.tree !is null);
 		auto tmp = this.tree.begin();
 		return new Iterator!(T,S)(this,tmp, true, false);
 	}
@@ -471,35 +475,48 @@ unittest {
 	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0],[]];
-	MultiMap!(string,int)[] sa = new MultiMap!(string,int)[3];
+
+	int g = 4;
+	MultiMap!(string,int)[] sa = new MultiMap!(string,int)[g];
 	sa[0] = new MultiMap!(string,int)(ISRType.RBTree);
 	sa[1] = new MultiMap!(string,int)(ISRType.BinarySearchTree);
 	sa[2] = new MultiMap!(string,int)(ISRType.HashTable);
-	for(int j = 0; j < 3; j++) {
+	sa[3] = new MultiMap!(string,int)(ISRType.HashTable);
+	for(int j = 0; j < g; j++) {
 		foreach(zt;lot) {
 			foreach(idx,ht;zt) {
-				for(int i = 0; i < 3; i++) {
+				for(int i = 0; i < g; i++) {
 					assert(!sa[i].contains(conv!(int,string)(ht)));
 					sa[i].insert(conv!(int,string)(ht), ht);
 					sa[i].insert(conv!(int,string)(ht), ht+1);
 					sa[i].insert(conv!(int,string)(ht), ht+2);
 					assert(sa[i].contains(conv!(int,string)(ht)));
 				}
-				assert(sa[0] == sa[1] && sa[1] == sa[2] && sa[0] == sa[2]);
+				assert(sa[0] == sa[1] && sa[1] == sa[2] && sa[0] == sa[2] &&
+					sa[0] == sa[3] && sa[1] == sa[3]);
 			}
 			switch(j) {
 			case 0:
-				sa[0].clear(); sa[1].clear; sa[2].clear;
+				sa[0].clear(); sa[1].clear(); sa[2].clear(); sa[3].clear();
 				break;
 			case 1:
 				foreach(kt; sa[0].keys()) {
 					sa[0].removeRange(kt);
 					sa[1].removeRange(kt);
 					sa[2].removeRange(kt);
+					sa[3].removeRange(kt);
 				}
 				break;
 			case 2:
-				for(int k = 0; k < 3; k++) {
+				for(int k = 0; k < g; k++) {
+					foreach(kt; sa[k].keys()) {
+						while(sa[k].contains(kt))
+							sa[k].remove(sa[k].lower(kt));	
+					}
+				}
+				break;
+			case 3:
+				for(int k = 0; k < g; k++) {
 					foreach(kt; sa[k].keys()) {
 						while(sa[k].contains(kt))
 							sa[k].remove(sa[k].lower(kt));	
@@ -509,7 +526,8 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(sa[0] == sa[1] && sa[1] == sa[2] && sa[0] == sa[2]);
+			assert(sa[0] == sa[1] && sa[1] == sa[2] && sa[0] == sa[2] &&
+				sa[0] == sa[3] && sa[1] == sa[3]);
 			assert(sa[0].getSize() == 0, 
 				conv!(size_t,string)(sa[0].getSize()) ~ " " ~
 				conv!(int,string)(j));
