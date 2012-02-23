@@ -87,6 +87,19 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 		void* arg)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
+
+	immutable(S)[] preColor(S)(int attribute, int foreground, int background) {
+		writeln(attribute, foreground, background);
+		return format!(char,S)("%c[%d;%d;%dm", cast(char)0x1B, 
+			attribute != -1 ? attribute : 0,
+			foreground != -1 ? foreground+30 : 30, 
+			background != -1 ? 50-background : 50);
+	}
+
+	immutable(S)[] postColor(S)() {
+		return format!(char,S)("%c[0;30;50m", cast(char)0x1B);
+	}
+
 	//writeln(_arguments);
 	size_t argPtr = 0;
 	size_t ptr = 0;
@@ -221,8 +234,7 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							break;
 						}
 						size_t lowIdx = idx;
-						while(idx < form.length 
-								&& isDigit!(T)(form[idx])) {
+						while(idx < form.length && isDigit!(T)(form[idx])) {
 							idx++;
 						}
 						attribute = conv!(immutable(T)[],int)(
@@ -473,6 +485,15 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						}
 						argPtr++;
 
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
+
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						//debug writeln(__FILE__,__LINE__,": ", padding);
 						if(tmp.length < padding && !leftAlign) {
@@ -513,6 +534,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
 							}
 						}
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
+
 						break parse;
 					}
 					case 'b': // string
@@ -520,6 +549,15 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							bool b = va_arg!(bool)(arg);
 							immutable(char)[] value = conv!(bool,string)(b);
 							assert(value == "true" || value == "false");
+
+							if(attribute != -1 || foreground != -1 || 
+									background != -1) {
+								immutable(T)[] pre = preColor!(T)(attribute, 
+									foreground, background);
+								foreach(cit; pre) {
+									appendWithIdx!(T)(ret, ptr++, cit);
+								}
+							}
 							immutable(T) paddingChar = padding0 ? '0' : ' ';
 							//debug writeln(__FILE__,__LINE__,": ", padding);
 							if(value.length < padding && !leftAlign) {
@@ -532,10 +570,27 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 								appendWithIdx!(T)(ret, ptr++, 
 									cast(immutable T)it);
 							}
+							if(attribute != -1 || foreground != -1 || 
+									background != -1) {
+								immutable(T)[] pre = postColor!(T)();
+								foreach(cit; pre) {
+									appendWithIdx!(T)(ret, ptr++, cit);
+								}
+							}
+
 							argPtr++;
 						}
 						break parse;
 					case 's': // string
+
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
 						if(isTypeOf!(string)(arguments[argPtr])) {
 							immutable(char)[] value = va_arg!(immutable(char)[])
 								(arg);
@@ -586,6 +641,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							}
 							argPtr++;
 						}
+
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
 						break parse;
 					case 'e': // double as exponent 1.4e44
 						expCap = false;
@@ -618,6 +681,15 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
+
 						if(tmp.length < padding && !leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
@@ -629,6 +701,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						if(tmp.length < padding && leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
 							}
 						}
 						break parse;
@@ -656,6 +736,15 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						argPtr++;
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
+
 						if(tmp.length < padding && !leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
@@ -667,6 +756,13 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						if(tmp.length < padding && leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
 							}
 						}
 						break parse;
@@ -686,6 +782,15 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						}
 						argPtr++;
 
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
+
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						if(tmp.length < padding && !leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
@@ -698,6 +803,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						if(tmp.length < padding && leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
 							}
 						}
 						break parse;
@@ -709,6 +822,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 								false,true);	
 
 						argPtr++;
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = preColor!(T)(attribute, 
+								foreground, background);
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
+							}
+						}
 
 						immutable(T) paddingChar = padding0 ? '0' : ' ';
 						if(tmp.length < padding && !leftAlign) {
@@ -722,6 +843,14 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						if(tmp.length < padding && leftAlign) {
 							for(size_t i = 0; i < padding - tmp.length; i++) {
 								appendWithIdx!(T)(ret, ptr++, paddingChar);
+							}
+						}
+
+						if(attribute != -1 || foreground != -1 || 
+								background != -1) {
+							immutable(T)[] pre = postColor!(T)();
+							foreach(cit; pre) {
+								appendWithIdx!(T)(ret, ptr++, cit);
 							}
 						}
 						break parse;
@@ -875,13 +1004,22 @@ void main() {
 			//}
 		//}
 	//}
-	string s = format("%c[%d;%d;%dmHello %c[%d;%d;%dmHello\n", 
+	/*string s = format("%c[%d;%d;%dmHello %c[%d;%d;%dmHello\n", 
 		cast(char)0x1B, 1, 31, 49,
-		cast(char)0x1B, 0, 30, 50);
+		cast(char)0x1B, 0, 30, 50);*/
+	string g = format("%&4!1?1dhello world\n", 10);
 	//string g = format("Hello %d %d %d\n", k, i, j);
-	writeC(0, s.ptr, s.length);
-	s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 0, 31, 49);
-	writeC(0, s.ptr, s.length);
+	writeC(0, g.ptr, g.length);
+	g = format("%&6!1?1shello world\n", "world ");
+	writeC(0, g.ptr, g.length);
+	g = format("%&4!1?2fhello world\n", 123.456);
+	writeC(0, g.ptr, g.length);
+	g = format("%!1?0bhello world\n", true);
+	writeC(0, g.ptr, g.length);
+
+	//writeC(0, s.ptr, s.length);
+	//s = format("%c[%d;%d;%dmHello\n", cast(char)0x1B, 0, 31, 49);
+	//writeC(0, s.ptr, s.length);
 	//writeC(0, g.ptr, g.length);
 	return;
 }
