@@ -105,7 +105,7 @@ class Vector(T) : Iterable!(T) {
 		T ret = this.data[idx];
 		typeof(this.index) upIdx = idx + 1;
 		typeof(this.index) lowIdx = idx;
-		while(lowIdx < this.index && lowIdx > 0) {
+		while(lowIdx < this.index && lowIdx >= 0) {
 			this.data[lowIdx] = this.data[upIdx];
 			upIdx++;
 			lowIdx++;

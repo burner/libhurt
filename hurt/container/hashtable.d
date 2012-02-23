@@ -183,8 +183,14 @@ class HashTable(T) : ISR!(T) {
 
 	bool remove(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
+		if(this.table is null && hash >= this.table.length) {
+			return false;
+		}
 		Node!(T) it = this.table[hash];
-		if(it.data == data) {
+		if(it is null) {
+			return false;
+		}
+		if(it !is null && it.data == data) {
 			this.table[hash] = it.next;
 			if(this.table[hash] !is null) {
 				this.table[hash].prev = null;

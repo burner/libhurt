@@ -102,15 +102,19 @@ S linearSearch(T,S)(in Range!(T,S) r[], T key) {
 	throw new Exception("failed to find the range");
 }
 
-T binarySearch(T)(Vector!(T) r, T key, T notFound, ref bool found) {
-	return binarySearch!(T)(r.getData(), key, notFound, r.getSize(), found);
+T binarySearch(T)(Vector!(T) r, T key, T notFound, ref bool found, 
+		ref size_t idx) {
+	return binarySearch!(T)(r.getData(), key, notFound, r.getSize(), found,
+		idx);
 }
 T binarySearch(T)(T[] r, T key, T notFound) {
+	size_t idx;
 	bool trash;
-	return binarySearch!(T)(r, key, notFound, r.length, trash);
+	return binarySearch!(T)(r, key, notFound, r.length, trash, idx);
 }
 
-T binarySearch(T)(T[] r, T key, T notFound, size_t high, ref bool found) {
+T binarySearch(T)(T[] r, T key, T notFound, size_t high, ref bool found,
+		ref size_t idx) {
 	size_t l = 0;	
 	if(r is null || r.length == 0) {
 		found = false;
@@ -135,6 +139,7 @@ T binarySearch(T)(T[] r, T key, T notFound, size_t high, ref bool found) {
 		}
 
 		if(r[m] == key) {
+			idx = m;
 			found = true;
 			return r[m];
 		}

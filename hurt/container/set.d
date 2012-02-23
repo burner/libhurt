@@ -51,6 +51,9 @@ class Set(T) {
 	}
 
 	public bool remove(T data) {
+		if(this.map is null) {
+			return false;
+		}
 		return this.map.remove(data);
 	}
 
