@@ -24,6 +24,11 @@ class Set(T) {
 		this.type = ISRType.HashTable;
 		this.makeMap(size);
 	}
+	
+	this(BinVec!(T) bv) {
+		this.type = ISRType.BinVec;
+		this.map = new BinVec!(T)(bv);
+	}
 
 	private void makeMap(size_t size = 16) {
 		if(this.type == ISRType.RBTree) {
@@ -76,6 +81,9 @@ class Set(T) {
 		Set!(T) ret;
 		if(this.type == ISRType.HashTable) {
 			ret = new Set!(T)(this.getSize());
+		} else if(this.type == ISRType.BinVec) {
+			ret = new Set!(T)(cast(BinVec!(T))this.map);			
+			return ret;
 		} else {
 			ret = new Set!(T)(this.type);
 		}
