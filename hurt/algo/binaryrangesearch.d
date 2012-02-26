@@ -4,6 +4,7 @@ import hurt.algo.sorting;
 import hurt.io.stdio;
 import hurt.container.vector;
 import hurt.util.slog;
+import hurt.util.pair;
 
 struct Range(T,S) {
 	S value;
@@ -111,6 +112,51 @@ T binarySearch(T)(T[] r, T key, T notFound) {
 	size_t idx;
 	bool trash;
 	return binarySearch!(T)(r, key, notFound, r.length, trash, idx);
+}
+
+T binarySearch(T)(immutable(T)[] r, T key, T notFound, size_t high, bool found,
+		ref size_t idx,
+		bool function(T a, T b) cmp,
+		bool function(T a, T b) equal) {
+	size_t l = 0;	
+	if(r is null || r.length == 0) {
+		found = false;
+		return notFound;
+	} else if(r.length-1 == 0) {
+		return r[0] == key ? r[0] : notFound;
+	}
+	//size_t h = (high == size_t.max ? r.length-1 : high);
+	size_t h = high-1;
+	if(h == size_t.max) {
+		found = false;
+		return notFound;
+	}
+	size_t m;
+	size_t cnt = 0;
+	while(h >= l && h != size_t.max) {
+		m = l + ((h - l) / 2);
+		//printfln("%u %d %d %d", cnt++, l, m, h);
+		if(h < l) {
+			found = false;
+			return notFound;
+		}
+
+		//if(r[m] == key) {
+		if(equal(r[m], key)) {
+			idx = m;
+			found = true;
+			return r[m];
+		}
+
+		//if(r[m] > key) {
+		if(cmp(r[m], key)) {
+			h = m-1;
+		} else {
+			l = m+1;
+		}
+	}
+	found = false;
+	return notFound;
 }
 
 T binarySearch(T)(T[] r, T key, T notFound, size_t high, ref bool found,
