@@ -103,12 +103,12 @@ class Set(T) {
 				return false;
 			sit++;
 		}
-		sit = this.begin();
+		/*sit = this.begin();
 		while(sit.isValid()) {
 			if(!s.contains(*sit))
 				return false;
 			sit++;
-		}
+		}*/
 		return this.getSize() == s.getSize();
 	}
 
