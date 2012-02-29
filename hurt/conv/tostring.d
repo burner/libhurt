@@ -2,6 +2,8 @@ module hurt.conv.tostring;
 
 import hurt.conv.numerictochar;
 import hurt.math.mathutil;
+import hurt.string.formatter;
+import hurt.util.slog;
 
 import std.stdio;
 
@@ -15,10 +17,14 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10,
 	}
 	T[128] tmp;
 	uint tmpptr = 0;
-	if(src == 0) 
+	long toProcess;
+	if(src == 0) {
 		return "0";
+	}
+
 	if(src < 0) {
-		src = -src;
+		//src = -src;
+		toProcess = -src;
 		sign = true;
 		static if(is(T == char)) {
 			tmp[tmpptr++] = '-';
@@ -28,6 +34,11 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10,
 			tmp[tmpptr++] = '\U0000002D'; // yes 0000002D means -
 		}
 	} else if(sign) {
+		if(src < 0) {
+			toProcess = -src;
+		} else {
+			toProcess = src;
+		}
 		static if(is(T == char)) {
 			tmp[tmpptr++] = '+';
 		} else static if(is(T == wchar)) {
@@ -35,12 +46,15 @@ public pure immutable(T)[] integerToString(T,S)(S src, int base = 10,
 		} else static if(is(T == dchar)) {
 			tmp[tmpptr++] = '\U0000002B'; // yes 0000002D means -
 		}
+	} else {
+		toProcess = src;
 	}
+
 	byte toConv;
-	while(src) {
-		toConv = cast(byte)(src % base);	
+	while(toProcess) {
+		toConv = cast(byte)(toProcess % base);	
 		tmp[tmpptr++] = byteToChar!(T)(toConv, title);
-		src /= base;
+		toProcess /= base;
 	}
 	if(sign) {
 		tmp[1..tmpptr].reverse;

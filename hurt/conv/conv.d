@@ -219,4 +219,6 @@ unittest {
 	assert(42 == conv!(string, int)("__4__2__"));
 	assert("42" == conv!(int, string)(42));
 	assert("-42" == conv!(int, string)(-42));
+	assert("55" == conv!(short,string)(55));
+	assert("55" == conv!(short,string)(55));
 }

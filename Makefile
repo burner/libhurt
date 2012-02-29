@@ -16,4 +16,8 @@ unittest:
 	dmd -m64 unit.d -Llibhurt.a -unittest -debug -gc -gs -I. 
 	./unit
 
+unit: all 
+	dmd -m64 unit.d -Llibhurt.a -unittest -debug -gc -gs -I. 
+	./unit
+
 new: clean all
