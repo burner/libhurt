@@ -10,8 +10,8 @@ Features:
 		Bitmap
 		Double Linked List
 
-		// Map MultiMap and Set can use BinarySeachTrees, RBTrees as well as
-		// HashMaps as underlying datastructures, simple by passing an argument
+		// Map MultiMap and Set can use BinarySeachTrees, RBTrees, BinaryVector(Sorted Vector)
+		// as well as HashMaps as underlying datastructures, simple by passing an argument
 		// to there constructors
 		Map
 		MultiMap
@@ -27,7 +27,7 @@ Features:
 	Convert:
 		Numbertypes to string
 		string to Numbertypes
-		utfX to utfX (x = (8,16,32)
+		utfX to utfX (X = (8,16,32)
 		Numbertypes to Numbertypes (sort of a safe cast)
 	
 	io:
@@ -37,6 +37,7 @@ Features:
 
 	Util:
 		time modules from tango
+		random modules from tango
 		append to array functions
 		find in array functions
 		sort function
