@@ -186,6 +186,10 @@ public class Deque(T) : Iterable!(T) {
 		return this.data[idx];
 	}
 
+	package const(T) getValue(const size_t idx) const {
+		return this.data[idx];
+	}
+
 	package const(T) getConstValue(const size_t idx) const {
 		return this.data[idx];
 	}
@@ -367,11 +371,26 @@ public class Deque(T) : Iterable!(T) {
 		return ret;
 	}
 
+	public const(T) front() const {
+		if(this.head == this.tail)
+			assert(0, "empty");
+		long head = (this.head+1) % this.data.length;
+		const(T) ret = this.data[head];
+		return ret;
+	}
+
 	public T popFront() {
 		if(this.head == this.tail)
 			assert(0, "empty");
 		this.head = (this.head+1) % this.data.length;
 		T ret = this.data[this.head];
+		return ret;
+	}
+
+	public const(T) back() const {
+		if(this.head == this.tail)
+			assert(0, "empty");
+		const(T) ret = this.data[this.tail];
 		return ret;
 	}
 
@@ -490,6 +509,10 @@ public class Deque(T) : Iterable!(T) {
 		return this.data[this.getIdx(idx)];
 	}
 
+	public const(T) opIndex(const long idx) const {
+		return this.data[this.getIdx(idx)];
+	}
+
 	public T get(const long idx) {
 		if(idx >= this.getSize()) {
 			return this.back();
@@ -534,6 +557,15 @@ public class Deque(T) : Iterable!(T) {
 	int opApply(int delegate(ref size_t, ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
 			if(int r = dg(idx, this.data[this.getIdx(idx)])) {
+				return r;
+			}
+		}
+		return 0;
+	}
+	
+	int opApply(int delegate(const ref T) dg) const {
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(idx)])) {
 				return r;
 			}
 		}
