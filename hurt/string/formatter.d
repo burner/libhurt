@@ -89,7 +89,7 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 
 	immutable(S)[] preColor(S)(int attribute, int foreground, int background) {
-		writeln(attribute, foreground, background);
+		//writeln(attribute, foreground, background);
 		return format!(char,S)("%c[%d;%d;%dm", cast(char)0x1B, 
 			attribute != -1 ? attribute : 0,
 			foreground != -1 ? foreground+30 : 30, 
