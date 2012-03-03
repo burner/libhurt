@@ -394,9 +394,17 @@ public class Deque(T) : Iterable!(T) {
 		return ret;
 	}
 
-	public T back() {
-		if(this.head == this.tail)
+	public ref T backRef() {
+		if(this.head == this.tail) {
 			assert(0, "empty");
+		}
+		return this.data[this.tail];
+	}
+
+	public T back() {
+		if(this.head == this.tail) {
+			assert(0, "empty");
+		}
 		T ret = this.data[this.tail];
 		return ret;
 	}
@@ -1316,6 +1324,23 @@ unittest {
 	});
 	assert(bd.getSize() == 0);
 }
+
+private struct test {
+	int t;
+
+	this(int t) {
+		this.t = t;
+	}
+}
+
+unittest {
+	Deque!(test) t = new Deque!(test)();
+	t.pushBack(test(99));
+	assert(t.backRef().t == 99);
+	t.backRef().t = 77;
+	assert(t.backRef().t == 77, conv!(int,string)(t.back().t));
+}
+
 /*
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
