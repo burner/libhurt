@@ -1,5 +1,6 @@
 module hurt.conv.numerictochar;
 
+import hurt.conv.conv;
 import hurt.util.slog;
 
 public pure T byteToChar(T)(byte src, bool title = false) 
@@ -39,7 +40,9 @@ public pure T byteToChar(T)(byte src, bool title = false)
 			case 15:
 				return title ? 'F' : 'f';
 			default:
-				assert(0, "Invalid input " ~ cast(char)src);
+				return 'E';
+				/*assert(0, "Invalid input " ~ cast(char)src ~ " " ~ 
+					conv!(byte,string)(src));*/
 		}
 	} else static if(is(T == wchar)) {
 		switch(src) {
