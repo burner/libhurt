@@ -197,7 +197,7 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 						}
 						break;
 					}
-					case '?': {
+					case '?': { // attribute
 						idx++;
 						if(idx < form.length && form[idx] == '*') {
 							if(convertsTo!(int)(arguments[argPtr])) {
@@ -241,7 +241,7 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							form[lowIdx..idx]);
 						continue;
 					}
-					case '&': {
+					case '&': { // background
 						idx++;
 						if(idx < form.length && form[idx] == '*') {
 							if(convertsTo!(int)(arguments[argPtr])) {
@@ -286,7 +286,7 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 							form[lowIdx..idx]);
 						continue;
 					}
-					case '!': {
+					case '!': { // foreground
 						idx++;
 						if(idx < form.length && form[idx] == '*') {
 							if(convertsTo!(int)(arguments[argPtr])) {

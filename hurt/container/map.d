@@ -113,6 +113,16 @@ class Map(T,S) {
 		return null !is this.find(key);
 	}
 
+	public bool containsData(S key) {
+		auto it = this.begin();
+		for(; it.isValid(); it++) {
+			if((*it).getData() == key) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public MapItem!(T,S) find(T key) {
 		this.finder.key = key;
 		ISRNode!(MapItem!(T,S)) jt = this.map.search(this.finder);

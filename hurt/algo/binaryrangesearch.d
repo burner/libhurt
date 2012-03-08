@@ -123,7 +123,7 @@ T binarySearch(T)(immutable(T)[] r, T key, T notFound, size_t high, bool found,
 		found = false;
 		return notFound;
 	} else if(r.length-1 == 0) {
-		return r[0] == key ? r[0] : notFound;
+		return equal(r[0], key) ? r[0] : notFound;
 	}
 	//size_t h = (high == size_t.max ? r.length-1 : high);
 	size_t h = high-1;
@@ -131,6 +131,7 @@ T binarySearch(T)(immutable(T)[] r, T key, T notFound, size_t high, bool found,
 		found = false;
 		return notFound;
 	}
+
 	size_t m;
 	size_t cnt = 0;
 	while(h >= l && h != size_t.max) {
