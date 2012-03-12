@@ -1,5 +1,7 @@
 module hurt.string.stringbuffer;
 
+import core.vararg;
+
 /** Authors: Robert "BuRnEr" Schadek, rburners.gmail.com
  * Data: 25.10.2010
  * Examples: See unittest
@@ -84,6 +86,13 @@ public template StringBuffer(T) {
 				this.pushBack(it);
 
 			return this;
+		}
+
+		public StringBuffer!(T) pushBack(immutable(T)[] form, ...) {
+			import hurt.string.formatter;
+
+			auto str = formatString!(T,T)(form, _arguments, _argptr);
+			return this.pushBack(str);
 		}
 
 		public StringBuffer!(T) pushBack(immutable(T)[] toAdd) {
@@ -181,4 +190,8 @@ unittest {
 		sb.pushBack(it);
 	}
 	assert(sb.compare("Hello World Hello World Hello World"));
+
+	StringBuffer!(char) sb2 = new StringBuffer!(char)(12);
+	sb2.pushBack("hello %d", 5);
+	assert(sb2.getString() == "hello 5");
 }
