@@ -130,6 +130,12 @@ public pure bool isString(T)() {
 	}
 }
 
+public pure bool isWhiteSpace(T)(T ch) if(is(T == char) || is(T == wchar) ||
+		is(T == dchar)) {
+	return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' ||
+		ch == '\a' || ch == '\v';
+}
+
 /** Trim blanks and tabs from the beginning and end of a str. */
 public pure final immutable(T)[] trim(T)(immutable(T)[] str) {
 	uint low = 0;
@@ -223,6 +229,7 @@ public pure bool isLowerCase(string str) {
 
 unittest {
 	assert(isLowerCase("hello"));
+	assert(!isLowerCase("Hello"));
 	assert(!isLowerCase("hellO"));
 	assert(isLowerCase(""));
 }

@@ -13,7 +13,7 @@ import hurt.container.list;
 import hurt.container.pairlist;
 import hurt.container.tree;
 import hurt.container.iterator;
-//import hurt.container.multimap;
+import hurt.container.multimap;
 import hurt.container.stack;
 import hurt.container.map;
 import hurt.conv.chartonumeric;
