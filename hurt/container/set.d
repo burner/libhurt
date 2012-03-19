@@ -122,6 +122,23 @@ class Set(T) {
 		return 0;
 	}
 
+	public Set!(T) difference(Set!(T) o) {
+		Set!(T) ret = new Set!(T)(this.type);
+		for(auto it = this.begin(); it.isValid(); it++) {
+			if(!o.contains(*it)) {
+				ret.insert(*it);
+			}
+		}
+
+		for(auto it = o.begin(); it.isValid(); it++) {
+			if(!this.contains(*it)) {
+				ret.insert(*it);
+			}
+		}
+
+		return ret;
+	}
+
 	public bool notIntersecting(Set!(T) s) {
 		ISRIterator!(T) it = s.begin();
 		for(; it.isValid(); it++) {
@@ -138,6 +155,17 @@ class Set(T) {
 }
 
 unittest {
+	Set!(int) d1 = new Set!(int)();
+	d1.insert(10); d1.insert(9); 
+
+	Set!(int) d2 = new Set!(int)();
+	d2.insert(99); d2.insert(9); 
+
+	Set!(int) diff = d1.difference(d2);
+	assert(diff.getSize() == 2);
+	assert(diff.contains(10));
+	assert(diff.contains(99));
+	
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
