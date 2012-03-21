@@ -217,6 +217,33 @@ public pure bool isTitleCase(wchar ch) {
 	return false;
 }
 
+public pure bool hasUpperCase(string str) {
+	foreach(char it; str) {
+		if(it > 64 && it < 91) {
+			return true;
+		}
+	}
+	return false;
+}
+
+unittest {
+	assert(hasUpperCase("aaaaaaaaaaaZ"));
+	assert(hasUpperCase("Aaaaaaaaaaaz"));
+}
+
+public pure bool isUpperCase(string str) {
+	foreach(char it; str) {
+		if(it < 65 || it > 90) {
+			return false;
+		}
+	}
+	return true;
+}
+
+unittest {
+	assert(isUpperCase("AHZ"));
+}
+
 // very bad only for ascii right now
 public pure bool isLowerCase(string str) {
 	foreach(char it; str) {

@@ -1,7 +1,6 @@
 module hurt.conv.numerictochar;
 
 import hurt.conv.conv;
-import hurt.util.slog;
 
 public pure T byteToChar(T)(byte src, bool title = false) 
 		if(is(T == char) || is(T == wchar) || is(T == dchar)) {

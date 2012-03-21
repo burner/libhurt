@@ -3,7 +3,6 @@ module hurt.conv.tostring;
 import hurt.conv.numerictochar;
 import hurt.math.mathutil;
 import hurt.string.formatter;
-import hurt.util.slog;
 
 import std.stdio;
 
