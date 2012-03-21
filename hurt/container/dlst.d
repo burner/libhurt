@@ -231,7 +231,7 @@ public class DLinkedList(T) : Iterable!(T) {
 	}	
 
 	public bool contains(T value) {
-		for(Elem!(T) e = this.head; e is this.tail; e = e.getNext()) {
+		for(Elem!(T) e = this.head; e !is this.tail; e = e.getNext()) {
 			if(e.getStore() == value) {
 				return true;
 			}
