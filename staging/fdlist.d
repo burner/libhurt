@@ -110,9 +110,47 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[this.backIt].next = itemPtr;
 			this.items[itemPtr].prev = backIt;
 			this.items[itemPtr].next = -1;
-			this.backIt = itemPtr;
 			this.items[itemPtr].item = item;
+			this.backIt = itemPtr;
 		}
+	}
+
+	public T popFront() {
+		if(this.isEmpty()) {
+			throw new OutOfRangeException("can't popBack from empty list");
+		}
+
+		long f = this.frontIt;
+		long p = this.items[f].next;
+		if(p != -1) {
+			this.items[p].prev = -1;
+		}
+		this.items[f].next = -1;
+		this.items[f].prev = -1;
+
+		this.frontIt = p;
+
+		this.free.push(f);
+		return this.items[f].item;
+	}
+
+	public T popBack() {
+		if(this.isEmpty()) {
+			throw new OutOfRangeException("can't popBack from empty list");
+		}
+
+		long b = this.backIt;
+		long p = this.items[b].prev;
+		if(p != -1) {
+			this.items[p].next = -1;
+		}
+		this.items[b].next = -1;
+		this.items[b].prev = -1;
+
+		this.backIt = p;
+
+		this.free.push(b);
+		return this.items[b].item;
 	}
 
 	private bool checkIdx(string file, int line)(size_t idx) const {
@@ -142,7 +180,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		return this.items[this.getIdx(idx)].item;
 	}
 
-	public void debugPrint() {
+	public void debugPrint() const {
 		foreach(size_t idx, Item!(T) it; this.items) {
 			if(idx % 6 == 0) {
 				println();
@@ -269,6 +307,36 @@ unittest {
 	assert(fdll.get(0) == 66);
 	assert(fdll.get(1) == 55);
 	assert(fdll.get(2) == 44);
+
+	assert(fdll.popBack() == 44);
+	assert(fdll.getSize() == 2);
+	assert(fdll.get(0) == 66);
+	assert(fdll.get(1) == 55);
+	assert(fdll.popBack() == 55);
+	assert(fdll.get(0) == 66);
+	assert(fdll.popBack() == 66);
+	assert(fdll.getSize() == 0);
+	assert(fdll.isEmpty());
+
+	fdll.pushFront(66);
+	assert(fdll.get(0) == 66);
+	fdll.pushFront(55);
+	assert(fdll.get(1) == 66);
+	assert(fdll.get(0) == 55);
+	fdll.pushFront(44);
+	assert(fdll.get(2) == 66);
+	assert(fdll.get(1) == 55);
+	assert(fdll.get(0) == 44);
+
+	assert(fdll.popFront() == 44);
+	assert(fdll.getSize() == 2);
+	assert(fdll.get(1) == 66);
+	assert(fdll.get(0) == 55);
+	assert(fdll.popFront() == 55);
+	assert(fdll.get(0) == 66);
+	assert(fdll.popFront() == 66);
+	assert(fdll.getSize() == 0);
+	assert(fdll.isEmpty());
 }
 
 version(staging) {
