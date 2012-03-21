@@ -153,6 +153,29 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		return this.items[b].item;
 	}
 
+	public T remove(size_t it) {
+		it = this.getIdx(it);
+
+		if(this.items[it].prev == -1) {
+			T tmp = this.popFront();
+			return tmp;
+		} else if(this.items[it].next == -1) {
+			T tmp = this.popBack();
+			return tmp;
+		} else {
+			long prev = this.items[it].prev;
+			long next = this.items[it].next;
+			this.items[prev].next = next;
+			this.items[next].prev = prev;
+			this.items[it].prev = -1;
+			this.items[it].next = -1;
+
+			this.free.push(it);
+
+			return this.items[it].item;
+		}
+	}
+
 	private bool checkIdx(string file, int line)(size_t idx) const {
 		if(idx >= this.getSize()) {
 			throw new OutOfRangeException(format(
@@ -185,7 +208,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			if(idx % 6 == 0) {
 				println();
 			}
-			printf("(%d %d), ", it.prev, it.next);
+			printf("(%u, %d %d), ", idx, it.prev, it.next);
 		}
 		println();
 	}
@@ -229,6 +252,17 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	int opApply(int delegate(ref T) dg) {
 		return 0;
 	}
+}
+unittest {
+	FDoubleLinkedList!(int) fdll = new FDoubleLinkedList!(int)();
+	for(int i = 0; i < 10; i++) {
+		fdll.pushBack(i);
+	}
+	assert(fdll.remove(5) == 5);
+	assert(fdll.remove(5) == 6);
+	assert(fdll.remove(4) == 4);
+	assert(fdll.remove(0) == 0);
+	assert(fdll.remove(5) == 9);
 }
 
 unittest {
