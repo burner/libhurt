@@ -8,6 +8,9 @@ import hurt.io.stdio;
 import hurt.exception.outofrangeexception;
 import hurt.time.stopwatch;
 
+/** This should be faster than the normal Double LinkedList.
+ * 	Tests yields a 2x speed up. 
+ */
 public struct Iterator(T) {
 	private long idx;
 	private FDoubleLinkedList!(T) list;
@@ -303,7 +306,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		}
 
 		if(this.free is null) {
-			this.free = new Stack!(size_t)();
+			this.free = new Stack!(size_t)(32);
 		}
 
 		for(size_t i = oldItemsSize; i < this.items.length; i++) {
@@ -312,9 +315,9 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public bool contains(const T key) const {
-		long u = this.getSize();
-		for(long i = 0; i < u; i++) {
-			if(this[i] == key) {
+		long u = this.frontIt;
+		for(; u != -1; u = this.items[u].next) {
+			if(this.items[u].item == key) {
 				return true;
 			}
 		}
@@ -523,11 +526,7 @@ unittest {
 	977, 2002, 1499, 1500, 992, 2018, 487, 1000, 2471, 2541, 1009, 498, 500,
 	1016];
 
-	version(staging) {
-		int runs = 10;
-	} else {
-		int runs = 1;
-	}
+	int runs = 5;
 	StopWatch sw;
 	sw.start();
 	for(int z = 0; z < runs; z++) {
@@ -545,7 +544,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	log("%f", sw.stop());
+	//log("%f", sw.stop());
 
 	StopWatch sw2;
 	sw2.start();
@@ -564,7 +563,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	log("%f", sw2.stop());
+	//log("%f", sw2.stop());
 }
 
 version(staging) {

@@ -4,6 +4,7 @@ hurt/container/bitmap.d
 hurt/container/bst.d
 hurt/container/deque.d
 hurt/container/dlst.d
+hurt/container/fdlist.d
 hurt/container/hashtable.d
 hurt/container/isr.d
 hurt/container/iterator.d
