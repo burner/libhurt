@@ -9,6 +9,7 @@ Features:
 	Container:
 		Bitmap
 		Double Linked List
+		Fast Double Linked List
 
 		// Map MultiMap and Set can use BinarySeachTrees, RBTrees, BinaryVector(Sorted Vector)
 		// as well as HashMaps as underlying datastructures, simple by passing an argument
@@ -45,7 +46,7 @@ Features:
 	String:
 		StringBuffer(T) (T = (char,wchar,dchar))
 		lower, upper
-		printf style format 
+		printf style format with color
 
 	Math:
 		BigInteger (needed this for some Euler Projects)

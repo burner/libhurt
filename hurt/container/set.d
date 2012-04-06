@@ -112,6 +112,16 @@ class Set(T) {
 		return this.getSize() == s.getSize();
 	}
 
+	public int opApply(scope int delegate(ref size_t, ref T) dg) {
+		ISRIterator!(T) it = this.begin();
+		for(size_t idx = 0; it.isValid(); it++, idx++) {
+			T value = *it;
+			if(int r = dg(idx, value))
+				return r;
+		}
+		return 0;
+	}
+
 	public int opApply(scope int delegate(ref T) dg) {
 		ISRIterator!(T) it = this.begin();
 		for(; it.isValid(); it++) {
