@@ -6,46 +6,52 @@ import hurt.conv.conv;
 import hurt.io.stdio;
 import hurt.util.slog;
  
-class BinarySearchTree(T) : ArrayTree!(T) { 
+class BinarySearchTreeArray(T) : ArrayTree!(T) { 
 	private bool search(const T item, ref long curr, ref long prev, 
 			ref bool lr) const {
-	    while(curr != -1) {
-			log("%d", curr);
-	        if(item == this.nodes[curr].data) {
+		while(curr != -1) {
+			//this.print();
+			if(item == this.nodes[curr].data) {
 				return true;
 			}
 			
-	        lr = this.nodes[curr].data < item;
-			log("%b", lr);
-	        prev = curr;
-	        curr = this.nodes[curr].link[lr];
-	    }
-	    return false;
+			lr = this.nodes[curr].data < item;
+			prev = curr;
+			curr = this.nodes[curr].link[lr];
+		}
+		if(prev > -1 && this.nodes[prev].data == item) {
+			curr = prev;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	 
 	bool insert(T item) {
-	    if(this.root == -1) {
-	        //this.root = new Node!(T);
-	        this.root = this.newNode();
+		if(this.root == -1) {
+			//this.root = new Node!(T);
+			this.root = this.newNode();
 			//log("%d", this.root);
-	        this.nodes[this.root].data = item;
-	        this.size++;
-	        return true;
-	    }
-	    bool lr;
-	    long curr = this.root, prev;
-	 
-	    if(this.search(item, curr, prev, lr)) {
-	        return false;
+			//log("%d", this.root);
+			this.nodes[this.root] = Node!(T)(this,item);
+			this.size++;
+			return true;
+		}
+		bool lr;
+		long curr = this.root; 
+		long prev;
+
+		if(this.search(item, curr, prev, lr)) {
+			return false;
 		}
 
-	    this.nodes[prev].link[lr] = this.newNode();
-	    this.nodes[this.nodes[prev].link[lr]].data = item;
+		this.nodes[prev].link[lr] = this.newNode();
+		this.nodes[this.nodes[prev].link[lr]] = Node!(T)(this,item);
 		if(prev != -1) {
-	    	this.nodes[this.nodes[prev].link[lr]].parent = prev;
+			this.nodes[this.nodes[prev].link[lr]].parent = prev;
 		}
-	    this.size++;
-	    return true;
+		this.size++;
+		return true;
 	}
 
 	/*public bool remove(ISRIterator!(T) it, bool dir = true) {
@@ -59,83 +65,104 @@ class BinarySearchTree(T) : ArrayTree!(T) {
 		} else {
 			return false;
 		}
-	}
+	}*/
 	 
 	bool remove(T item) {
-		if(this.root !is null ) {
-			Node!(T) p = null, succ;
-			Node!(T) it = this.root;
+		if(this.root != -1 ) {
+			//Node!(T) p = null;
+			long p = -1;
+			long succ = -1;
+			long it = this.root;
 			bool dir;
 
 			while(true) {
-				if(it is null )
+				if(it == -1) {
 					return false;
-				else if(it.data == item)
+				} else if(this.nodes[it].data == item) {
 					break;
+				}
 
-				dir = it.data < item;
+				dir = this.nodes[it].data < item;
 				p = it;
-				it = it.link[dir];
+				it = this.nodes[it].link[dir];
 			}
 
-			if(it.link[0] !is null && it.link[1] !is null ) {
+			if(this.nodes[it].link[0] != -1 && 
+				this.nodes[it].link[1] != -1 ) {
+				//log();
 				p = it;
-				succ = it.link[1];
+				succ = this.nodes[it].link[1];
 
-				while(succ.link[0] !is null ) {
+				while(this.nodes[succ].link[0] != -1) {
 					p = succ;
-					succ = succ.link[0];
+					succ = this.nodes[succ].link[0];
 				}
 
-				it.data = succ.data;
-				bool which = p.link[1] is succ;
-				p.link[which] = succ.link[1];
-				if(p.link[which] !is null) {
-					p.link[which].parent = p;
+				this.nodes[it].data = this.nodes[succ].data;
+				bool which = this.nodes[p].link[1] == -1;
+				this.nodes[p].link[which] = this.nodes[succ].link[1];
+				if(this.nodes[p].link[which] != -1) {
+					this.nodes[this.nodes[p].link[which]].parent = p;
 				}
+
+				this.releaseNode(succ);
 			} else {
-				dir = it.link[0] is null;
+				//log();
+				dir = this.nodes[it].link[0] == -1;
 
-				if(p is null) {
-					this.root = it.link[dir];
-					if(this.root !is null) {
-						this.root.parent = null;
+				if(p == -1) {
+					//log("%d %b", it, dir);
+					this.root = this.nodes[it].link[dir];
+					if(this.root != -1 && this.nodes[this.root].isValid()) {
+						this.nodes[this.root].parent = -1;
 					}
+					this.releaseNode(it);
 				} else {
-					bool which = p.link[1] is it;
-					p.link[which] = it.link[dir];
-					if(p.link[which] !is null) {
-						p.link[which].parent = p;
+					//log("%d", p);
+					bool which = this.nodes[this.nodes[p].link[1]] == 
+						this.nodes[it];
+					this.nodes[this.nodes[p].link[which]] = 
+						this.nodes[this.nodes[it].link[dir]];
+					if(this.nodes[this.nodes[p].link[which]].isValid()) {
+						this.nodes[this.nodes[p].link[which]].parent = p;
 					}
+					this.releaseNode(it);
 				}
 			}
 		}
 
-    	size--;
-    	return true;
-	}*/
+		size--;
+		return true;
+	}
 	 
 	Node!(T) search(T item) {
-	    bool found;
-	    long curr = this.root; 
+		bool found;
+		long curr = this.root; 
 		long prev = -1;
 	 
-	    found = search(item, curr, prev, found);
+		found = search(item, curr, prev, found);
 		if(found) {
 			return this.nodes[curr];
 		} else {
 			return Node!(T)(this);
 		}
 	}
+
+	public void print() const {
+		foreach(idx, it; this.nodes) {
+			printf("%u:%s,", idx, it.toString());
+		}
+		printfln("%d %d %d", this.root, this.tail, this.inBetween.getSize());
+	}
 	
-	/*bool validate() const {
-		if(this.root is null) 
+	bool validate() const {
+		if(this.root == -1) 
 			return true;
-		return this.root.validate(true);
+		return this.nodes[this.root].validate(true, Node!(T)(this));
 	}
 
-	void print() const {
-		this.root.print();
+	/*void print() const {
+		this.nodes[this.root].print();
 	}*/
 }
 
@@ -155,11 +182,28 @@ class BinarySearchTree(T) : ArrayTree!(T) {
 
 version(staging) {
 void main() {
-	BinarySearchTree!(int) bst = new BinarySearchTree!(int)();
-	bst.insert(22);
+	BinarySearchTreeArray!(int) bst = new BinarySearchTreeArray!(int)();
+	assert(bst.insert(22));
+	assert(bst.validate());
 	assert(bst.search(22).isValid());
-	log();
 	assert(!bst.search(23).isValid());
+	assert(bst.remove(22));
+	assert(bst.validate());
+	assert(!bst.search(22).isValid());
+	assert(bst.insert(22));
+	assert(bst.insert(23));
+	assert(bst.validate());
+	//bst.print();
+	assert(bst.search(22).isValid());
+	assert(bst.search(23).isValid());
+	assert(bst.remove(22));
+	assert(bst.validate());
+	assert(!bst.search(22).isValid());
+	assert(bst.search(23).isValid());
+	//bst.print();
+	assert(bst.insert(44));
+	assert(bst.validate());
+	//bst.print();
 }
 }
 

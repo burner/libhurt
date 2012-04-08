@@ -6,6 +6,8 @@ import hurt.conv.conv;
 import hurt.util.random.random;
 import hurt.util.datetime;
 import hurt.io.stdio;
+import hurt.string.formatter;
+import hurt.util.slog;
 
 /*
 public class Iterator(T) : ISRIterator!(T) {
@@ -69,7 +71,7 @@ public class Iterator(T) : ISRIterator!(T) {
 }*/
 
 public struct Node(T) {
-	ArrayTree!(T) tree;
+	private ArrayTree!(T) tree;
 	T data;
 	bool red;
 	bool invalid;
@@ -92,6 +94,7 @@ public struct Node(T) {
         this.link[0] = -1;
         this.link[1] = -1;
 		this.parent = -1;
+		this.invalid = false;
 	}
 
 	T getData() {
@@ -102,13 +105,13 @@ public struct Node(T) {
 		return !this.invalid;
 	}
 
-	/*bool validate(bool root, const Node!(T) par = null) const {
+	bool validate(bool root, const Node!(T) par) const {
 		if(!root) {
-			if(this.parent is null) {
+			if(this.parent == -1) {
 				println(__FILE__,__LINE__,": parent is null");
 				return false;
 			}
-			if(this.parent !is par) {
+			if(this.tree.nodes[this.parent] != par) {
 				println(__FILE__,__LINE__,": parent is wrong ");
 					//, parent.data, 
 					//" ",par.data);
@@ -117,18 +120,20 @@ public struct Node(T) {
 		}
 		bool left = true;
 		bool right = true;
-		if(this.link[0] !is null) {
-			assert(this.link[0].parent is this);
-			left = this.link[0].validate(false, this);
+		if(this.link[0] != -1 && this.tree.nodes[this.link[0]].isValid()) {
+			assert(this.tree.nodes[this.tree.nodes[this.link[0]].parent] == 
+				this);
+			left = this.tree.nodes[this.link[0]].validate(false, this);
 		}
-		if(this.link[1] !is null) {
-			assert(this.link[1].parent is this);
-			right = this.link[1].validate(false, this);
+		if(this.link[0] != -1 && this.tree.nodes[this.link[1]].isValid()) {
+			assert(this.tree.nodes[this.tree.nodes[this.link[1]].parent] ==
+				this);
+			right = this.tree.nodes[this.link[1]].validate(false, this);
 		}
 		return left && right;
-	}*/
+	}
 
-	public void print() const {
+	/*public void print() const {
 		//println(this.data);
 		if(this.link[0] != -1) {
 			this.tree.nodes[this.link[0]].print();
@@ -136,18 +141,28 @@ public struct Node(T) {
 		if(this.link[1] != -1) {
 			this.tree.nodes[this.link[1]].print();
 		}
+	}*/
+
+	public string toString() const {
+		static if(is(T : int)) {
+			return format("[%d:%d:%d= %d]", this.parent, this.link[0], 
+				this.link[1], this.data);
+		} else {
+			return format("[%d:%d:%d]", this.parent, this.link[0], 
+				this.link[1]);
+		}
 	}
 }
 
 abstract class ArrayTree(T) {
 	protected size_t size;
 	package Node!(T)[] nodes;
-	private Stack!(size_t) inBetween;
-	private size_t tail;
+	protected Stack!(size_t) inBetween;
+	protected size_t tail;
 	protected long root;
 
 	this() {
-		this.nodes = new Node!(T)[32];
+		this.grow();
 		this.size = 0;
 		this.root = -1;
 		this.tail = 0;
@@ -170,6 +185,15 @@ abstract class ArrayTree(T) {
 
 	public size_t getSize() const {
 		return this.size;
+	}
+
+	protected void releaseNode(size_t idx) {
+		this.nodes[idx] = Node!(T)(this);
+		if(idx + 1 == this.tail) {
+			this.tail--;
+		} else {
+			this.inBetween.push(idx);
+		}
 	}
 
 	protected size_t newNode() {
