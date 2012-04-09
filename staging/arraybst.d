@@ -1,9 +1,10 @@
 module hurt.container.arraybst;
 
 import hurt.container.arraytree;
-
+import hurt.container.isr;
 import hurt.conv.conv;
 import hurt.io.stdio;
+import hurt.string.formatter;
 import hurt.util.slog;
  
 class BinarySearchTreeArray(T) : ArrayTree!(T) { 
@@ -31,10 +32,10 @@ class BinarySearchTreeArray(T) : ArrayTree!(T) {
 		if(this.root == -1) {
 			//this.root = new Node!(T);
 			this.root = this.newNode();
-			//log("%d", this.root);
-			//log("%d", this.root);
+			log("%d %d", this.root, item);
 			this.nodes[this.root] = Node!(T)(this,item);
 			this.size++;
+			println(this.nodes[this.root].toString());
 			return true;
 		}
 		bool lr;
@@ -54,18 +55,19 @@ class BinarySearchTreeArray(T) : ArrayTree!(T) {
 		return true;
 	}
 
-	/*public bool remove(ISRIterator!(T) it, bool dir = true) {
+	public bool remove(ISRIterator!(T) it, bool dir = true) {
 		if(it.isValid()) {
 			T value = *it;
-			if(dir)
+			if(dir) {
 				it++;
-			else
+			} else {
 				it--;
+			}
 			return this.remove(value);
 		} else {
 			return false;
 		}
-	}*/
+	}
 	 
 	bool remove(T item) {
 		if(this.root != -1 ) {
@@ -134,6 +136,15 @@ class BinarySearchTreeArray(T) : ArrayTree!(T) {
 		size--;
 		return true;
 	}
+
+	public ISRIterator!(T) searchIt(T data) {
+		bool found;
+		long curr = this.root; 
+		long prev = -1;
+	 
+		found = search(data, curr, prev, found);
+		return new Iterator!(T)(this, curr);
+	}
 	 
 	Node!(T) search(T item) {
 		bool found;
@@ -166,19 +177,19 @@ class BinarySearchTreeArray(T) : ArrayTree!(T) {
 	}*/
 }
 
-/*bool compare(T)(BinarySearchTree!(T) t, T[T] s) {
+bool compare(T)(BinarySearchTreeArray!(T) t, T[T] s) {
 	if(t.getSize() != s.length) {
 		println(__LINE__, "size wrong");
 		return false;
 	}
 	foreach(it; s.values) {
-		if(t.search(it) is null) {
+		if(!t.search(it).isValid()) {
 			println(__LINE__, "size wrong");
 			return false;
 		}
 	}
 	return true;
-}*/
+}
 
 version(staging) {
 void main() {
@@ -207,7 +218,7 @@ void main() {
 }
 }
 
-/*unittest {
+unittest {
 	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
@@ -215,25 +226,32 @@ void main() {
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 	foreach(lots; lot) {
-		BinarySearchTree!(int) a = new BinarySearchTree!(int)();
+		BinarySearchTreeArray!(int) a = new BinarySearchTreeArray!(int)();
+		assert(a.getSize() == 0);
+		assert(a.isEmpty());
 		int[int] at;
 		foreach(idx, it; lots) {
 			assert(a.insert(it));
 			assert(a.getSize() == idx+1);
-			foreach(jt; lots[0..idx+1]) {
-				assert(a.search(jt));
+			foreach(jdx, jt; lots[0..idx+1]) {
+				if(!a.search(jt).isValid()) {
+					printfln("jdx %d idx %d jt %d size %d", jdx, idx, jt, 
+						a.getSize());
+					a.print();
+					assert(false);
+				}
 			}
 			at[it] = it;
 			assert(a.validate());
 			assert(compare!(int)(a, at));
 			foreach(jt; a.values()) {
-				assert(a.search(jt));
+				assert(a.search(jt).isValid());
 			}
 
-			Iterator!(int) ait = a.begin();
+			ISRIterator!(int) ait = a.begin();
 			size_t cnt = 0;
 			while(ait.isValid()) {
-				assert(a.search(*ait));
+				assert(a.search(*ait).isValid());
 				ait++;
 				cnt++;
 			}
@@ -243,7 +261,7 @@ void main() {
 			ait = a.end();
 			cnt = 0;
 			while(ait.isValid()) {
-				assert(a.search(*ait));
+				assert(a.search(*ait).isValid());
 				ait--;
 				cnt++;
 			}
@@ -259,21 +277,21 @@ void main() {
 			assert(a.validate());
 			assert(compare!(int)(a, at));
 			foreach(jt; lots[0..idx+1]) {
-				assert(!a.search(jt));
+				assert(!a.search(jt).isValid());
 			}
 			foreach(jt; lots[idx+1..$]) {
-				assert(a.search(jt));
+				assert(a.search(jt).isValid());
 			}
 			int[] values = a.values();
 			//writeln(__LINE__," ", values);
 			foreach(jt; values) {
-				assert(a.search(jt));
+				assert(a.search(jt).isValid());
 			}
 			
-			Iterator!(int) ait = a.begin();
+			ISRIterator!(int) ait = a.begin();
 			size_t cnt = 0;
 			while(ait.isValid()) {
-				assert(a.search(*ait));
+				assert(a.search(*ait).isValid());
 				ait++;
 				cnt++;
 			}
@@ -283,7 +301,7 @@ void main() {
 			ait = a.end();
 			cnt = 0;
 			while(ait.isValid()) {
-				assert(a.search(*ait));
+				assert(a.search(*ait).isValid());
 				ait--;
 				cnt++;
 			}
@@ -294,26 +312,27 @@ void main() {
 	}
 
 	for(int i = 0; i < lot[0].length; i++) {
-		BinarySearchTree!(int) itT = new BinarySearchTree!(int)();
+		BinarySearchTreeArray!(int) itT = new BinarySearchTreeArray!(int)();
 		foreach(it; lot[0]) {
 			itT.insert(it);
 		}
 		assert(itT.getSize() == lot[0].length);
-		Iterator!(int) be = itT.begin();
-		while(be.isValid())
+		ISRIterator!(int) be = itT.begin();
+		while(be.isValid()) {
 			assert(itT.remove(be, true));
+		}
 		assert(itT.getSize() == 0);
 	}
 
 	for(int i = 0; i < lot[0].length; i++) {
-		BinarySearchTree!(int) itT = new BinarySearchTree!(int)();
+		BinarySearchTreeArray!(int) itT = new BinarySearchTreeArray!(int)();
 		foreach(it; lot[0]) {
 			itT.insert(it);
 		}
 		assert(itT.getSize() == lot[0].length);
-		Iterator!(int) be = itT.end();
+		ISRIterator!(int) be = itT.end();
 		while(be.isValid())
 			assert(itT.remove(be, false));
 		assert(itT.getSize() == 0);
 	}
-}*/
+}

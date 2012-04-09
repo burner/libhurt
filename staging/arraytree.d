@@ -9,66 +9,68 @@ import hurt.io.stdio;
 import hurt.string.formatter;
 import hurt.util.slog;
 
-/*
 public class Iterator(T) : ISRIterator!(T) {
-	private Node!(T) current;
+	private ArrayTree!(T) tree;
+	private long idx;
 
-	this(Node!(T) current) {
-		this.current = current;
+	this(ArrayTree!(T) tree, long idx) {
+		this.tree = tree;
+		this.idx = idx;
 	}
 
 	override ISRIterator!(T) dup() {
-		return new Iterator!(T)(this.current);
+		return new Iterator!(T)(this.tree, this.idx);
 	}
 
 	//void opUnary(string s)() if(s == "++") {
 	override void increment() {
-		Node!(T) y;
-		if(null !is (y = this.current.link[true])) {
-			while(y.link[false] !is null) {
-				y = y.link[false];
+		long y;
+		if(-1 != (y = this.tree.nodes[this.idx].link[true])) {
+			while(this.tree.nodes[y].link[false] != -1) {
+				y = this.tree.nodes[y].link[false];
 			}
-			this.current = y;
+			this.idx = y;
 		} else {
-			y = this.current.parent;
-			while(y !is null && this.current is y.link[true]) {
-				this.current = y;
-				y = y.parent;
+			y = this.tree.nodes[this.idx].parent;
+			while(y != -1 && this.idx == this.tree.nodes[y].link[true]) {
+				this.idx = y;
+				y = this.tree.nodes[y].parent;
 			}
-			this.current = y;
+			this.idx = y;
 		}
 	}	
 
 	override T getData() {
-		return this.current.getData();
+		return this.tree.nodes[this.idx].getData();
 	}
 
 	//void opUnary(string s)() if(s == "--") {
 	override void decrement() {
-		Node!(T) y;
-		if(null !is (y = this.current.link[false])) {
-			while(y.link[true] !is null) {
-				y = y.link[true];
+		long y;
+		if(-1 !is (y = this.tree.nodes[this.idx].link[false])) {
+			while(this.tree.nodes[y].link[true] != -1) {
+				y = this.tree.nodes[y].link[true];
 			}
-			this.current = y;
+			this.idx = y;
 		} else {
-			y = this.current.parent;
-			while(y !is null && this.current is y.link[false]) {
-				this.current = y;
-				y = y.parent;
+			y = this.tree.nodes[this.idx].parent;
+			while(y !is -1 && this.idx == this.tree.nodes[y].link[false]) {
+				this.idx = y;
+				y = this.tree.nodes[y].parent;
 			}
-			this.current = y;
+			this.idx = y;
 		}
 	}
 
 	override bool isValid() const {
-		return this.current !is null;
+		return this.idx != -1 && 
+			this.tree.nodes[this.idx] != Node!(T)(this.tree);
 	}
 
 	T opUnary(string s)() if(s == "*") {
-		return this.current.data;
+		return this.tree.nodes[this.idx].data;
 	}
-}*/
+}
 
 public struct Node(T) {
 	private ArrayTree!(T) tree;
@@ -79,7 +81,15 @@ public struct Node(T) {
 	long link[2];
 	long parent;
 
-	this(ArrayTree!(T) tree) {
+	package this(const ArrayTree!(T) tree) {
+		//this.tree = tree;
+		this.parent = -1;
+        this.link[0] = -1;
+        this.link[1] = -1;
+		this.invalid = true;
+	}
+
+	package this(ArrayTree!(T) tree) {
 		this.tree = tree;
 		this.parent = -1;
         this.link[0] = -1;
@@ -125,7 +135,7 @@ public struct Node(T) {
 				this);
 			left = this.tree.nodes[this.link[0]].validate(false, this);
 		}
-		if(this.link[0] != -1 && this.tree.nodes[this.link[1]].isValid()) {
+		if(this.link[1] != -1 && this.tree.nodes[this.link[1]].isValid()) {
 			assert(this.tree.nodes[this.tree.nodes[this.link[1]].parent] ==
 				this);
 			right = this.tree.nodes[this.link[1]].validate(false, this);
@@ -207,27 +217,30 @@ abstract class ArrayTree(T) {
 		}
 	}
 
-	/*Iterator!(T) begin() {
-		Node!(T) be = this.root;
-		if(be is null)
-			return new Iterator!(T)(null);
+	Iterator!(T) begin() {
+		long be = this.root;
+		if(be == -1) {
+			return new Iterator!(T)(this, -1);
+		}
+
 		int count = 0;
-		while(be.link[0] !is null) {
-			be = be.link[0];
+		while(this.nodes[be].link[0] != -1) {
+			be = this.nodes[be].link[0];
 			count++;
 		}
-		auto it =  new Iterator!(T)(be);
-		//println(__LINE__," ",count, " ", be is null, " ", it is null, " ", it.isValid(), " ", *it);
+		auto it = new Iterator!(T)(this, be);
 		return it;	
 	}
 
 	Iterator!(T) end() {
-		Node!(T) end = this.root;
-		if(end is null)
-			return new Iterator!(T)(null);
-		while(end.link[1] !is null)
-			end = end.link[1];
-		return new Iterator!(T)(end);
+		long end = this.root;
+		if(end == -1) {
+			return new Iterator!(T)(this, -1);
+		}
+		while(this.nodes[end].link[1] != -1) {
+			end = this.nodes[end].link[1];
+		}
+		return new Iterator!(T)(this, end);
 	}
 
 	public T[] values() {
@@ -241,25 +254,23 @@ abstract class ArrayTree(T) {
 		while(it.isValid()) {
 			//println(ptr, " ", *it);
 			ret[ptr++] = *it;
-			it++;
+			it.increment();
 		}
 		assert(ptr == ret.length, conv!(size_t,string)(ptr) ~ " " ~
 			conv!(size_t, string)(ret.length));
 		return ret;
 	}
 
-	public ISRIterator!(T) searchIt(T data) {
-		return new Iterator!(T)(cast(Node!(T))search(data));
-	}
-
 	void clear() {
-	    this.root = null;
+		for(size_t i = 0; i < this.nodes.length; i++) {
+			this.nodes[i] = Node!(T)(this);
+		}
 	    this.size = 0;
 	}
 	 
 	bool isEmpty() const {
-	    return this.root is null;
-	}*/
+	    return this.root == -1;
+	}
 }
 /*
 unittest {

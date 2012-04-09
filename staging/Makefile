@@ -1,7 +1,8 @@
 #SRC=formatter.d
 
-SRC=arraytree.d arraybst.d
+#SRC=arraytree.d arraybst.d
+SRC=fdlist.d
 
 all:
-	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -ofarraytree
-	./arraytree
+	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -offdlist
+	./fdlist
