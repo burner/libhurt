@@ -61,6 +61,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	private Item!(T)[] items;
 	private size_t tail;
 	private Stack!(size_t) free;
+	private size_t size;
 
 	private long frontIt, backIt;
 
@@ -68,6 +69,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		this.items = null;	
 		this.free = null;	
 		this.tail = 0;
+		this.size = 0;
 		this.grow();
 		this.frontIt = -1;
 		this.backIt = -1;
@@ -82,10 +84,13 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public bool isEmpty() const {
-		return this.frontIt == -1;
+		return this.size == 0;
 	}
 
 	private void releasePtr(size_t ptr) {
+		this.items[ptr].next = -1;
+		this.items[ptr].prev = -1;
+
 		if(ptr + 1 == this.tail) {
 			this.tail--;
 		} else {
@@ -138,6 +143,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].prev = idx;
 			this.items[idx].next = itemPtr;
 		}
+		this.size++;
 	}
 
 	public void pushFront(T item) {
@@ -155,6 +161,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].item = item;
 			this.frontIt = itemPtr;
 		}
+		this.size++;
 	}
 
 	public void pushBack(T item) {
@@ -172,6 +179,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].item = item;
 			this.backIt = itemPtr;
 		}
+		this.size++;
 	}
 
 	public T popFront() {
@@ -184,12 +192,11 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		if(p != -1) {
 			this.items[p].prev = -1;
 		}
-		this.items[f].next = -1;
-		this.items[f].prev = -1;
 
 		this.frontIt = p;
 
 		this.releasePtr(f);
+		this.size--;
 		return this.items[f].item;
 	}
 
@@ -203,12 +210,10 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		if(p != -1) {
 			this.items[p].next = -1;
 		}
-		this.items[b].next = -1;
-		this.items[b].prev = -1;
-
 		this.backIt = p;
 
 		this.releasePtr(b);
+		this.size--;
 		return this.items[b].item;
 	}
 
@@ -224,19 +229,20 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	private T removeImpl(size_t it) {
 		if(this.items[it].prev == -1) {
 			T tmp = this.popFront();
+			this.size--;
 			return tmp;
 		} else if(this.items[it].next == -1) {
 			T tmp = this.popBack();
+			this.size--;
 			return tmp;
 		} else {
 			long prev = this.items[it].prev;
 			long next = this.items[it].next;
 			this.items[prev].next = next;
 			this.items[next].prev = prev;
-			this.items[it].prev = -1;
-			this.items[it].next = -1;
 
 			this.releasePtr(it);
+			this.size--;
 
 			return this.items[it].item;
 		}
@@ -334,7 +340,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public size_t getSize() const {
-		return this.items.length - (this.tail + this.free.getSize());
+		return this.size;
 	}
 
 	public size_t getCapacity() const {
@@ -388,29 +394,16 @@ unittest {
 	foreach(it; fdll) {
 		assert(it == i++);
 	}
-	log();
 
 	Iterator!(int) it = fdll.begin();
 	for(i = 0; it.isValid(); i++, it++) {
 		assert(i == *it);
 	}
-	log();
 	it = fdll.end();
 	for(i = 9; it.isValid(); i--, it--) {
 		assert(i == *it);
 	}
-	log("%d", fdll.getSize());
 
-	/*assert(fdll.remove(5) == 5);
-	log("%d", fdll.getSize());
-	fdll.debugPrint();
-	assert(fdll.remove(4) == 6);
-	log("%d", fdll.getSize());
-	assert(fdll.remove(4) == 4);
-	log("%d", fdll.getSize());
-	assert(fdll.remove(0) == 0);
-	log("%d", fdll.getSize());
-	assert(fdll.remove(5) == 9);*/
 }
 
 unittest {
@@ -418,7 +411,6 @@ unittest {
 	for(int i = 0; i < 10; i++) {
 		fdll.pushFront(i);
 	}
-	log();
 	fdll.insert(9, -2, true);
 	assert(fdll.get(9) == -2);
 	assert(fdll.getSize() == 11);
@@ -432,7 +424,6 @@ unittest {
 	for(int i = 0; i < 10; i++) {
 		fdll.pushFront(i);
 	}
-	log();
 	fdll.insert(5, -2, true);
 	assert(fdll.get(5) == -2);
 	assert(fdll.getSize() == 11);
@@ -440,7 +431,7 @@ unittest {
 	assert(fdll.get(6) == -5);
 	assert(fdll.getSize() == 12);
 }
-/*
+
 unittest {
 	FDoubleLinkedList!(int) fdll = new FDoubleLinkedList!(int)();
 	for(int i = 0; i < 10; i++) {
@@ -583,7 +574,7 @@ unittest {
 		l.remove(t[i] % l.getSize());
 	} }
 	log("%f", sw2.stop());
-}*/
+}
 
 version(staging) {
 void main() {

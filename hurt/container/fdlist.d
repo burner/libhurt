@@ -59,13 +59,17 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	private Item!(T)[] items;
+	private size_t tail;
 	private Stack!(size_t) free;
+	private size_t size;
 
 	private long frontIt, backIt;
 
 	this() {
 		this.items = null;	
 		this.free = null;	
+		this.tail = 0;
+		this.size = 0;
 		this.grow();
 		this.frontIt = -1;
 		this.backIt = -1;
@@ -80,15 +84,29 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public bool isEmpty() const {
-		return this.free.getSize() == this.items.length;
+		return this.size == 0;
+	}
+
+	private void releasePtr(size_t ptr) {
+		this.items[ptr].next = -1;
+		this.items[ptr].prev = -1;
+
+		if(ptr + 1 == this.tail) {
+			this.tail--;
+		} else {
+			this.free.push(ptr);
+		}
 	}
 
 	private size_t nextPtr() {
-		if(this.free.isEmpty()) {
+		if(!this.free.isEmpty()) {
+			return this.free.pop();
+		} else if(this.tail == this.items.length) {
 			this.grow();
+			return this.tail++;
+		} else {
+			return this.tail++;
 		}
-
-		return this.free.pop();
 	}
 
 	public void insert(Iterator!(T) it, T item, bool before = false) {
@@ -125,6 +143,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].prev = idx;
 			this.items[idx].next = itemPtr;
 		}
+		this.size++;
 	}
 
 	public void pushFront(T item) {
@@ -142,6 +161,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].item = item;
 			this.frontIt = itemPtr;
 		}
+		this.size++;
 	}
 
 	public void pushBack(T item) {
@@ -159,6 +179,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			this.items[itemPtr].item = item;
 			this.backIt = itemPtr;
 		}
+		this.size++;
 	}
 
 	public T popFront() {
@@ -171,12 +192,11 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		if(p != -1) {
 			this.items[p].prev = -1;
 		}
-		this.items[f].next = -1;
-		this.items[f].prev = -1;
 
 		this.frontIt = p;
 
-		this.free.push(f);
+		this.releasePtr(f);
+		this.size--;
 		return this.items[f].item;
 	}
 
@@ -190,12 +210,10 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		if(p != -1) {
 			this.items[p].next = -1;
 		}
-		this.items[b].next = -1;
-		this.items[b].prev = -1;
-
 		this.backIt = p;
 
-		this.free.push(b);
+		this.releasePtr(b);
+		this.size--;
 		return this.items[b].item;
 	}
 
@@ -211,19 +229,20 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	private T removeImpl(size_t it) {
 		if(this.items[it].prev == -1) {
 			T tmp = this.popFront();
+			this.size--;
 			return tmp;
 		} else if(this.items[it].next == -1) {
 			T tmp = this.popBack();
+			this.size--;
 			return tmp;
 		} else {
 			long prev = this.items[it].prev;
 			long next = this.items[it].next;
 			this.items[prev].next = next;
 			this.items[next].prev = prev;
-			this.items[it].prev = -1;
-			this.items[it].next = -1;
 
-			this.free.push(it);
+			this.releasePtr(it);
+			this.size--;
 
 			return this.items[it].item;
 		}
@@ -306,11 +325,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		}
 
 		if(this.free is null) {
-			this.free = new Stack!(size_t)(32);
-		}
-
-		for(size_t i = oldItemsSize; i < this.items.length; i++) {
-			this.free.push(i);
+			this.free = new Stack!(size_t)(16);
 		}
 	}
 
@@ -325,11 +340,11 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public size_t getSize() const {
-		return this.items.length - this.free.getSize();
+		return this.size;
 	}
 
 	public size_t getCapacity() const {
-		return this.free.getSize();
+		return (this.items.length - this.tail) + this.free.getSize();
 	}
 
 	int opApply(int delegate(ref size_t,ref T) dg) {
@@ -389,11 +404,6 @@ unittest {
 		assert(i == *it);
 	}
 
-	assert(fdll.remove(5) == 5);
-	assert(fdll.remove(5) == 6);
-	assert(fdll.remove(4) == 4);
-	assert(fdll.remove(0) == 0);
-	assert(fdll.remove(5) == 9);
 }
 
 unittest {
@@ -544,7 +554,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	//log("%f", sw.stop());
+	log("%f", sw.stop());
 
 	StopWatch sw2;
 	sw2.start();
@@ -563,7 +573,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	//log("%f", sw2.stop());
+	log("%f", sw2.stop());
 }
 
 version(staging) {
