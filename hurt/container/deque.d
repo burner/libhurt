@@ -432,6 +432,10 @@ public class Deque(T) : Iterable!(T) {
 		return ret;
 	}
 
+	public bool containsNot(const T toFind) {
+		return !this.contains(toFind);
+	}
+
 	public bool contains(const T toFind) {
 		ConstIterator!(T) b = this.cBegin();	
 		for(; b.isValid(); b++) {
