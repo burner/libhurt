@@ -114,10 +114,10 @@ T binarySearch(T)(T[] r, T key, T notFound) {
 	return binarySearch!(T)(r, key, notFound, r.length, trash, idx);
 }
 
-T binarySearch(T)(immutable(T)[] r, T key, T notFound, size_t high, bool found,
-		ref size_t idx,
-		bool function(T a, T b) cmp,
-		bool function(T a, T b) equal) {
+T binarySearch(T)(immutable(immutable(T)[]) r, immutable(T) key, 
+		immutable(T) notFound, size_t high, bool found, ref size_t idx,
+		bool function(immutable(T) a, immutable(T) b) cmp,
+		bool function(immutable(T) a, immutable(T) b) equal) {
 	size_t l = 0;	
 	if(r is null || r.length == 0) {
 		found = false;

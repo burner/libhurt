@@ -84,6 +84,8 @@ public pure S conv(T, S)(T t, string file = __FILE__, int line = __LINE__) {
 			return "" ~ t;
 		} else static if( is(S == dchar) ) {
 			return cast(dchar)t;
+		} else static if( is(S == char) ) {
+			return t;
 		}
 	} else static if( is(T == ubyte)) {		// ubyte
 		static if( is(S == string) ) {

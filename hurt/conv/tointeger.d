@@ -36,7 +36,7 @@ public pure T stringToInt(T,S)(immutable(S)[] str, int multi = 10)
 			} else if(it == '+') {
 				continue;
 			} else {
-				assert(0, "is not digit nor sign " ~ it);
+				assert(0, "is not digit nor sign " ~ conv!(S,char)(it));
 			}
 		}
 

@@ -1352,20 +1352,26 @@ class Stream : InputStream, OutputStream {
 	 * Get a hash of the stream by reading each byte and using it in a CRC-32
 	 * checksum.
 	 */
-	override size_t toHash() {
-		if(!readable || !seekable)
+	override size_t toHash() @trusted {
+		if(!readable || !seekable) {
 			return super.toHash();
-		ulong pos = position();
-		uint crc = init_crc32 ();
-		position(0);
-		ulong len = size();
-		for(ulong i = 0; i < len; i++) {
-			ubyte c;
-			read(c);
-			crc = update_crc32(c, crc);
 		}
-		position(pos);
-		return crc;
+
+		try {
+			ulong pos = position();
+			uint crc = init_crc32 ();
+			position(0);
+			ulong len = size();
+			for(ulong i = 0; i < len; i++) {
+				ubyte c;
+				read(c);
+				crc = update_crc32(c, crc);
+			}
+			position(pos);
+			return crc;
+		} catch(Throwable) {
+			return super.toHash();
+		}
 	}
 
 	// helper for checking that the stream is readable
