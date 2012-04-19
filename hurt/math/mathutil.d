@@ -42,7 +42,7 @@ public pure T min(T)(T t, T s) if(isNumeric!(T)()) {
 	return t < s ? t : s;
 }
 
-public pure T abs(T)(T t) if(isNumeric!(T)()) {
+public @safe pure T abs(T)(T t) if(isNumeric!(T)()) {
 	return t < 0 ? -t : t;
 }
 

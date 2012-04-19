@@ -665,6 +665,11 @@ public class Deque(T) : Iterable!(T) {
 }
 
 unittest {
+	Deque!(int) d = new Deque!(int)(128);
+	assert(d.getSize() == 0);
+}
+
+unittest {
 	Deque!(int) di = new Deque!(int);
 	Deque!(int) dj = new Deque!(int)(di);
 	assert(di == dj);
