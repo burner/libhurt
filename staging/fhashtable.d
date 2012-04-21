@@ -3,6 +3,7 @@ module hurt.container.fhashtable;
 import hurt.container.isr;
 import hurt.container.stack;
 import hurt.conv.conv;
+import hurt.util.slog;
 
 import std.stdio;
 
@@ -370,33 +371,43 @@ unittest {
 }
 
 unittest {
-	/*int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
 	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 	foreach(it; lot) {
-		HashTable!(int) ht = new HashTable!(int)(false);
+		FHashTable!(int) ht = new FHashTable!(int)();
 		assert(ht.getSize() == 0);
 		foreach(idx,jt; it) {
 			assert(ht.insert(jt));
 			assert(ht.getSize() == idx+1);
-			foreach(kt; it[0..idx+1])
-				assert(ht.search(kt));
-			foreach(kt; it[idx+1..$])
-				assert(!ht.search(kt));
+			foreach(kt; it[0..idx+1]) {
+				assert(ht.contains(kt));
+				assert(ht.search(kt).isValid());
+			}
+			foreach(kt; it[idx+1..$]) {
+				assert(!ht.contains(kt));
+				assert(!ht.search(kt).isValid());
+			}
 		}
 		foreach(idx,jt; it) {
 			assert(ht.remove(jt));
 			assert(ht.getSize() + idx + 1 == it.length);
-			foreach(kt; it[0..idx])
-				assert(!ht.search(kt));
-			foreach(kt; it[idx+1..$])
-				assert(ht.search(kt));
+			foreach(kt; it[0..idx]) {
+				assert(!ht.contains(kt));
+				assert(!ht.search(kt).isValid());
+			}
+			foreach(kt; it[idx+1..$]) {
+				assert(ht.contains(kt));
+				assert(ht.search(kt).isValid());
+			}
 		}
 		assert(ht.getSize() == 0, conv!(size_t,string)(ht.getSize()));
 	}
+}
+/*
 	string[] words = [
 "abbreviation","abbreviations","abettor","abettors","abilities","ability"
 "abrasion","abrasions","abrasive","abrasives","absence","absences","abuse"
@@ -719,4 +730,3 @@ unittest {
 			assert(itT.remove(be, false));
 		assert(itT.getSize() == 0);
 	}*/
-}
