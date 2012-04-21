@@ -1,6 +1,7 @@
 module hurt.container.fhashtable;
 
 import hurt.container.isr;
+import hurt.container.stack;
 import hurt.conv.conv;
 
 import std.stdio;
@@ -68,11 +69,12 @@ import std.stdio;
 
 struct Node(T) {
 	T data;
-	size_t vPtr;
+	size_t vPtr; /* 0 means not set, 1 means set but no list, everything
+		else there is a list */
 
-	this(T data) {
+	this(T data, size_t vPtr = 1) {
 		this.data = data;
-		vPtr = 1;
+		this.vPtr = vPtr;
 	}
 
 	T getData() {
@@ -95,6 +97,10 @@ class FHashTable(T) {
 	private Node!(T)[] table;
 	private size_t function(T data) hashFunc;
 	private size_t size;
+
+	private size_t tail;
+	private Node!(T)[] overflow;
+	private Stack!(size_t) free;
 
 	static size_t defaultHashFunc(T data) {
 		static if(is(T : long) || is(T : int) || is(T : byte) || is(T : char)) {
@@ -151,6 +157,9 @@ class FHashTable(T) {
 	this(size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.hashFunc = hashFunc;
 		this.table = new Node!(T)[128];
+		this.overflow = new Node!(T)[32];
+		this.free = new Stack!(size_t)();
+		this.tail = 2;
 	}
 
 	/*ISRIterator!(T) searchIt(T data) {
@@ -167,13 +176,20 @@ class FHashTable(T) {
 	Node!(T) search(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		size_t it = hash;
-		while(this.table[it].isValid()) {
+		if(this.table[it].isValid()) {
 			if(this.table[it].data == data) {
-				break;
+				return this.table[it];	
+			} else {
+				size_t vPtr = this.table[it].vPtr;
+				while(this.overflow[vPtr].isValid()) {
+					if(this.overflow[vPtr].data == data) {
+						return this.overflow[vPtr];
+					}
+					vPtr = this.table[vPtr].vPtr;
+				}
 			}
-			it = this.table[it].vPtr;
 		}
-		return this.table[it];
+		return Node!(T)();
 	}
 
 	/*public bool remove(ISRIterator!(T) it, bool dir = true) {
@@ -221,7 +237,7 @@ class FHashTable(T) {
 	}*/
 
 	private void grow() {
-		Node!(T)[] nTable = new Node!(T)[this.table.length*2];
+		/*Node!(T)[] nTable = new Node!(T)[this.table.length*2];
 		foreach(it; this.table) {
 			if(it.isValid()) {
 				Node!(T) i = it;
@@ -229,35 +245,39 @@ class FHashTable(T) {
 				size_t hash;
 				while(i.isValid()) {
 					hash = this.hashFunc(i.data) % nTable.length;
-					insert(nTable, hash, i);
+					insert(nTable, hash, i.data);
 					i = j;
-					if(i !is null)
+					if(i.isValid()) {
 						j = i.next;	
+					}
 				}
 			}
 		}
-		this.table = nTable;
+		this.table = nTable;*/
 	}
 
-	package Node!(T) getNode(size_t idx) {
+	/*package Node!(T) getNode(size_t idx) {
 		if(idx < this.table.length) {
 			return this.table[idx];
 		} else {
-			return null;
+			return No;
 		}
-	}
+	}*/
 
 	package size_t getTableSize() const {
 		return this.table.length;
 	}
 
-	private static void insert(Node!(T)[] t, size_t hash, Node!(T) node) {
-		Node!(T) old = t[hash];
-		t[hash] = node;
-		t[hash].next = old;
-		t[hash].prev = null;
-		if(old !is null) {
-			old.prev = t[hash];
+	private void insert(Node!(T)[] t, Node!(T)[] overflow, size_t hash, 
+			T data) {
+		if(!t[hash].isValid()) {
+			t[hash] = Node!(T)(data);
+			return;
+		} else {
+			size_t oldNext = t[hash].vPtr;
+			size_t nextPtr = this.nextPtr;
+			overflow[nextPtr] = Node!(T)(data, oldNext);
+			t[hash].vPtr = nextPtr;
 		}
 	}
 
@@ -267,10 +287,31 @@ class FHashTable(T) {
 			this.grow();
 		}
 		size_t hash = this.hashFunc(data) % table.length;
-		insert(this.table, hash, new Node!(T)(data));
+		insert(this.table, this.overflow, hash, data);
 		this.size++;
 		
 		return true;
+	}
+
+	private void releasePtr(size_t ptr) {
+		this.overflow[ptr].vPtr = 0;
+
+		if(ptr + 1 == this.tail) {
+			this.tail--;
+		} else {
+			this.free.push(ptr);
+		}
+	}
+
+	private size_t nextPtr() {
+		if(!this.free.isEmpty()) {
+			return this.free.pop();
+		} else if(this.tail == this.overflow.length) {
+			this.overflow.length = this.overflow.length * 2;
+			return this.tail++;
+		} else {
+			return this.tail++;
+		}
 	}
 
 	public size_t getSize() const {
@@ -282,8 +323,21 @@ class FHashTable(T) {
 	}
 }
 
+version(staging) {
+void main() {
+	return;
+}
+}
+
 unittest {
-	int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
+	FHashTable!(int) fht = new FHashTable!(int)();
+	fht.insert(66);
+	fht.insert(66);
+	assert(fht.search(66).isValid());
+}
+
+unittest {
+	/*int[][] lot = [[2811, 1089, 3909, 3593, 1980, 2863, 676, 258, 2499, 3147,
 	3321, 3532, 3009, 1526, 2474, 1609, 518, 1451, 796, 2147, 56, 414, 3740,
 	2476, 3297, 487, 1397, 973, 2287, 2516, 543, 3784, 916, 2642, 312, 1130,
 	756, 210, 170, 3510, 987], [0,1,2,3,4,5,6,7,8,9,10],
@@ -631,5 +685,5 @@ unittest {
 		while(be.isValid())
 			assert(itT.remove(be, false));
 		assert(itT.getSize() == 0);
-	}
+	}*/
 }
