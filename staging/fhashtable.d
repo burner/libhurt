@@ -162,6 +162,29 @@ class FHashTable(T) {
 		this.tail = 2;
 	}
 
+	public bool contains(T data) const {
+		return this.search(data).isValid();
+	}
+
+	const Node!(T) search(T data) const {
+		size_t hash = this.hashFunc(data) % this.table.length;
+		size_t it = hash;
+		if(this.table[it].isValid()) {
+			if(this.table[it].data == data) {
+				return this.table[it];	
+			} else {
+				size_t vPtr = this.table[it].vPtr;
+				while(this.overflow[vPtr].isValid()) {
+					if(this.overflow[vPtr].data == data) {
+						return this.overflow[vPtr];
+					}
+					vPtr = this.table[vPtr].vPtr;
+				}
+			}
+		}
+		return Node!(T)();
+	}
+
 	/*ISRIterator!(T) searchIt(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
 		Node!(T) it = this.table[hash];
@@ -203,38 +226,45 @@ class FHashTable(T) {
 		} else {
 			return false;
 		}
-	}
+	}*/
 
 	bool remove(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
-		if(this.table is null && hash >= this.table.length) {
-			return false;
-		}
-		Node!(T) it = this.table[hash];
-		if(it is null) {
-			return false;
-		}
-		if(it !is null && it.data == data) {
-			this.table[hash] = it.next;
-			if(this.table[hash] !is null) {
-				this.table[hash].prev = null;
+		if(this.table[hash].isValid() && this.table[hash].data == data) {
+			if(this.table[hash].vPtr > 1) {
+				size_t vPtrTmp = this.table[hash].vPtr;
+				this.table[hash].data = this.overflow[vPtrTmp].data;
+				this.table[hash].vPtr = this.overflow[vPtrTmp].vPtr;
+				this.releasePtr(vPtrTmp);
+			} else if(this.table[hash].vPtr == 1) {
+				this.table[hash].vPtr = 0;
 			}
 			this.size--;
 			return true;
-		}
-		while(it.next !is null) {
-			if(it.next.data == data) {
-				it.next = it.next.next;
-				if(it.next !is null) {
-					it.next.prev = it;
+		} else if(this.table[hash].isValid() && this.table[hash].data != data &&
+				this.table[hash].vPtr > 1 && 
+				this.overflow[this.table[hash].vPtr].data == data) {
+			size_t next = this.overflow[this.table[hash].vPtr].vPtr;
+			this.releasePtr(this.table[hash].vPtr);
+			this.table[hash].vPtr = next;
+			this.size--;
+			return true;
+		} else if(this.table[hash].isValid() && this.table[hash].vPtr > 1) {
+			size_t ne = this.overflow[this.table[hash].vPtr].vPtr;
+			size_t nene = this.overflow[ne].vPtr;
+			while(this.overflow[nene].isValid()) {
+				if(this.overflow[nene].data == data) {
+					this.overflow[ne].vPtr = this.overflow[nene].vPtr;
+					this.releasePtr(nene);
+					this.size--;
+					return true;
 				}
-				this.size--;
-				return true;
+				ne = nene;
+				nene = this.overflow[nene].vPtr;
 			}
-			it = it.next;
 		}
 		return false;
-	}*/
+	}
 
 	private void grow() {
 		/*Node!(T)[] nTable = new Node!(T)[this.table.length*2];
@@ -332,8 +362,11 @@ void main() {
 unittest {
 	FHashTable!(int) fht = new FHashTable!(int)();
 	fht.insert(66);
-	fht.insert(66);
-	assert(fht.search(66).isValid());
+	fht.insert(67);
+	assert(fht.contains(66));
+	assert(fht.contains(67));
+	assert(fht.remove(66));
+	assert(!fht.contains(66));
 }
 
 unittest {
