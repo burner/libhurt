@@ -4,69 +4,70 @@ import hurt.container.isr;
 import hurt.container.stack;
 import hurt.conv.conv;
 import hurt.util.slog;
+import hurt.string.formatter;
 
 import std.stdio;
 
-/*class Iterator(T) : ISRIterator!(T) {
-	private size_t idx; 
-	private Node!(T) curNode;
-	private HashTable!(T) table;
+class Iterator(T) : ISRIterator!(T) {
+	private size_t oIdx; 
+	private size_t tIdx; 
+	private FHashTable!(T) table;
 
-	this(HashTable!(T) table, size_t idx, Node!(T) curNode) {
+	this(FHashTable!(T) table, size_t tIdx, size_t oIdx) {
 		this.table = table;
-		this.idx = idx;
-		this.curNode = curNode;
+		this.tIdx = tIdx;
+		this.oIdx = oIdx;
 	}
 
-	override ISRIterator!(T) dup() {
-		Iterator!(T) it = new Iterator!(T)(this.table, this.idx, this.curNode);
-		return it;
+	public override Iterator!(T) dup() {
+		return new Iterator!(T)(this.table, this.tIdx, this.oIdx);
 	}
 
 	//public void opUnary(string s)() if(s == "++") {
 	override void increment() {
-		Node!(T) next = this.curNode.next;
-		if(next is null) {
-			size_t tableSize = this.table.getTableSize();
-			while(this.idx+1 < tableSize && next is null) {
-				this.idx++;
-				next = this.table.getNode(this.idx);
+		if(this.tIdx > this.table.table.length) {
+			return;
+		} else if(this.table.table[tIdx].isValid() && 
+				this.table.table[tIdx].vPtr > 1 && this.oIdx <= 1) {
+			this.oIdx = this.table.table[tIdx].vPtr;
+		} else if(this.oIdx > 1) {
+			this.oIdx = this.table.overflow[this.oIdx].vPtr;
+			if(this.oIdx <= 1) {
+				this.tIdx++;
+				while(!this.table.table[this.tIdx].isValid()) {
+					this.tIdx++;
+				}
 			}
 		}
-		this.curNode = next;
 	}
 
 	//public void opUnary(string s)() if(s == "--") {
 	override void decrement() {
-		Node!(T) prev = this.curNode.prev;
-		//writeln(__LINE__," ",prev is null, " ",this.idx);
-		if(prev is null) {
-			while(this.idx != size_t.max && prev is null) {
-				this.idx--;
-				prev = this.table.getNode(idx);	
-				if(prev !is null) {
-					while(prev.next !is null)
-						prev = prev.next;
-				}
-			}
-
-		}
-		this.curNode = prev;
-		//writeln(__LINE__," ",this.curNode is null, " ",this.idx);
 	}
 
 	//public T opUnary(string s)() if(s == "*") {
 	override T getData() {
-		if(this.isValid())
-			return this.curNode.getData();
-		else
-			assert(0, "Iterator was not valid");
+		if(this.oIdx > 1) {
+			return this.table.overflow[this.oIdx].data;
+		} else if(this.oIdx <= 1 && this.table.table[this.tIdx].isValid()) {
+			return this.table.table[this.tIdx].data;
+		} else {
+			assert(false, format("This Iterator was invalid. oIdx %d tIdx %d",
+				this.oIdx, this.tIdx));
+		}
 	}
 
 	public override bool isValid() const {
-		return this.curNode !is null;
+		if(this.tIdx == size_t.max || this.tIdx >= this.table.table.length) {
+			return false;
+		} else if(this.oIdx > 1) {
+			return this.table.table[this.tIdx].isValid() && 
+				this.table.overflow[this.oIdx].isValid();
+		} else {
+			return this.table.table[this.tIdx].isValid();
+		}
 	}
-}*/
+}
 
 struct Node(T) {
 	T data;
@@ -95,7 +96,7 @@ struct Node(T) {
 
 
 class FHashTable(T) {
-	private Node!(T)[] table;
+	package Node!(T)[] table;
 	private size_t function(T data) hashFunc;
 	private size_t size;
 
@@ -113,8 +114,6 @@ class FHashTable(T) {
 				ret = it + (ret << 6) + (ret << 16) - ret;
 			}
 			return ret;
-		} else static if(is(T : Object)) {
-			return cast(size_t)data.toHash();
 		} else {
 			assert(0);
 		}
@@ -130,17 +129,19 @@ class FHashTable(T) {
 			}
 		}
 		return ret;
-	}
+	}*/
 
 	Iterator!(T) begin() {
-		size_t idx = 0;
-		while(idx+1 < this.table.length && this.table[idx] is null)
-			idx++;
-		return new Iterator!(T)(this, idx, this.table[idx]);
+		for(size_t i = 0; i < this.table.length; i++) {
+			if(this.table[i].isValid()) {
+				return new Iterator!(T)(this, i, 0);
+			}
+		}
+		return new Iterator!(T)(this, size_t.max, 0);
 	}
 
 	Iterator!(T) end() {
-		size_t idx = this.table.length-1;
+		/*size_t idx = this.table.length-1;
 		if(this.table.length == 0)
 			return new Iterator!(T)(this,0,null);
 		while(idx >= 0 && this.table.length > idx && this.table[idx] is null)
@@ -150,10 +151,11 @@ class FHashTable(T) {
 
 		Node!(T) end = this.table[idx];
 		while(end.next !is null)
-			end = end.next;
+			end = end.next;*/
 		
-		return new Iterator!(T)(this, idx, end);
-	}*/
+		//return new Iterator!(T)(this, idx, end);
+		return null;
+	}
 
 	this(size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.hashFunc = hashFunc;
@@ -268,23 +270,8 @@ class FHashTable(T) {
 	}
 
 	private void grow() {
-		/*Node!(T)[] nTable = new Node!(T)[this.table.length*2];
-		foreach(it; this.table) {
-			if(it.isValid()) {
-				Node!(T) i = it;
-				Node!(T) j = this.table[i.vPtr];
-				size_t hash;
-				while(i.isValid()) {
-					hash = this.hashFunc(i.data) % nTable.length;
-					insert(nTable, hash, i.data);
-					i = j;
-					if(i.isValid()) {
-						j = i.next;	
-					}
-				}
-			}
-		}
-		this.table = nTable;*/
+		Node!(T)[] nTable = new Node!(T)[this.table.length*2];
+		this.table = nTable;
 	}
 
 	/*package Node!(T) getNode(size_t idx) {
@@ -363,6 +350,8 @@ void main() {
 unittest {
 	FHashTable!(int) fht = new FHashTable!(int)();
 	fht.insert(66);
+	assert(fht.begin().isValid());
+	assert(fht.begin().getData() == 66);
 	fht.insert(67);
 	assert(fht.contains(66));
 	assert(fht.contains(67));
