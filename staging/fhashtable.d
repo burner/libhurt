@@ -11,37 +11,57 @@ import std.stdio;
 class Iterator(T) : ISRIterator!(T) {
 	private size_t oIdx; 
 	private size_t tIdx; 
+	private size_t backCnt;
 	private FHashTable!(T) table;
 
 	this(FHashTable!(T) table, size_t tIdx, size_t oIdx) {
 		this.table = table;
 		this.tIdx = tIdx;
 		this.oIdx = oIdx;
+		this.backCnt = 0;
 	}
 
 	public override Iterator!(T) dup() {
 		return new Iterator!(T)(this.table, this.tIdx, this.oIdx);
 	}
 
-	//public void opUnary(string s)() if(s == "++") {
 	override void increment() {
-		if(this.tIdx > this.table.table.length) {
-			return;
-		} else if(this.table.table[tIdx].isValid() && 
-				this.table.table[tIdx].vPtr > 1 && this.oIdx <= 1) {
+		if(this.table.table[tIdx].isValid() && this.oIdx == 0 &&
+				this.table.table[tIdx].vPtr > 1) {
 			this.oIdx = this.table.table[tIdx].vPtr;
-		} else if(this.oIdx > 1) {
-			this.oIdx = this.table.overflow[this.oIdx].vPtr;
-			if(this.oIdx <= 1) {
+		} else if(this.table.table[tIdx].isValid() && this.oIdx == 0 &&
+				this.table.table[tIdx].vPtr == 1) {
+			this.tIdx++;
+			while(this.tIdx < this.table.table.length
+					&& !this.table.table[tIdx].isValid()) {
 				this.tIdx++;
-				while(!this.table.table[this.tIdx].isValid()) {
-					this.tIdx++;
-				}
 			}
+			this.oIdx = 0;
+			return;
+		} else if(this.table.table[tIdx].isValid() && this.oIdx > 1 &&
+				this.table.overflow[this.oIdx].isValid()) {
+			this.oIdx = this.table.overflow[this.oIdx].next;
+			if(!this.table.overflow[this.oIdx].isValid()) {
+				while(this.tIdx < this.table.table.length
+						&& !this.table.table[this.tIdx].isValid()) {
+					tIdx++;	
+				}
+				this.oIdx = 0;
+			}
+			return;
+		} else if(this.table.table[this.tIdx].isValid() && this.oIdx == 1) {
+			while(this.tIdx < this.table.table.length
+					&& !this.table.table[this.tIdx].isValid()) {
+				tIdx++;	
+			}
+			this.oIdx = 0;
+			return;	
+		} else {
+			assert(false, format("Bad stuff just happend tIdx %d oIdx %d", 
+				tIdx, oIdx));
 		}
 	}
 
-	//public void opUnary(string s)() if(s == "--") {
 	override void decrement() {
 	}
 
@@ -94,6 +114,32 @@ struct Node(T) {
 	}
 }
 
+struct NodeList(T) {
+	T data;
+	long next; 
+	long prev;
+	bool valid;
+
+	this(T data, long next) {
+		this.data = data;
+		this.next = next;
+		this.prev = 0;
+		this.valid = true;
+	}
+
+	T getData() {
+		return this.data;
+	}
+
+	public long remove() {
+		this.valid = false;
+		return this.next;
+	}
+
+	bool isValid() const @trusted {
+		return this.valid;
+	}
+}
 
 class FHashTable(T) {
 	package Node!(T)[] table;
@@ -101,7 +147,7 @@ class FHashTable(T) {
 	private size_t size;
 
 	private size_t tail;
-	private Node!(T)[] overflow;
+	private NodeList!(T)[] overflow;
 	private Stack!(size_t) free;
 
 	static size_t defaultHashFunc(T data) {
@@ -160,7 +206,7 @@ class FHashTable(T) {
 	this(size_t function(T toHash) hashFunc = &defaultHashFunc) {
 		this.hashFunc = hashFunc;
 		this.table = new Node!(T)[128];
-		this.overflow = new Node!(T)[32];
+		this.overflow = new NodeList!(T)[32];
 		this.free = new Stack!(size_t)();
 		this.tail = 2;
 	}
@@ -179,9 +225,10 @@ class FHashTable(T) {
 				size_t vPtr = this.table[it].vPtr;
 				while(this.overflow[vPtr].isValid()) {
 					if(this.overflow[vPtr].data == data) {
-						return this.overflow[vPtr];
+						return Node!(T)(this.overflow[vPtr].data, 
+							this.overflow[vPtr].next);
 					}
-					vPtr = this.table[vPtr].vPtr;
+					vPtr = this.overflow[vPtr].next;
 				}
 			}
 		}
@@ -209,9 +256,10 @@ class FHashTable(T) {
 				size_t vPtr = this.table[it].vPtr;
 				while(this.overflow[vPtr].isValid()) {
 					if(this.overflow[vPtr].data == data) {
-						return this.overflow[vPtr];
+						return Node!(T)(this.overflow[vPtr].data, 
+							this.overflow[vPtr].next);
 					}
-					vPtr = this.table[vPtr].vPtr;
+					vPtr = this.overflow[vPtr].next;
 				}
 			}
 		}
@@ -233,37 +281,45 @@ class FHashTable(T) {
 
 	bool remove(T data) {
 		size_t hash = this.hashFunc(data) % this.table.length;
+
+		// the head is what we search for
 		if(this.table[hash].isValid() && this.table[hash].data == data) {
 			if(this.table[hash].vPtr > 1) {
 				size_t vPtrTmp = this.table[hash].vPtr;
 				this.table[hash].data = this.overflow[vPtrTmp].data;
-				this.table[hash].vPtr = this.overflow[vPtrTmp].vPtr;
+				this.table[hash].vPtr = this.overflow[vPtrTmp].next;
 				this.releasePtr(vPtrTmp);
 			} else if(this.table[hash].vPtr == 1) {
 				this.table[hash].vPtr = 0;
 			}
 			this.size--;
 			return true;
+
+		// the first item in the overflow list is the item to remove
 		} else if(this.table[hash].isValid() && this.table[hash].data != data &&
 				this.table[hash].vPtr > 1 && 
 				this.overflow[this.table[hash].vPtr].data == data) {
-			size_t next = this.overflow[this.table[hash].vPtr].vPtr;
+			size_t next = this.overflow[this.table[hash].vPtr].next;
 			this.releasePtr(this.table[hash].vPtr);
 			this.table[hash].vPtr = next;
 			this.size--;
 			return true;
+
+		// remove a item in the overflow list
 		} else if(this.table[hash].isValid() && this.table[hash].vPtr > 1) {
-			size_t ne = this.overflow[this.table[hash].vPtr].vPtr;
-			size_t nene = this.overflow[ne].vPtr;
-			while(this.overflow[nene].isValid()) {
-				if(this.overflow[nene].data == data) {
-					this.overflow[ne].vPtr = this.overflow[nene].vPtr;
-					this.releasePtr(nene);
+			size_t ne = this.overflow[this.table[hash].vPtr].next;
+			while(this.overflow[ne].isValid()) {
+				if(this.overflow[ne].data == data) {
+					//this.overflow[ne].next = this.overflow[nene].next;
+					long prev = this.overflow[ne].prev;
+					long next = this.overflow[ne].next;
+					this.overflow[prev].next = next;
+					this.overflow[next].prev = prev;
+					this.releasePtr(ne);
 					this.size--;
 					return true;
 				}
-				ne = nene;
-				nene = this.overflow[nene].vPtr;
+				ne = this.overflow[ne].next;
 			}
 		}
 		return false;
@@ -271,7 +327,14 @@ class FHashTable(T) {
 
 	private void grow() {
 		Node!(T)[] nTable = new Node!(T)[this.table.length*2];
+		NodeList!(T)[] nOverflow = new NodeList!(T)[this.overflow.length*2];
+		auto it = this.begin();
+		for(; it.isValid(); it++) {
+			this.insert(nTable, nOverflow, this.hashFunc(*it) % nTable.length, 
+				*it);
+		}
 		this.table = nTable;
+		this.overflow = nOverflow;
 	}
 
 	/*package Node!(T) getNode(size_t idx) {
@@ -286,15 +349,17 @@ class FHashTable(T) {
 		return this.table.length;
 	}
 
-	private void insert(Node!(T)[] t, Node!(T)[] overflow, size_t hash, 
+	private void insert(Node!(T)[] t, NodeList!(T)[] overflow, size_t hash, 
 			T data) {
 		if(!t[hash].isValid()) {
 			t[hash] = Node!(T)(data);
 			return;
 		} else {
 			size_t oldNext = t[hash].vPtr;
-			size_t nextPtr = this.nextPtr;
-			overflow[nextPtr] = Node!(T)(data, oldNext);
+			size_t nextPtr = this.nextPtr();
+			log("%d %d", nextPtr, overflow.length);
+			overflow[nextPtr] = NodeList!(T)(data, oldNext);
+			log("%d %d", hash, t.length);
 			t[hash].vPtr = nextPtr;
 		}
 	}
@@ -312,7 +377,9 @@ class FHashTable(T) {
 	}
 
 	private void releasePtr(size_t ptr) {
-		this.overflow[ptr].vPtr = 0;
+		this.overflow[ptr].next = 0;
+		this.overflow[ptr].prev = 0;
+		this.overflow[ptr].valid = false;
 
 		if(ptr + 1 == this.tail) {
 			this.tail--;
@@ -355,6 +422,13 @@ unittest {
 	fht.insert(67);
 	assert(fht.contains(66));
 	assert(fht.contains(67));
+	auto it = fht.begin();
+	assert(it.isValid());
+	int last = *it;
+	assert(*it == 66 || *it == 67);
+	it++;
+	assert(it.isValid());
+	assert((*it == 66 || *it == 67) && *it != last);
 	assert(fht.remove(66));
 	assert(!fht.contains(66));
 }
@@ -396,7 +470,8 @@ unittest {
 		assert(ht.getSize() == 0, conv!(size_t,string)(ht.getSize()));
 	}
 }
-/*
+
+unittest {
 	string[] words = [
 "abbreviation","abbreviations","abettor","abettors","abilities","ability"
 "abrasion","abrasions","abrasive","abrasives","absence","absences","abuse"
@@ -634,21 +709,21 @@ unittest {
 "cost","cut","drunk","felt","forecast","ground","hit","lent","offset","set"
 "shed","shot","slit","thought","wound"];
 
-	HashTable!(string) st = new HashTable!(string)(false);
+	FHashTable!(string) st = new FHashTable!(string)();
 	foreach(idx,word;words) {
 		st.insert(word);
 		foreach(kt; words[0..idx+1]) {
-			assert(st.search(kt));
+			assert(st.contains(kt));
 		}
 		foreach(kt; words[idx+1..$])
-			assert(!st.search(kt));
+			assert(!st.contains(kt));
 		assert(idx+1 == st.getSize(), conv!(size_t,string)(idx+1) ~
 			" " ~ conv!(size_t,string)(st.getSize()));
 		
-		Iterator!(string) it = st.begin();
+		/*Iterator!(string) it = st.begin();
 		size_t cnt = 0;
 		while(it.isValid()) {
-			assert(st.search(*it));
+			assert(st.contains(*it));
 			it++;
 			cnt++;
 		}
@@ -666,7 +741,9 @@ unittest {
 		}
 		assert(cnt == st.getSize(), conv!(size_t,string)(cnt) ~
 			" " ~ conv!(size_t,string)(st.getSize()));
+		*/
 	}
+}/*
 
 	foreach(idx,jt; words) {
 		assert(st.remove(jt));

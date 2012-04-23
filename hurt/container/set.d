@@ -6,6 +6,7 @@ import hurt.container.hashtable;
 import hurt.container.isr;
 import hurt.container.rbtree;
 import hurt.container.tree;
+import hurt.container.iterator;
 
 import hurt.conv.conv;
 
@@ -23,6 +24,13 @@ class Set(T) {
 	this(size_t size) {
 		this.type = ISRType.HashTable;
 		this.makeMap(size);
+	}
+
+	this(Iterable!(T) iterable) {
+		this();
+		foreach(it; iterable) {
+			this.insert(it);
+		}
 	}
 	
 	this(BinVec!(T) bv) {
