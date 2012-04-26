@@ -187,6 +187,10 @@ public class MapSet(T,S) {
 		return this.map;
 	}
 
+	public T[] keys() {
+		return this.map.keys();
+	}
+
 	/** Make one set of all the sets contained in the map.
 	 */
 	public Set!(S) getSet() {
@@ -199,6 +203,15 @@ public class MapSet(T,S) {
 			}
 		}
 		return ret;
+	}
+
+	public Set!(S) getSet(T which) {
+		MapItem!(T, Set!(S)) mi = this.map.find(which);
+		if(mi is null) {
+			return new Set!(S)();
+		} else {
+			return mi.getData();
+		}
 	}
 
 	public override bool opEquals(Object o) {
