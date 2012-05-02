@@ -228,10 +228,18 @@ public class MapSet(T,S) {
 		StringBuffer!(char) ret = new StringBuffer!(char)();
 		ISRIterator!(MapItem!(T,Set!(S))) it = this.map.begin();
 		for(; it.isValid(); it++) {
-			ret.pushBack(format("%d:", (*it).getKey()));
+			static if(is(T : int)) {
+				ret.pushBack(format("%d:", (*it).getKey()));
+			} else static if(is(T : Object)) {
+				ret.pushBack(format("%s:", (*it).getKey()));
+			}
 			ISRIterator!(S) jt = (*it).getData().begin();
 			for(; jt.isValid(); jt++) {
-				ret.pushBack(format("%d ", *jt));
+				static if(is(T : int)) {
+					ret.pushBack(format("%d ", *jt));
+				} else static if(is(T : Object)) {
+					ret.pushBack(format("%s ", *jt));
+				}
 			}
 			ret.pushBack("\n");
 		}
