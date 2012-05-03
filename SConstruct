@@ -113,7 +113,7 @@ hurt/util/random/normalsource.d
 hurt/util/random/expsource.d
 ''')
 
-#lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gs -gc -g -m64"))
+lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gs -gc -g -m64"))
 #lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-unittest -gs -gc -g"))
-lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-release -noboundscheck"))
+#lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-release -noboundscheck"))
 #lib = Library(target = 'hurt', source=src, CCFLAGS = '-Wall -ggdb', DFLAGS = Split("-O -release -noboundscheck"))

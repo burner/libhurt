@@ -222,6 +222,24 @@ public class MapSet(T,S) {
 		this.map.clear();
 	}
 
+	public MapSet!(T,S) difference(MapSet!(T,S) other) {
+		auto ret = new MapSet!(T,S)(this.mapType, this.setType);
+
+		foreach(key, value; this) {
+			if(!other.contains(key,value)) {
+				ret.insert(key,value);
+			}
+		}
+
+		foreach(key, value; other) {
+			if(!this.contains(key,value)) {
+				ret.insert(key,value);
+			}
+		}
+
+		return ret;
+	}
+
 	/** I'm pretty sure this only works for int.
 	 */
 	public override string toString() {
@@ -272,6 +290,34 @@ private bool Equals(T,S)(MapSet!(T,S) ms, Object o) {
 		}
 	}
 	return true;
+}
+
+unittest {
+	MapSet!(int,int) a = new MapSet!(int,int)();
+	a.insert(1,1);
+	a.insert(1,2);
+	a.insert(1,3);
+	a.insert(3,1);
+	a.insert(3,2);
+	a.insert(3,3);
+
+	MapSet!(int,int) b = new MapSet!(int,int)();
+	b.insert(2,1);
+	b.insert(2,2);
+	b.insert(2,3);
+	b.insert(3,1);
+	b.insert(3,3);
+
+	MapSet!(int,int) diff = a.difference(b);
+	MapSet!(int,int) c = new MapSet!(int,int)();
+	c.insert(1,1);
+	c.insert(1,2);
+	c.insert(1,3);
+	c.insert(2,1);
+	c.insert(2,2);
+	c.insert(2,3);
+	c.insert(3,2);
+	assert(diff == c);
 }
 
 unittest {
