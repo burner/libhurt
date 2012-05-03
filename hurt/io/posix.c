@@ -6,6 +6,10 @@
 #include <errno.h>
 #include <math.h>
 
+int flushCStdout() {
+	return fflush(stdout);
+}
+
 int writeC(int fd, const void *buf, size_t count) {
 	return write(fd, buf, count);
 }

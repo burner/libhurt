@@ -9,6 +9,11 @@ import core.vararg;
 
 extern(C) char* getLine();
 extern(C) void freeCLine(char* line);
+extern(C) int flushCStdout();
+
+public int flushStdout() {
+	return flushCStdout();
+}
 
 private static StringBuffer!(char) buf;
 

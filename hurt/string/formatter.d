@@ -112,6 +112,11 @@ public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
 			continue;
 		} else if((idx > 0 && form[idx] == '%') 
 				|| (idx == 0 && form[idx] == '%')) {
+			if(idx+1 < form.length && form[idx+1] == '%') {
+				appendWithIdx!(T)(ret, ptr++, form[idx]);
+				idx++;
+				continue;
+			}
 			bool padding0 = false;
 			bool expCap = false;
 			bool skipExpCap = false;

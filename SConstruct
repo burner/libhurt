@@ -70,6 +70,7 @@ hurt/io/file.d
 hurt/io/inputstream.d
 hurt/io/ioflags.d
 hurt/io/posix.c
+hurt/io/progressbar.d
 hurt/io/stdio.d
 hurt/io/stream.d
 ''')
