@@ -4,7 +4,7 @@ import hurt.io.stdio;
 
 public void updateBar(int i, int n, int w = 60) {
 	// Only update r times.
-	if( i % (n/1000) != 0 ) 
+	if(n>1000 && i % (n/1000) != 0 ) 
 		return;
 
 	// Calculuate the ratio of complete-to-incomplete.
@@ -32,7 +32,7 @@ public void updateBar(int i, int n, int w = 60) {
 }
 
 public void barDone(int n, int w = 60) {
-	float ratio = 100/99;
+	float ratio = n/cast(float)n;
 	int c = cast(int)(ratio * w);
 
 	// Show the percentage complete.

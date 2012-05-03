@@ -8,6 +8,7 @@ import hurt.container.dlst;
 import hurt.container.map;
 import hurt.algo.sorting;
 import hurt.string.formatter;
+import hurt.util.util;
 
 extern(C) long getMilli();
 
@@ -41,8 +42,8 @@ public class Trace {
 		sort!(Stats)(a, function(in Stats a, in Stats b) {
 			 return a.time > b.time; });
 		foreach(it; a) {
-			printfln("%60s %8d %12d", it.funcName~"() at "~ it.file ~ ":" ~ 
-				format!(char,char)("%5d",it.line), it.calls, it.time);
+			printfln("%60s %8d %12d", it.funcName ~ " " ~ cropFileName(it.file) 
+				~ ":" ~ format!(char,char)("%5d",it.line), it.calls, it.time);
 		}
 		Trace.allCallsMutex.unlock();
 	}

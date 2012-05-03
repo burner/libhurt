@@ -2,6 +2,16 @@ module hurt.util.util;
 
 import hurt.math.mathutil;
 import hurt.string.formatter;
+import hurt.util.array;
+
+public pure string cropFileName(string filename) {
+	size_t idx = rfind!(char)(filename, '/');
+	if(idx < filename.length) {
+		return filename[idx+1 .. $];
+	} else {
+		return filename;
+	}
+}
 
 pure uint bswap(uint v) {
 	// XxxxxxxxXxxxxxxxXxxxxxxx11111111 -> 11111111XxxxxxxxXxxxxxxxXxxxxxxxx

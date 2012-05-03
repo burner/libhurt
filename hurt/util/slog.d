@@ -3,18 +3,9 @@ module hurt.util.slog;
 import hurt.io.stdio;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
-import hurt.util.array;
+import hurt.util.util;
 
 import core.vararg;
-
-private string cropFileName(string filename) {
-	size_t idx = rfind!(char)(filename, '/');
-	if(idx < filename.length) {
-		return filename[idx+1 .. $];
-	} else {
-		return filename;
-	}
-}
 
 unittest {
 	assert("crop" == cropFileName("hello/crop"), cropFileName("hello/crop"));

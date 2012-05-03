@@ -126,24 +126,17 @@ public template StringBuffer(T) {
 			this.buffer[this.bufferPointer++] = toAdd;
 		}
 		
-		public T popBack() 
-			in {
-				assert(this.bufferPointer, 
-					"Tryed to popBack empty StringBuffer");
-			}
-			out {this.bufferPointer--;}
-			body {
-				return this.buffer[this.bufferPointer-1];
-			}
+		public T popBack() {
+			assert(this.bufferPointer, "Tryed to popBack empty StringBuffer");
+			T ret = this.buffer[this.bufferPointer--];
+			return ret;
+		}
 
-		public T peekBack() 
-			in {
-				assert(this.bufferPointer, 
-					"Tryed to popBack empty StringBuffer");
-			}
-			body {
-				return this.buffer[this.bufferPointer-1];
-			}
+		public T peekBack() {
+			assert(this.bufferPointer, 
+				"Tryed to popBack empty StringBuffer");
+			return this.buffer[this.bufferPointer-1];
+		}
 
 		public typeof(bufferPointer) getSize() const {
 			return this.bufferPointer;
@@ -194,4 +187,8 @@ unittest {
 	StringBuffer!(char) sb2 = new StringBuffer!(char)(12);
 	sb2.pushBack("hello %d", 5);
 	assert(sb2.getString() == "hello 5");
+
+	sb2.popBack();
+	assert(sb2.getString() == "hello ");
+
 }

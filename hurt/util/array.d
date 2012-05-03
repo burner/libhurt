@@ -98,7 +98,7 @@ size_t find(T)(in T[] arr, in T toSearch) {
 	return arr.length;
 }
 
-size_t rfind(T)(in T[] arr, in T toSearch) {
+public pure size_t rfind(T)(in T[] arr, in T toSearch) {
 	foreach_reverse(idx, it; arr) {
 		if(it == toSearch) {
 			return idx;
@@ -107,7 +107,8 @@ size_t rfind(T)(in T[] arr, in T toSearch) {
 	return arr.length;
 }
 
-size_t findArr(T)(in T[] arr, immutable(T)[] toSearch, size_t i = 0) {
+public pure size_t findArr(T)(in T[] arr, immutable(T)[] toSearch, 
+		size_t i = 0) {
 	if(toSearch is null || toSearch.length == 0) {
 		return arr.length;
 	}
