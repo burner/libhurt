@@ -226,6 +226,15 @@ public class Deque(T) : Iterable!(T) {
 		return ConstIterator!(T)(this, false, size_t.max);
 	}
 
+	public T[] values() {
+		T[] ret = new T[this.getSize()];
+		foreach(idx, it; this) {
+			ret[idx] = it;
+		}
+		
+		return ret;
+	}
+
 	private void growCapacity() {
 		T[] n = new T[this.data.length*2];
 		assert(n !is null);
@@ -667,6 +676,10 @@ public class Deque(T) : Iterable!(T) {
 unittest {
 	Deque!(int) d = new Deque!(int)(128);
 	assert(d.getSize() == 0);
+	d.pushBack(44);
+	d.pushBack(54);
+	d.pushFront(34);
+	assert(d.values() == [34,44,54]);
 }
 
 unittest {
@@ -1339,6 +1352,10 @@ private struct test {
 
 	this(int t) {
 		this.t = t;
+	}
+
+	int opCmp(ref test s) {
+		return this.t = s.t;
 	}
 }
 

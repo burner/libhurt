@@ -309,6 +309,10 @@ public pure immutable(T)[][] split(T)(immutable(T)[] str, T splitSymbol = ' ') {
 	return ret[0 .. retPtr];
 }
 
+unittest {
+	assert(split!(char)("Hello") == ["Hello"]);
+}
+
 // split unittest
 unittest {
 	assert(split!(char)("he llo", ' ') == ["he","llo"]);
