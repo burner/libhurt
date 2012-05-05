@@ -140,6 +140,16 @@ class Set(T) {
 		return 0;
 	}
 
+	public Set!(T) Union(Set!(T) o) {
+		Set!(T) ret = new Set!(T)(this.type);
+		for(auto it = this.begin(); it.isValid(); it++) {
+			if(o.contains(*it)) {
+				ret.insert(*it);
+			}
+		}
+		return ret;
+	}
+
 	public Set!(T) difference(Set!(T) o) {
 		Set!(T) ret = new Set!(T)(this.type);
 		for(auto it = this.begin(); it.isValid(); it++) {
@@ -170,6 +180,20 @@ class Set(T) {
 	public bool intersecting(Set!(T) s) {
 		return !this.notIntersecting(s);
 	}
+}
+
+unittest {
+	Set!(int) d1 = new Set!(int)();
+	d1.insert(10); d1.insert(9); d1.insert(66);
+
+	Set!(int) d2 = new Set!(int)();
+	d2.insert(99); d2.insert(9); d1.insert(66);
+
+	Set!(int) d3 = d1.Union(d2);
+	Set!(int) d4 = new Set!(int)();
+	d4.insert(66);
+	d4.insert(9);
+	//assert(d3 == d4);
 }
 
 unittest {
