@@ -1,8 +1,8 @@
 #SRC=formatter.d
 
 #SRC=arraytree.d arraybst.d
-SRC=progressbar.d
+SRC=deque.d
 
 all:
-	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -ofprogressbar
-	./progressbar
+	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -ofdeque
+	./deque
