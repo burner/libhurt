@@ -164,8 +164,12 @@ public class Deque(T) : Iterable!(T) {
 		this.tail = 0;
 	}
 
-	public this(Deque!(T) toCopy) {
-		this.data = toCopy.data.dup;
+	public this(Deque!(T) toCopy, bool slice = false) {
+		if(!slice) {
+			this.data = toCopy.data.dup;
+		} else {
+			this.data = toCopy.data;
+		}
 		this.head = toCopy.head;
 		this.tail = toCopy.tail;
 	}
@@ -497,7 +501,7 @@ public class Deque(T) : Iterable!(T) {
 		this.data[this.tail] = toPush;
 	}
 
-	private size_t getIdx(const long idx) const {
+	private bool checkIdx(const long idx) const {
 		if( (idx > 0 && idx >= this.getSize()) || this.isEmpty() ||
 				(idx < 0 &&  abs(idx) > this.getSize()) ) {
 			throw new OutOfRangeException(
@@ -505,6 +509,18 @@ public class Deque(T) : Iterable!(T) {
 					("idx %d head %d tail %d data.size %d len %d", idx, 
 					this.head, this.head, this.data.length, this.getSize()));
 		}
+		return true;
+	}
+
+	private size_t getIdx(const long idx) const {
+		/*if( (idx > 0 && idx >= this.getSize()) || this.isEmpty() ||
+				(idx < 0 &&  abs(idx) > this.getSize()) ) {
+			throw new OutOfRangeException(
+				format!(char,char)
+					("idx %d head %d tail %d data.size %d len %d", idx, 
+					this.head, this.head, this.data.length, this.getSize()));
+		}*/
+		this.checkIdx(idx);
 
 		if(idx >= 0) {
 			return (this.head + idx + 1) % this.data.length;
@@ -602,6 +618,46 @@ public class Deque(T) : Iterable!(T) {
 		return 0;
 	}
 
+	public size_t opDollar() const {
+		return this.getSize();
+	}
+
+	public Deque!(T) opSlice(long begin, long end, bool reAlloc = true) {
+		if(begin <= end && begin >= 0 && end >= 0) {
+			Deque!(T) ret = new Deque!(T)(this, true && reAlloc);
+			long eCnt = ret.getSize() - end;
+			for(long i = 0; i < begin; i++) {
+				ret.popFront();
+			}
+			for(long i = 0; i < eCnt; i++) {
+				ret.popBack();
+			}
+			return ret;
+		} else if(begin <= end && begin < 0 && end >= 0) {
+			Deque!(T) ret = new Deque!(T)(this.getSize() + abs(begin));
+			long eCnt = this.getSize() - abs(end);
+			long till = conv!(size_t,long)(this.getSize()-eCnt);
+			for(long i = begin; i < till; i++) {
+				ret.pushBack(this[i]);
+			}
+			return ret;
+		} else if(begin > end && begin >= 0 && end >= 0) {
+			auto tmp =  this.opSlice(end, begin+1, false);
+			tmp.reverse();
+			return tmp;
+		}
+		assert(false);
+	}
+
+	public void reverse() {
+		size_t tSize = this.getSize();
+		for(long i = 0; i < tSize/2; i++) {
+			T tmp = this[i];
+			this[i] = this[tSize-1-i];
+			this[tSize-1-i] = tmp;
+		}
+	}
+
 	public size_t getSize() const { 
 		if(this.isEmpty()) {
 			return 0;
@@ -671,6 +727,48 @@ public class Deque(T) : Iterable!(T) {
 		ret.pushBack("]");
 		return ret.getString();
 	}
+}
+
+unittest {
+	Deque!(int) t = new Deque!(int)([1,2,3,4,5,6,7]);
+	Deque!(int) tc1 = t[1 .. t.getSize()-2];
+	Deque!(int) test = new Deque!(int)([2,3,4,5]);
+	assert(tc1 == test);
+
+	test = new Deque!(int)([2,3,4,5,6]);
+	tc1 = t[1 .. t.getSize()-1];
+	assert(tc1 == test);
+
+	t = new Deque!(int)([2,3,4,5]);
+	auto r = t[t.getSize()-1 .. 0];
+	test = new Deque!(int)([5,4,3,2]);
+	assert(test == r);
+
+	test = new Deque!(int)([2,3,4,5]);
+	assert(t == test);
+
+	r = t[-2 .. t.getSize()];
+	assert(r.getSize() == 6);
+	test = new Deque!(int)([4,5,2,3,4,5]);
+	assert(r == test);
+}
+
+unittest {
+	auto r = new Deque!(int)([1,2,3,4,5,6]);
+	r.reverse();
+	auto t = new Deque!(int)([6,5,4,3,2,1]);
+	assert(r == t);
+
+	r = new Deque!(int)();
+	r.reverse();
+	assert(r.isEmpty());
+}
+
+unittest {
+	auto r = new Deque!(int)([1,2,3,4,5,6,7]);
+	r.reverse();
+	auto t = new Deque!(int)([7,6,5,4,3,2,1]);
+	assert(r == t);
 }
 
 unittest {
@@ -1367,8 +1465,32 @@ unittest {
 	assert(t.backRef().t == 77, conv!(int,string)(t.back().t));
 }
 
-/*
+public Deque!(T) lstExpr(T, string it = "x", string con = "true")
+		(Iterable!(T) input, T delegate(T t) func[]) {
+	Deque!(T) ret = new Deque!(T)(input.getSize());
+	immutable string loop = "foreach("~it~"; input) {
+		if("~con~") {
+			T tmp = "~it~";	
+			foreach(jt; func) {
+				tmp = jt(tmp);
+			}
+			ret.pushBack(tmp);
+		}
+	}";
+	mixin(loop);
+	return ret;
+}
+
+unittest {
+	auto de = new Deque!(int)([1,2,3,4,5]);
+	auto rslt = lstExpr!(int,"x","x != 2")(de, [delegate(int x) { return x*x; }, delegate(int x) { return x + 1; }]);
+	auto rsltTst = new Deque!(int)([2,10,17,26]);
+	assert(rslt == rsltTst);
+}
+
+version(staging) {
 void main() {
 	Deque!(int) d1 = new Deque!(int)();
 }
-*/
+}
+
