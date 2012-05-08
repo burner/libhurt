@@ -61,7 +61,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	private Item!(T)[] items;
 	private size_t tail;
 	private Stack!(size_t) free;
-	private size_t size;
+	private long size;
 
 	private long frontIt, backIt;
 
@@ -229,11 +229,9 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	private T removeImpl(size_t it) {
 		if(this.items[it].prev == -1) {
 			T tmp = this.popFront();
-			this.size--;
 			return tmp;
 		} else if(this.items[it].next == -1) {
 			T tmp = this.popBack();
-			this.size--;
 			return tmp;
 		} else {
 			long prev = this.items[it].prev;
@@ -306,7 +304,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 			}
 			printf("(%u, %d %d), ", idx, it.prev, it.next);
 		}
-		println();
+		printfln("size %d", this.size);
 	}
 
 	private void grow() {
@@ -554,7 +552,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	log("%f", sw.stop());
+	//log("%f", sw.stop());
 
 	StopWatch sw2;
 	sw2.start();
@@ -573,7 +571,7 @@ unittest {
 	for(int i = 0; !l.isEmpty(); i++) {
 		l.remove(t[i] % l.getSize());
 	} }
-	log("%f", sw2.stop());
+	//log("%f", sw2.stop());
 }
 
 version(staging) {
