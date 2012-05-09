@@ -11,7 +11,7 @@ import hurt.util.slog;
 class LRU(T,S) {
 	FDoubleLinkedList!(Pair!(T,S)) queue;
 	Map!(T, Iterator!(Pair!(T,S))) map;
-	size_t size;
+	const size_t size;
 
 	this(size_t size) {
 		this.size = size;
@@ -27,7 +27,7 @@ class LRU(T,S) {
 	public S get(T key) {
 		MapItem!(T, Iterator!(Pair!(T,S))) mi = this.map.find(key);
 		enforce(mi !is null, 
-			"object can't be accessed because it is not placed");
+			"object can't be accessed because it is not present");
 		Iterator!(Pair!(T,S)) it = mi.getData();
 		S ret = (*it).second;
 		this.queue.remove(it);
@@ -45,10 +45,26 @@ class LRU(T,S) {
 		this.map.insert(key, this.queue.begin());
 	}	
 
+	public void remove(T key) {
+		MapItem!(T, Iterator!(Pair!(T,S))) mi = this.map.find(key);
+		enforce(mi !is null, 
+			"object can't be accessed because it is not present");
+		Iterator!(Pair!(T,S)) it = mi.getData();
+		this.queue.remove(it);
+		this.map.remove(key);
+	}
+
+	public size_t getSize() const {
+		return this.queue.getSize();
+	}
+
+	public bool isEmpty() const {
+		return this.queue.getSize() == 0;
+	}
+
 }
 
-version(staging) {
-void main() {
+unittest {
 	LRU!(int,string) lru = new LRU!(int,string)(8);
 	lru.insert(1, "eins");
 	assert(lru.get(1) == "eins");
@@ -72,5 +88,12 @@ void main() {
 	for(int i = 2; i < 10; i++) {
 		assert(lru.contains(i));
 	}
+	assert(lru.getSize() == 8);
+	lru.remove(5);
+	assert(lru.getSize() == 7);
+}
+
+version(staging) {
+void main() {
 }
 }
