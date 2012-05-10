@@ -83,6 +83,7 @@ hurt/math/bracket.d
 
 src += Split('''
 hurt/string/formatter.d
+hurt/string/spell.d
 hurt/string/stringbuffer.d
 hurt/string/stringutil.d
 hurt/string/utf.d

@@ -1,8 +1,8 @@
 #SRC=formatter.d
 
 #SRC=arraytree.d arraybst.d
-SRC=lru.d
+SRC=spell.d
 
 all:
-	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -oflru
-	./lru
+	dmd -debug -gc -m64 -w -unittest -version=staging $(SRC) -I. ../libhurt.a -I.. -ofspell
+	./spell
