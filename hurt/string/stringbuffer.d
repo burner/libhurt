@@ -106,6 +106,13 @@ public template StringBuffer(T) {
 			return this;
 		}
 
+		public StringBuffer!(T) pushBack(StringBuffer!(T) sb) {
+			foreach(it; sb.getData()) {
+				this.pushBack(it);
+			}
+			return this;
+		}
+
 		public void pushBackOp(in T toAdd) {
 			this.holdsOp = true;
 			if(this.bufferPointer == initSize) {

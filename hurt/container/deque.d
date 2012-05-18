@@ -572,6 +572,26 @@ public class Deque(T) : Iterable!(T) {
 		return this.head == this.tail;
 	}
 
+	int opApplyReverse(int delegate(const ref size_t, const ref T) dg) const {
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[
+				this.getIdx(this.getSize() - 1 -idx)] )) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
+	int opApplyReverse(int delegate(const ref T) dg) const {
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)])) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
+
 	int opApplyReverse(int delegate(ref size_t, ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
 			if(int r = dg(idx, this.data[
@@ -585,6 +605,15 @@ public class Deque(T) : Iterable!(T) {
 	int opApplyReverse(int delegate(ref T) dg) {
 		for(size_t idx = 0; idx < this.getSize(); idx++) {
 			if(int r = dg(this.data[this.getIdx(this.getSize() - 1 -idx)])) {
+				return r;
+			}
+		}
+		return 0;
+	}
+
+	int opApply(int delegate(const ref size_t, const ref T) dg) const {
+		for(size_t idx = 0; idx < this.getSize(); idx++) {
+			if(int r = dg(idx, this.data[this.getIdx(idx)])) {
 				return r;
 			}
 		}
