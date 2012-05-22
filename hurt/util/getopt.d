@@ -75,12 +75,14 @@ struct Args {
 
 	private bool notAnOption(string str) {
 		foreach(it; this.optionShort) {
-			if(it == str)
+			if(it == str) {
 				return false;
+			}
 		}
 		foreach(it; this.optionLong) {
-			if(it == str)
+			if(it == str) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -153,17 +155,19 @@ struct Args {
 	private void getArgument(T)(string opShort, string opLong, ref T value,
 			hurt.container.multimap.Iterator!(string,size_t) l) {
 		static if(is(T == bool)) {
-			if(l.isValid() && l.getData() < this.args.length-1 &&
-					this.notAnOption(this.args[l.getData()+1])) {
+			if(l.isValid() && l.getData() < this.args.length-1) {
+					//!this.notAnOption(this.args[l.getData()+1])) {
 
 				if(this.args[l.getData()+1] == "true" ||
 						this.args[l.getData()+1] == "false") {
 					value = conv!(string,bool)(this.args[l.getData()+1]);
 					this.unprocessed.remove(l.getData()+1);
 				} else {
-					throw new Exception(
+					/*throw new Exception(
 						format("passed invalid bool flag \"%s\"", 
 						this.args[l.getData()+1]));
+					*/
+					value = true;
 				}
 			} else {
 				value = true;
@@ -292,11 +296,11 @@ struct Args {
 	}
 }
 
-/*
-void main(string[] args) {
+version(staging) {
+unittest {
 	string[] ar = split(
 	"./getopt -b 100 -t false --foo 300 --file getopt.d 5555" ~
-	" -m 1 -m 2 --multiple 3");
+	" -m 1 -m 2 --uar --multiple 3");
 	Args arguments = Args(ar);
 	arguments.setHelpText("test programm to test the args parser");
 	int bar = 0;
@@ -304,20 +308,29 @@ void main(string[] args) {
 	int foo = 0;
 	int[] m;
 	bool tar = false;
+	bool uar = false;
 	string file;
 	arguments.setOption("-b", "--bar", "bar option", bar);
 	arguments.setOption!(int)("-z", null, "zar option", zar);
 	arguments.setOption("-t", "--tar", "tar option", tar);
 	arguments.setOption("-f", "--foo", "foo option", foo);
+	arguments.setOption("-u", "--uar", "uar option", uar);
 	arguments.setMultipleOptions("-m", "--multiple", "multplie option", m);
 	arguments.setOption("-d", "--file", "file option", file, true, "-z");
-	println(__LINE__,bar, foo, tar, file);
-	foreach(int mIt; m) {
-		printf("%d ", mIt);
-	}
-	println();
+	assert(bar == 100);
+	assert(foo == 300);
+	assert(!tar);
+	assert(file == "getopt.d");
+	assert(uar);
+	//println(__LINE__,bar, foo, tar, file, uar);
+	assert(m == [1,2,3]);
 
 	foreach(size_t idx, string it; arguments) {
-		printfln("%u %s", idx, it);
+		assert(idx == 9);
+		assert(it == "5555");
 	}
-}*/
+}
+
+void main() {
+}
+}
