@@ -4,6 +4,9 @@ import hurt.math.mathutil;
 import hurt.string.formatter;
 import hurt.util.array;
 
+public extern(C) void exit(int);
+	
+
 public pure string cropFileName(string filename) {
 	size_t idx = rfind!(char)(filename, '/');
 	if(idx < filename.length) {
