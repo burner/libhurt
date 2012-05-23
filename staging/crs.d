@@ -9,11 +9,14 @@ struct CRS(T) {
 	T[] val;
 	size_t[] colIdx;
 	size_t[] rowPtr;
+	size_t colLength;
 
-	pure nothrow @safe this(T[] val, size_t[] colIdx, size_t[] rowPtr) {
+	pure nothrow @safe this(T[] val, size_t[] colIdx, size_t[] rowPtr, 
+			size_t colLength) {
 		this.val = val;
 		this.colIdx = colIdx;
 		this.rowPtr = rowPtr;
+		this.colLength = colLength;
 	}
 }
 
@@ -41,14 +44,15 @@ public pure nothrow @safe CRS!(T) makeCRS(T)(T[][] input, T nullvalue) {
 	}
 
 	return CRS!(T)(val[0 .. valPtr], col[0 .. colPtr],
-			row[0 .. rowPtr]);
+			row[0 .. rowPtr], input[0].length);
 }
 
-//private pure nothrow @safe size_t binary_search(size_t[] A, size_t key, size_t imin, size_t imax) {
-private size_t binary_search(size_t[] A, size_t key, size_t imin, size_t imax) {
+private pure nothrow @safe size_t binary_search(size_t[] A, size_t key, size_t imin, size_t imax) {
+//private size_t binary_search(size_t[] A, size_t key, size_t imin, size_t imax) {
+	//printfln("%d -> %d key %d", A[imin], A[imax], key);
 	while(imax >= imin) {
 		size_t imid = (imin + imax) / 2;
-		printfln("%d : %d : %d", imin, imid, imax);
+		//printfln("%d : %d=%d : %d", imin, imid, A[imid], imax);
 		if(A[imid] < key) {
 			imin = imid + 1;
 		} else if(A[imid] > key) {
@@ -57,25 +61,30 @@ private size_t binary_search(size_t[] A, size_t key, size_t imin, size_t imax) {
 			return imid;
 		}
 	}
-	printfln("%d %d", imax, imin);
+	//printfln("%d %d", imax, imin);
 	return size_t.max;
 }
 
-public T get(T)(CRS!(T) value, size_t row, size_t column, T nullValue) {
-//public pure @safe T get(T)(CRS!(T) value, size_t row, size_t column, T nullValue) {
+//public T get(T)(CRS!(T) value, size_t row, size_t column, T nullValue) {
+public pure @safe T get(T)(CRS!(T) value, size_t row, size_t column, T nullValue) {
 	if(row >= value.rowPtr.length) {
 		throw new OutOfRangeException("row " ~ conv!(size_t,string)(row) ~ " out of bound");
 	}
 
-	size_t searchEnd = row+1 == value.rowPtr.length ? value.colIdx.length-1 : value.rowPtr[row+1];
-	debug printfln("%d:%d column %d", value.rowPtr[row], searchEnd, column);
-	printfln("codIdx length %d", value.colIdx.length);
+	if(column >= value.colLength) {
+		throw new OutOfRangeException("column " ~ conv!(size_t,string)(column) ~ " out of bound");
+	}
+
+	size_t searchEnd = row+1 == value.rowPtr.length ? value.colIdx.length-1 : value.rowPtr[row+1]-1;
+	//debug printfln("%d:%d column %d", value.rowPtr[row], searchEnd, column);
+	//printfln("codIdx length %d", value.colIdx.length);
 	size_t valIdx = binary_search(value.colIdx, column, value.rowPtr[row], searchEnd);
 
-	println();
+	//printfln("%b", valIdx == size_t.max);
 	if(valIdx == size_t.max) {
 		return nullValue;
 	} else {
+		//printfln("%d", value.val[valIdx]);
 		return value.val[valIdx];
 	}
 }
