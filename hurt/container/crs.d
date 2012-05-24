@@ -1,8 +1,10 @@
 module hurt.container.crs;
 
-import hurt.exception.outofrangeexception;
+import hurt.container.vector;
 import hurt.conv.conv;
+import hurt.exception.outofrangeexception;
 import hurt.string.formatter;
+
 version(staging) {
 import hurt.io.stdio;
 import hurt.time.stopwatch;
@@ -27,6 +29,36 @@ struct CRS(T) {
 		this.ratio = conv!(size_t,float)(
 			this.val.length * 2 + this.rowPtr.length) / 
 			conv!(size_t,float)(this.rowPtr.length * val.length);
+	}
+
+	public this(Vector!(Vector!(T)) input, 
+			T nullvalue) {
+		assert(input.getSize() > 0);
+		T[] val = new T[input.getSize() * input[0].getSize()];
+		size_t valPtr = 0;
+		size_t[] col = new size_t[input.getSize() * input[0].getSize()];
+		size_t colPtr = 0;
+		size_t[] row = new size_t[input.getSize() * input[0].getSize()];
+		size_t rowPtr = 0;
+
+		foreach(idx, it; input) {
+			row[rowPtr++] = colPtr;
+			foreach(jdx, jt; it) {
+				if(jt != nullvalue) {
+					val[valPtr++] = jt;
+					col[colPtr++] = jdx;
+				}
+			}
+		}
+		this.val = val[0 .. valPtr]; 
+		this.colIdx = col[0 .. colPtr];
+		this.rowPtr = row[0 .. rowPtr]; 
+		this.colLength = input[0].getSize();
+		this.nullValue = nullValue;
+
+		this.ratio = conv!(size_t,float)(
+			this.val.length * 2 + this.rowPtr.length) / 
+			conv!(size_t,float)(input.getSize() * input[0].getSize());
 	}
 
 	public pure nothrow @safe this(const T[][] input, 
@@ -119,6 +151,18 @@ struct CRS(T) {
 
 	public pure nothrow @safe size_t getSize() const {
 		return this.val.length * 2 + this.rowPtr.length;
+	}
+
+	public pure nothrow @safe const(T[]) getValues() const {
+		return this.val;
+	}
+
+	public pure nothrow @safe const(size_t[]) getColumn() const {
+		return this.colIdx;
+	}
+
+	public pure nothrow @safe const(size_t[]) getRows() const {
+		return this.rowPtr;
 	}
 }
 
