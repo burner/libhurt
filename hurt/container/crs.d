@@ -23,6 +23,10 @@ struct CRS(T) {
 		this.colIdx = colIdx;
 		this.rowPtr = rowPtr;
 		this.nullValue = nullValue;
+
+		this.ratio = conv!(size_t,float)(
+			this.val.length * 2 + this.rowPtr.length) / 
+			conv!(size_t,float)(this.rowPtr.length * val.length);
 	}
 
 	public pure nothrow @safe this(const T[][] input, 
