@@ -149,6 +149,14 @@ public class DLinkedList(T) : Iterable!(T) {
 		}
 	}
 
+	public T back() {
+		return this.tail.getStore();
+	}
+
+	public T front() {
+		return this.head.getStore();
+	}
+
 	public T popBack() {
 		if(this.size > 1) {
 			Elem!(T) tmp = this.tail;

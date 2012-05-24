@@ -217,6 +217,24 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		return this.items[b].item;
 	}
 
+	public T front() {
+		if(this.isEmpty()) {
+			throw new OutOfRangeException("can't popBack from empty list");
+		}
+
+		long b = this.frontIt;
+		return this.items[b].item;
+	}
+
+	public T back() {
+		if(this.isEmpty()) {
+			throw new OutOfRangeException("can't popBack from empty list");
+		}
+
+		long b = this.backIt;
+		return this.items[b].item;
+	}
+
 	public T remove(Iterator!(T) it) {
 		return this.removeImpl(it.getIdx());
 	}
@@ -297,7 +315,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 		return this.items[this.getIdx(idx)].item;
 	}
 
-	public void debugPrint() const {
+	public void debugPrint() {
 		foreach(size_t idx, Item!(T) it; this.items) {
 			if(idx % 6 == 0) {
 				println();
