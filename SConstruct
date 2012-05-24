@@ -2,6 +2,7 @@ src = Split('''
 hurt/container/binvec.d
 hurt/container/bitmap.d
 hurt/container/bst.d
+hurt/container/crs.d
 hurt/container/deque.d
 hurt/container/dlst.d
 hurt/container/fdlist.d
