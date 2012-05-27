@@ -191,3 +191,8 @@ pure T[] remove(T)(T[] arr, in size_t idx) {
 	}
 	return ret;
 }
+
+version(staging) {
+void main() {
+}
+}
