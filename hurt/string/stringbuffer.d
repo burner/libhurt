@@ -11,6 +11,7 @@ import core.vararg;
  * check if it has a numeric (think holdsNumberChar()) and if not check
  * against a given keyword with StringBuffer.compare("your keyword").
  */
+pure:
 public template StringBuffer(T) {
 	class StringBuffer {
 		private T buffer[];
