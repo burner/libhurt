@@ -1495,6 +1495,22 @@ unittest {
 }
 
 public Deque!(T) lstExpr(T, string it = "x", string con = "true")
+		(T[] input, T delegate(T t) func[]) {
+	Deque!(T) ret = new Deque!(T)(input.getSize());
+	immutable string loop = "foreach("~it~"; input) {
+		if("~con~") {
+			T tmp = "~it~";	
+			foreach(jt; func) {
+				tmp = jt(tmp);
+			}
+			ret.pushBack(tmp);
+		}
+	}";
+	mixin(loop);
+	return ret;
+}
+
+public Deque!(T) lstExpr(T, string it = "x", string con = "true")
 		(Iterable!(T) input, T delegate(T t) func[]) {
 	Deque!(T) ret = new Deque!(T)(input.getSize());
 	immutable string loop = "foreach("~it~"; input) {

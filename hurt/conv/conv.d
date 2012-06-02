@@ -9,12 +9,36 @@ import hurt.string.utf;
 
 import std.stdio;
 
+public pure @safe nothrow bool convsTo(S,T)(T from) {
+	static if( is(T == string) || is(T == wstring) || is(T == dstring)) {
+		static if(isInteger!(S)()) {
+			foreach(idx, it; from)  {
+				if(idx == 0) {
+					if(it > '9' || it < '0') {
+						return false;
+					}
+				} else if((it > '9' || it < '0') && it != '_') {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	assert(false);
+}
+
+unittest {
+	assert(convsTo!(int)("2343423432"));
+}
+
 public pure S conv(T, S)(T t, string file = __FILE__, int line = __LINE__) {
 	static if( is(T == string) ) {			// string
 		static if( is(S == int) ) {
 			return stringToInt!(int,char)(t);	
 		} else static if( is(S == ulong) ) {
 			return stringToInt!(ulong)(t);
+		} else static if( is(S == uint) ) {
+			return stringToInt!(uint)(t);
 		} else static if( is(S == bool) ) {
 			if(t == "true")
 				return true;
