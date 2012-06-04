@@ -172,6 +172,23 @@ public template StringBuffer(T) {
 			}
 			return this.buffer[idx];
 		}
+
+		public int opApply(int delegate(ref const(T) value) dg) const {
+			int result;
+			for(size_t i = 0; i < this.bufferPointer; i++) {
+				result = dg(this.buffer[i]);
+			}
+			return result;
+		}
+
+		public int opApply(int delegate(ref const(size_t), ref const(T)) dg) 
+				const {
+			int result;
+			for(size_t i = 0; i < this.bufferPointer; i++) {
+				result = dg(i, this.buffer[i]);
+			}
+			return result;
+		}
 	}
 }
 
@@ -198,5 +215,10 @@ unittest {
 
 	sb2.popBack();
 	assert(sb2.getString() == "hello ");
+
+	string test = "hello ";
+	foreach(idx, it; sb2) {
+		assert(it == test[idx]);
+	}
 
 }
