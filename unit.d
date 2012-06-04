@@ -73,6 +73,7 @@ import hurt.time.iso8601;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
 import hurt.string.stringutil;
+import hurt.string.stringstore;
 import hurt.string.utf;
 import hurt.io.stream;
 import hurt.io.ioflags;
