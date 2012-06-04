@@ -29,9 +29,17 @@ struct strptr(T) {
 		this.store = store;
 	}
 
-	public string toString() const {
-		return cast(immutable)this.store.getSlice(this.storeIdx, this.blockIdx,
-			this.length);
+	public immutable(T)[] toString() const {
+		if(this.store is null) {
+			return conv!(string,immutable(T)[])("");
+		} else {
+			return cast(immutable)this.store.getSlice(this.storeIdx, 
+				this.blockIdx, this.length);
+		}
+	}
+
+	public string opCast(string)() const {
+		return this.toString();
 	}
 }
 
@@ -59,7 +67,7 @@ class StringStore(T) {
 		} else static if(is(S == immutable(T)[])) {
 			return from.length;
 		} else {
-			assert(false);
+			assert(false, format("%s", typeid(S)));
 		}
 	}
 
@@ -114,6 +122,8 @@ unittest {
 	//log("%s", ptr2.toString());
 	auto ptr3 = ss.pushBack("hello my name is");
 	//ss.debugPrint();
+
+	assert(cast(string)ptr3 == "hello my name is");
 }
 
 unittest {
@@ -128,6 +138,11 @@ unittest {
 	//log("%s", ptr2.toString());
 	auto ptr3 = ss.pushBack(new StringBuffer!(char)("hello my name is"));
 	//ss.debugPrint();
+
+	auto ptr4 = ss.pushBack("");
+	assert(ptr4.toString() == "");
+	ptr4 = ss.pushBack(new StringBuffer!(char)(""));
+	assert(ptr4.toString() == "");
 }
 
 version(staging) {
