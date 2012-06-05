@@ -504,6 +504,7 @@ class Stream : InputStream, OutputStream {
 				} else {
 					prevCr = true;
 				}
+				goto case '\n';
 			case '\n':
 			case char.init:
 				result.length = strlen;
@@ -546,7 +547,9 @@ class Stream : InputStream, OutputStream {
 				} else {
 					prevCr = true;
 				}
+				goto case '\n';
 			case '\n':
+				goto case wchar.init;
 			case wchar.init:
 				result.length = strlen;
 				return result;
