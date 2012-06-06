@@ -1,6 +1,7 @@
 module hurt.string.stringutil;
 
 import hurt.exception.exception;
+import hurt.string.stringbuffer;
 
 import core.vararg; 
 import core.stdc.stdio; 
@@ -49,6 +50,47 @@ body {
     copy[s.length] = 0;
 
     return assumeUnique(copy).ptr;
+}
+
+immutable(char)[] fromStringz(const(char)* ptr, size_t len) {
+	auto ret = new StringBuffer!(char)(128);
+	for(size_t i = 0; i < len; i++) {
+		ret.pushBack(*ptr);
+		ptr++;
+	}
+	return ret.getString();
+}
+
+immutable(char)[] fromStringz(char* ptr) {
+	auto ret = new StringBuffer!(char)(128);
+	while(*ptr != '\0') {
+		ret.pushBack(*ptr);
+		ptr++;
+	}
+	return ret.getString();
+}
+
+immutable(char)[] fromStringz(const(char)* ptr) {
+	auto ret = new StringBuffer!(char)(128);
+	while(*ptr != '\0') {
+		ret.pushBack(*ptr);
+		ptr++;
+	}
+	return ret.getString();
+}
+
+immutable(char)[] fromStringz(immutable(char)* ptr) {
+	auto ret = new StringBuffer!(char)(128);
+	while(*ptr != '\0') {
+		ret.pushBack(*ptr);
+		ptr++;
+	}
+	return ret.getString();
+}
+
+unittest {
+	string t = "hello world test";
+	assert(t == fromStringz(toStringz(t)));
 }
 
 /// Ditto
@@ -179,6 +221,20 @@ public pure int hashCode(T)(immutable(T)[] str) {
 		h = 31 * h + str[ off++ ];
 	}
 	return h;
+}
+
+public pure immutable(T)[] toLowerCase(T)(immutable(T)[] str)
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+	T[] tmp = new T[str.length];
+	foreach(idx, it; str) {
+		tmp[idx] = toLowerCase!(T)(it);
+	}
+	return tmp.idup;
+}
+
+public pure T toLowerCase(T)(immutable(T) ch) 
+		if(is(T == char) || is(T == wchar) || is(T == dchar)) {
+	return cast(T)(ch + 32);
 }
 
 public pure T toLowerCase(T)(T ch) 
