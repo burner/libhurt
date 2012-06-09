@@ -466,7 +466,7 @@ class Socket : Conduit, ISelectable
 		
 		// normal connect
 		if(core.sys.posix.sys.socket.connect(this.sock, address.name(), address.nameLen()) == -1) {
-			log("%d %s", this.sock, fromStringz(cast(char*)address.name, address.nameLen()));
+			log("%d %d %s", this.sock, address.nameLen(), address.toString());
 		    throw new SocketException("Unable to connect socket");
 		}
 		
