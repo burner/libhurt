@@ -198,6 +198,7 @@ public class BinVec(T) : ISR!(T) {
 		}
 		return result;
 	}
+
 	public override bool opEquals(Object o) {
 		BinVec!(T) v = cast(BinVec!(T))o;
 		if(this.getSize() != v.getSize()) {
@@ -302,7 +303,7 @@ unittest {
 		}
 		assert(fset.isEmpty());
 	}
-/*
+	version(staging) {
 	string[] words = [
 "abbreviation","abbreviations","abettor","abettors","abilities","ability"
 "abrasion","abrasions","abrasive","abrasives","absence","absences","abuse"
@@ -611,9 +612,11 @@ unittest {
 		auto copy = new BinVec!(string)(ssset);
 		assert(copy == ssset);
 	}
-	//printfln("fset %f", watch.stop());
+	printfln("fset %f", watch.stop());
+}
 }
 
+version(None) {
 unittest {
 	StopWatch watch;
 	watch.start();
@@ -1001,8 +1004,8 @@ unittest {
 		Set!(string) copy = ssset.dup;
 		assert(copy == ssset);
 	}
-	//printfln("set %f", watch.stop());
-	*/
+	printfln("set %f", watch.stop());
+}
 }
 
 version(staging) {

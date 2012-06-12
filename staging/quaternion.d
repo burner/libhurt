@@ -49,28 +49,6 @@
 * \todo Andere Funktionen testen (mit Testprogramm)
 */
 
-import std.math;
-import hurt.conv.conv;
-
-struct vec3(T) {
-	T values[3];
-	
-	this(T a, T b, T c) {
-		values[0] = a;
-		values[1] = b;
-		values[2] = c;
-	}
-
-	void normalize() {
-		double len = sqrt((values[0] * values[0]) + 
-			(values[1] * values[1]) +
-			(values[2] * values[2]));
-
-		values[0] = values[0] / len;
-		values[1] = values[1] / len;
-		values[2] = values[2] / len;
-	}
-}
 
 /**
 * \brief Default-Konstruktor

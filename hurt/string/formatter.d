@@ -28,13 +28,18 @@ public string makeString(int line = __LINE__, string file = __FILE__)(
 				|| it == typeid(dchar)) {
 			buf.pushBack("%c ");
 		} else if(it == typeid(ubyte) || it == typeid(ushort) 
-				|| it == typeid(uint) || it == typeid(ulong)) {
+				|| it == typeid(uint) || it == typeid(ulong) ||
+				it == typeid(const(ubyte)) || it == typeid(const(ushort)) 
+				|| it == typeid(const(uint)) || it == typeid(const(ulong))) {
 			buf.pushBack("%u ");
 		} else if(it == typeid(byte) || it == typeid(short) 
-				|| it == typeid(int) || it == typeid(long)) {
+				|| it == typeid(int) || it == typeid(long) ||
+				it == typeid(const(byte)) || it == typeid(const(short)) 
+				|| it == typeid(const(int)) || it == typeid(const(long))) {
 			buf.pushBack("%d ");
 		} else if(it == typeid(float) || it == typeid(double)
-				|| it == typeid(real)) {
+				|| it == typeid(real) || it == typeid(const(float)) || 
+				it == typeid(const(double)) || it == typeid(const(real))) {
 			buf.pushBack("%.5f ");
 		} else if(it == typeid(immutable(char)[]) || 
 				it == typeid(immutable(wchar)[]) || 
