@@ -20,7 +20,7 @@ static this() {
 	buf = new StringBuffer!(char)(32);
 }
 
-public string makeString(int line = __LINE__, string file = __FILE__)(
+public @trusted string makeString(int line = __LINE__, string file = __FILE__)(
 		TypeInfo[] arguments, void* args) {
 	buf.clear();
 	foreach(it;arguments) {
@@ -28,13 +28,18 @@ public string makeString(int line = __LINE__, string file = __FILE__)(
 				|| it == typeid(dchar)) {
 			buf.pushBack("%c ");
 		} else if(it == typeid(ubyte) || it == typeid(ushort) 
-				|| it == typeid(uint) || it == typeid(ulong)) {
+				|| it == typeid(uint) || it == typeid(ulong) ||
+				it == typeid(const(ubyte)) || it == typeid(const(ushort)) 
+				|| it == typeid(const(uint)) || it == typeid(const(ulong))) {
 			buf.pushBack("%u ");
 		} else if(it == typeid(byte) || it == typeid(short) 
-				|| it == typeid(int) || it == typeid(long)) {
+				|| it == typeid(int) || it == typeid(long) ||
+				it == typeid(const(byte)) || it == typeid(const(short)) 
+				|| it == typeid(const(int)) || it == typeid(const(long))) {
 			buf.pushBack("%d ");
 		} else if(it == typeid(float) || it == typeid(double)
-				|| it == typeid(real)) {
+				|| it == typeid(real) || it == typeid(const(float)) || 
+				it == typeid(const(double)) || it == typeid(const(real))) {
 			buf.pushBack("%.5f ");
 		} else if(it == typeid(immutable(char)[]) || 
 				it == typeid(immutable(wchar)[]) || 
@@ -50,7 +55,7 @@ public string makeString(int line = __LINE__, string file = __FILE__)(
 	return formatString!(char,char,line,file)(buf.getString(), arguments, args);
 }
 
-private bool isTypeOf(T)(TypeInfo given) {
+private @trusted bool isTypeOf(T)(TypeInfo given) {
 	if(given == typeid(T) || given == typeid(const(T)) || 
 			given == typeid(immutable(T))) {
 		return true;
@@ -59,7 +64,7 @@ private bool isTypeOf(T)(TypeInfo given) {
 	}
 }
 
-private bool convertsTo(T)(TypeInfo given) {
+private @safe bool convertsTo(T)(TypeInfo given) {
 	static if(is(T == char)) {
 		return isTypeOf!(char)(given);
 	} else static if(is(T == ubyte) || is(T == ushort) || is(T == uint) ||
@@ -77,14 +82,14 @@ private bool convertsTo(T)(TypeInfo given) {
 	}
 }
 
-public immutable(S)[] format(T = char,S = char, int line = __LINE__,
+public @safe immutable(S)[] format(T = char,S = char, int line = __LINE__,
 		string file = __FILE__)(immutable(T)[] form, ...) {
 	return formatString!(T,S,line,file)(form, _arguments, _argptr);
 }
 
-public immutable(S)[] formatString(T = char,S = char, int line = __LINE__,
-		string file = __FILE__)(immutable(T)[] form, TypeInfo[] arguments, 
-		void* arg)
+public @trusted immutable(S)[] formatString(T = char,S = char, 
+		int line = __LINE__, string file = __FILE__)(
+			immutable(T)[] form, TypeInfo[] arguments, void* arg)
 		if((is(T == char) || is(T == wchar) || is(T == dchar)) &&
 		(is(S == char) || is(S == wchar) || is(S == dchar))) {
 

@@ -77,6 +77,8 @@ public pure S conv(T, S)(T t, string file = __FILE__, int line = __LINE__) {
 		return floatToString!(dchar,T)(t);
 	} else static if(isFloat!T() && isInteger!S()) {
 		return tToS!(T,S)(t, file, line);
+	} else static if(isFloat!T() && isFloat!S()) {
+		return cast(S)t;
 	} else static if(isInteger!T() && isInteger!S()) {	// integer to integer
 		return tToS!(T,S)(t, file, line);
 	} else static if( is(T == int) ) {		// int

@@ -12,7 +12,7 @@ import core.vararg;
  * against a given keyword with StringBuffer.compare("your keyword").
  */
 pure:
-public template StringBuffer(T) {
+public @trusted template StringBuffer(T) {
 	class StringBuffer {
 		private T buffer[];
 		private size_t initSize;

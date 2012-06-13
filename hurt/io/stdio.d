@@ -7,6 +7,7 @@ import core.vararg;
 
 //import std.stdio;
 
+@trusted:
 extern(C) char* getLine();
 extern(C) void freeCLine(char* line);
 extern(C) int flushCStdout();
