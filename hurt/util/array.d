@@ -90,6 +90,9 @@ pure T[] appendWithIdx(T)(ref T[] arr, size_t idx, immutable(T) toAppend,
  * if the element is not part of the array the length
  * array is returned. */
 size_t find(T)(in T[] arr, in T toSearch, size_t start = 0) {
+	if(start >= arr.length) {
+		return arr.length;
+	}
 	foreach(idx, it; arr[start .. $]) {
 		if(it == toSearch) {
 			return idx+start;
