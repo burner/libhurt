@@ -7,6 +7,7 @@ import hurt.util.util;
 
 import core.vararg;
 
+@safe:
 unittest {
 	assert("crop" == cropFileName("hello/crop"), cropFileName("hello/crop"));
 	assert("" == cropFileName("hello/"), cropFileName("hello/"));
