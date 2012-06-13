@@ -199,14 +199,18 @@ public:
 			if(idx > 0 && idx % Columns == 0) {
 				hurt.io.stdio.println();
 			}
-			hurt.io.stdio.print(it);
+			static if(is(T == float)) {
+				hurt.io.stdio.printf("%e", it);
+			} else {
+				hurt.io.stdio.printf("%d", it);
+			}
 			hurt.io.stdio.print(" ");
 		}
 		hurt.io.stdio.println();
 	}
 
 	//mixin(genOpBinary!(3,3)());
-	mixin(genOpBinaryFromTo!(3,3,1,10)());
+	mixin(genOpBinaryFromTo!(Rows,Rows*2,Columns,Columns*2)());
 
 	/*!
 	  \brief multiply two matrixes (operator *)
@@ -471,11 +475,12 @@ static mat!(T,Rows,Columns) createIdentity(T,Rows,Columns)() {
 	return createDiagonal(1.0);
 }
 
-static mat!(T,Rows,Columns) createDiagonal(T,Rows,Columns)(T value) {
+static mat!(T,Rows,Columns) createDiagonal(T,size_t Rows ,size_t Columns)
+		(T value) {
 	assert(Rows == Columns);
-	mat!(T,Rows,Rows) diagonalmat = mat!(T,Rows,Rows)();
+	mat!(T,Rows,Columns) diagonalmat = mat!(T,Rows,Columns)();
 	for(size_t i = 0; i < Rows; ++i) {
-		diagonalmat[i][i] = value;
+		diagonalmat[i,i] = value;
 	}
 	return diagonalmat;
 }
@@ -602,6 +607,7 @@ void main() {
 	mat!(int,3,3) m = mat!(int,3,3)([ [1,2,3], [4,5,6], [7,8,9]]);
 	mat!(int,3,3) n = mat!(int,3,3)([ [1,2,3], [4,5,6], [7,8,9]]);
 	mat!(int,3,4) o = mat!(int,3,4)([ [1,2,3,12], [4,5,6,11], [7,8,9,10]]);
+	auto i = mat!(int,3,5)([ [1,2,3,12,13], [4,5,6,11,14], [7,8,9,10,15]]);
 	m.print();
 	println();
 	n.print();
@@ -613,5 +619,22 @@ void main() {
 	auto y = m * o;
 	println();
 	y.print();
+	auto w = n * i;
+	println();
+	w.print();
 	//log("%s", genOpBinaryFromTo!(3,3,1,10)());
+	auto h = mat!(float,4,4)([[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0],
+		[9.0, 10.0, 11.0, 12.0], [13.0, 14.0, 15.0, 16.0]]);
+
+	auto k = createDiagonal!(float,4,4)(1.0);
+	auto p = h * h;
+	println();
+	k.print();
+	println();
+	h.print();
+	println();
+	p.print();
+	auto oo = h * k;
+	println();
+	oo.print();
 }

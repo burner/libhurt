@@ -139,6 +139,8 @@ public pure immutable(T)[] floatToExponent(T,S)(S src, int round = 4,
 }
 
 unittest {
+	assert("0.00" == floatToString!(char,double)(0.0, 2), 
+		floatToString!(char,double)(0.0, 2));
 	assert("10.00" == floatToString!(char,double)(10.0, 2), 
 		floatToString!(char,double)(10.0, 2));
 	assert("1.20" == floatToString!(char,double)(1.2, 2), 
