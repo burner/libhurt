@@ -1,3 +1,4 @@
+module hurt.math.quaternion;
 /**
  * Simon is the legal property of its developers, whose names are too
  * numerous to list here.  Please refer to the COPYRIGHT file
@@ -18,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 
 
 //------------------------------------------------------------------------------
@@ -49,47 +51,61 @@
 * \todo Andere Funktionen testen (mit Testprogramm)
 */
 
-
 /**
 * \brief Default-Konstruktor
 */
 
-public struct Quaternion(T = float) {
-	immutable Quaternion identity;
-	T elements[4];
+import hurt.math.vec;
+import hurt.math.matrix;
+import std.math;
+import hurt.conv.conv;
 
-	this() {
-		element[0] = 0.0;
-		element[1] = 0.0;
-		element[2] = 1.0;
-		element[3] = 0.0;
+//#define	DEGTORAD(x)	( ((x) * M_PI) / 180.0f )
+//#define	RADTODEG(x)	( ((x) * 180.0f) / M_PI )
+
+double degToRad(double deg) {
+	return (deg * PI) / 180.0;
+}
+
+double radToDeg(double rad) {
+	return (rad * 180.0) / PI;
+}
+
+struct Quaternion(T) {
+	private T mqElement[4];
+
+	this(this) {
+		mqElement[0] = 0.0;
+		mqElement[1] = 0.0;
+		mqElement[2] = 1.0;
+		mqElement[3] = 0.0;
 	}
 
-	/**
-	* \brief Konstruktor, der als Input die vier einzelnen Komponenten eines Quaternions hat
-	* \
-	*/
+/**
+* \brief Konstruktor, der als Input die vier einzelnen Komponenten eines Quaternions hat
+* \
+*/
 	this(T w, T x, T y, T z){
-		element[0] = w;
-		element[1] = x;
-		element[2] = y;
-		element[3] = z;
+		mqElement[0] = w;
+		mqElement[1] = x;
+		mqElement[2] = y;
+		mqElement[3] = z;
 	}
 
-	/**
-	* \brief Konstruktor, der aus einem Winkel (angle im Bogenma) und der Rotationsachse (axis) ein RotationsQuaternion erstellt. Die RotationsAchse wird normalisiert
-	*
-	* \param float angle Bogenma der Drehung.
-	* \param vec3!T axis
-	*/
+/**
+* \brief Konstruktor, der aus einem Winkel (angle im Bogenma) und der Rotationsachse (axis) ein RotationsQuaternion erstellt. Die RotationsAchse wird normalisiert
+*
+* \param float angle Bogenma der Drehung.
+* \param vec3!T axis
+*/
 	this(T angle, vec3!T axis){
-		double tempSin = sin(conv!(T,double)angle / 2.f);
+		float tempSin = sin(conv!(T,real)(angle) / 2.0);
 		axis.normalize();
-		element[0] = cos(angle / 2.f);
-		element[1] = axis[0] * tempSin;
-		element[2] = axis[1] * tempSin;
-		element[3] = axis[2] * tempSin;
-
+		mqElement[0] = cos(conv!(T,real)(angle) / 2.0);
+		mqElement[1] = axis[0] * tempSin;
+		mqElement[2] = axis[1] * tempSin;
+		mqElement[3] = axis[2] * tempSin;
+	
 	}
 
 	/**
@@ -107,20 +123,19 @@ public struct Quaternion(T = float) {
 	* Der Code dieser Funktion ist die ausformulierte Muliplikation der Quaternionen.
 	*/
 	this(T phix, T phiy, T phiz){
-		
-		double sx = sin(phix * 0.5);
-		double cx = cos(phix * 0.5);
+		T sx = sin(phix * 0.5f);
+		T cx = cos(phix * 0.5f);
 
-		double sy = sin(phiy  * 0.5);
-		double cy = cos(phiy  * 0.5);
+		T sy = sin(phiy  * 0.5f);
+		T cy = cos(phiy  * 0.5f);
 		
-		double sz = sin(phiz * 0.5);
-		double cz = cos(phiz * 0.5);
+		T sz = sin(phiz * 0.5f);
+		T cz = cos(phiz * 0.5f);
 
-		element[0] = (cx * cy * cz) + (sx * sy * sz);
-		element[1] = (sx * cy * cz) - (cx * sy * sz);
-		element[2] = (cx * sy * cz) + (sx * cy * sz);
-		element[3] = (cx * cy * sz) - (sx * sy * cz);
+		mqElement[0] = (cx * cy * cz) + (sx * sy * sz);
+		mqElement[1] = (sx * cy * cz) - (cx * sy * sz);
+		mqElement[2] = (cx * sy * cz) + (sx * cy * sz);
+		mqElement[3] = (cx * cy * sz) - (sx * sy * cz);
 	}
 
 	/**
@@ -129,92 +144,91 @@ public struct Quaternion(T = float) {
 	* \todo Ahhhrg. Was mach das ding und wieso? bitte besser kommentieren oder entfernen.
 	*/
 	this(vec3!T v){
-		element[0] = 0;
-		element[1] = v[0];
-		element[2] = v[1];
-		element[3] = v[2];
+	    mqElement[0] = 0;
+		mqElement[1] = v[0];
+		mqElement[2] = v[1];
+		mqElement[3] = v[2];
+	
 	}
 
-
-/**
-* \brief Konstruktor, der als Input eine Rotationsmatrix hat
-* \todo Was macht der Kram. Bitte Einheiten und Vorgehen kurz kommentieren.
-
-Quaternion::Quaternion(Matrix3x3& m){
-
-	float tr, s;
-
-	tr = m[0][0] + m[1][1] + m[2][2];
-
-	if (tr >= 0){
-		s = sqrt(tr + 1);
-		element[0] = 0.5f * s;
-		s = 0.5f / s;
-		element[1] = (m[2][1] - m[1][2]) * s;
-		element[2] = (m[0][2] - m[2][0]) * s;
-		element[3] = (m[1][0] - m[0][1]) * s;
+	/**
+	* \brief Konstruktor, der als Input eine Rotationsmat hat
+	* \todo Was macht der Kram. Bitte Einheiten und Vorgehen kurz kommentieren.
+	*/
+	this(mat!(T,3,3) m) {
+	
+		T tr, s;
+	
+		tr = m[0,0] + m[1,1] + m[2,2];
+	
+		if(tr >= 0) {
+			s = sqrt(tr + 1);
+			mqElement[0] = 0.5f * s;
+			s = 0.5f / s;
+			mqElement[1] = (m[2,1] - m[1,2]) * s;
+			mqElement[2] = (m[0,2] - m[2,0]) * s;
+			mqElement[3] = (m[1,0] - m[0,1]) * s;
+		} else {
+			int i = 0;
+				
+			if(m[1,1] > m[0,0])
+				i = 1;
+			if(m[2,2] > m[i,i])
+				i = 2;
+	
+			switch(i) {
+				case 0:
+					s = sqrt(cast(real)(m[0,0] - (m[1,1] + m[2,2])) + 1);
+					mqElement[1] = 0.5f * s;
+					s= 0.5f / s;
+					mqElement[2] = (m[0,1] + m[1,0]) * s;
+					mqElement[3] = (m[2,0] + m[0,2]) * s;
+					mqElement[0] = (m[2,1] - m[1,2]) * s;
+					break;
+	
+				case 1:
+					s = sqrt(cast(real)(m[1,1] - (m[2,2] + m[0,0])) + 1);
+					mqElement[2] = 0.5f * s;
+					s = 0.5f / s;
+					mqElement[3] = (m[1,2] + m[2,1]) * s;
+					mqElement[1] = (m[0,1] + m[1,0]) * s;
+					mqElement[0] = (m[0,2] - m[2,0]) * s;
+					break;
+	
+				case 2:
+					s = sqrt(cast(real)(m[2,2] - (m[0,0] + m[1,1])) + 1);
+					mqElement[3] = 0.5f * s;
+					s = 0.5f / s;
+					mqElement[1] = (m[2,0] + m[0,2]) * s;
+					mqElement[2] = (m[1,2] + m[2,1]) * s;
+					mqElement[0] = (m[1,0] - m[0,1]) * s;
+					break;
+				default:
+					assert(false);
+			}
+		}		
 	}
-
-	else {
-		int i = 0;
-			
-		if(m[1][1] > m[0][0])
-			i = 1;
-		if(m[2][2] > m[i][i])
-			i = 2;
-
-		switch (i){
-
-		case 0:
-			s = sqrt((m[0][0] - (m[1][1] + m[2][2])) + 1);
-			element[1] = 0.5f * s;
-			s= 0.5f / s;
-			element[2] = (m[0][1] + m[1][0]) * s;
-			element[3] = (m[2][0] + m[0][2]) * s;
-			element[0] = (m[2][1] - m[1][2]) * s;
-			break;
-
-		case 1:
-			s = sqrt((m[1][1] - (m[2][2] + m[0][0])) + 1);
-			element[2] = 0.5f * s;
-			s = 0.5f / s;
-			element[3] = (m[1][2] + m[2][1]) * s;
-			element[1] = (m[0][1] + m[1][0]) * s;
-			element[0] = (m[0][2] - m[2][0]) * s;
-			break;
-
-		case 2:
-			s = sqrt((m[2][2] - (m[0][0] + m[1][1])) + 1);
-			element[3] = 0.5f * s;
-			s = 0.5f / s;
-			element[1] = (m[2][0] + m[0][2]) * s;
-			element[2] = (m[1][2] + m[2][1]) * s;
-			element[0] = (m[1][0] - m[0][1]) * s;
-		}
-	}		
-
-}*/
 
 
 	/**
 	* \brief Destruktor
 	*/
-	~this() {
+	~this() { 
 	}
 
 	/**
 	* \brief Gibt gewnschtes Element des Quaternions zurck
 	*/
-	T opIndex(size_t index) const {
-	   return element[index];
+	T opIndex(size_t index) {
+		return mqElement[index];
 	}
 
 	/**
 	* \brief Gibt gewnschtes Element des Quaternions zurck
-	
-	const float& Quaternion::operator [](unsigned int index) const{
-	   return element[index];
-	}*/
+	*/
+	const float opIndex(size_t index) const {
+	   return mqElement[index];
+	}
 
 
 	/**
@@ -222,37 +236,21 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \param Quaternion
 	* \return Quaternion
 	*/
-	Quaternion opOpAssign!("+=")(const Quaternion rhs){
-		element[0] += rhs.element[0];
-		element[1] += rhs.element[1];
-		element[2] += rhs.element[2];
-		element[3] += rhs.element[3];
+	Quaternion opOpAssign(string op)(const ref Quaternion rhs) {
+		mixin("mqElement[0]"~ op ~ "rhs.mqElement[0]");
+		mixin("mqElement[1]"~ op ~ "rhs.mqElement[1]");
+		mixin("mqElement[2]"~ op ~ "rhs.mqElement[2]");
+		mixin("mqElement[3]"~ op ~ "rhs.mqElement[3]");
 
 	   return this;
 	}
 
-	/**
-	* \brief Multiplikation zweier Quaternionen
-	* \param Quaternion
-	* \return Quaternion
-	*/
-	Quaternion opOpAssign!("*=")(const Quaternion rhs){
-		//! \todo Das geht bestimmt besser, oder?
-		Quaternion temp = this * rhs;
-		this = temp;
-		
-		return *this;
-	}
-
-
-	/**
-	* \brief Identitts-Quaternion fr die Multiplikation
-	*/
-	void identity() {
-		element[0] = 1.0;
-		element[1] = 0.0;
-		element[2] = 0.0;
-		element[3] = 0.0;
+	Quaternion opAssign(const ref Quaternion rhs) {
+		mqElement[0] = rhs.mqElement[0];
+		mqElement[1] = rhs.mqElement[1];
+		mqElement[2] = rhs.mqElement[2];
+		mqElement[3] = rhs.mqElement[3];
+		return this;
 	}
 
 	/**
@@ -260,19 +258,16 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \return Invertiertes Quaternion
 	*/
 	Quaternion inverse() {
-		return Quaternion(element[0], 
-			-element[1], 
-			-element[2], 
-			-element[3]);
+		return Quaternion(mqElement[0], -mqElement[1], -mqElement[2], -mqElement[3]);
 	}
 
 	/**
 	* \brief Invertiert das Quaternion, setz es jedoch nicht
 	*/
 	void invert() {
-		element[1] = -element[1];
-		element[2] = -element[2];
-		element[3] = -element[3];
+		mqElement[1] = -mqElement[1];
+		mqElement[2] = -mqElement[2];
+		mqElement[3] = -mqElement[3];
 	}
 
 	/**
@@ -280,20 +275,19 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \return Gibt die Magnitude (Norm) zurck (float)
 	*/
 	T normalize() {
-		if(element[0] == 0.0 && element[1] == 0.0 && 
-				element[2] == 0.0 && element[3] == 0.0) {
-			return 0.0;
+		if(mqElement[0] == 0.0 && mqElement[1] == 0.0 && mqElement[2] == 0.0 && mqElement[3] == 0.0) {
+			return conv!(float,T)(0.0);
 		}
 
-		const float norm = sqrt(element[0] * element[0] + 
-			element[1] * element[1] + 
-			element[2] * element[2] + 
-			element[3] * element[3]);
+		const T norm = conv!(double,T)(sqrt(mqElement[0] * mqElement[0] + 
+				mqElement[1] * mqElement[1] + 
+				mqElement[2] * mqElement[2] + 
+				mqElement[3] * mqElement[3]));
 		
 		//assert(norm == 0.0);
 
 		for(int i=0; i<4; ++i) {
-			element[i] /= norm;
+			mqElement[i] /= norm;
 		}
 		return norm;
 	}
@@ -301,26 +295,28 @@ Quaternion::Quaternion(Matrix3x3& m){
 	/**
 	* \brief Normalisiert die Rotationsachse eines Orientierungs-Quaternions (noch nicht sicher ob ntig)
 	*/
+
 	void normalizeAxis() {
-		float denom = sqrt(1 - (element[0]*element[0]));
-		T x = element[1]/denom;
-		T y = element[2]/denom;
-		T z = element[3]/denom;
+		float denom = sqrt(1 - (mqElement[0]*mqElement[0]));
+		float x = mqElement[1]/denom;
+		float y = mqElement[2]/denom;
+		float z = mqElement[3]/denom;
 		vec3!T axis = vec3!T(x, y, z);
 		axis.normalize();
-		element[1] = axis[0]*denom;
-		element[2] = axis[1]*denom;
-		element[3] = axis[2]*denom;
+		mqElement[1] = axis[0]*denom;
+		mqElement[2] = axis[1]*denom;
+		mqElement[3] = axis[2]*denom;
 	}
+
 
 	/**
 	* \brief Setzt die Werte des Quaternions, hat als Input die vier einzelnen Komponenten eines Quaternions
 	*/
-	void setValues(T w, T x, T y, T z){
-		element[0] = w;
-		element[1] = x;
-		element[2] = y;
-		element[3] = z;
+	void setValues(T w, T x, T y, T z) {
+		mqElement[0] = w;
+		mqElement[1] = x;
+		mqElement[2] = y;
+		mqElement[3] = z;
 	}
 
 	/**
@@ -332,40 +328,31 @@ Quaternion::Quaternion(Matrix3x3& m){
 	void setValues(T angle, vec3!T axis){
 		float tempSin = sin(angle / 2);
 
-		element[0] = cosf(angle / 2);
-		element[1] = axis[0] * tempSin;
-		element[2] = axis[1] * tempSin;
-		element[3] = axis[2] * tempSin;
+		mqElement[0] = cos(angle / 2);
+		mqElement[1] = axis[0] * tempSin;
+		mqElement[2] = axis[1] * tempSin;
+		mqElement[3] = axis[2] * tempSin;
 	}
 
-
-	/**
-	* \brief Setzt die Werte des Quaternions, hat als Input die Eulerwinkel
-	* \param float x, y, z die Eulerwinkel in Bogenma
-	*/
-	void setValues(T x, T y, T z) {
-		this = Quaternion(x, y, z);
-	}
 
 	/**
 	* \brief setzt die Werte des Vektorteils im Quaternion neu
 	* \return Setzt die Werte in den bergebenen Referenzen
 	*/
 	void setVector(const vec3!T v) {
-		element[1] = v[0];
-		element[2] = v[1];
-		element[3] = v[2];
+		mqElement[1] = v[0];
+		mqElement[2] = v[1];
+		mqElement[3] = v[2];
 	}
 
 	/**
 	* \brief Gibt die Werte des Quaternion in der Achsen- und Winkel-Form zurck
 	* \return Setzt die Werte in den bergebenen Referenzen
 	*/
-	void getAxisAngle(ref vec3!T axis, ref T angle) const {
-		float s = sqrt(
-			(element[1] * element[1]) + 
-			(element[2] * element[2]) + 
-			(element[3] * element[3]));
+	void getAxisAngle(ref vec3!T axis, ref float angle) const {
+		T s = sqrt((mqElement[1] * mqElement[1]) + 
+			(mqElement[2] * mqElement[2]) + 
+			(mqElement[3] * mqElement[3]));
 
 		if(s == 0) {
 			axis[0] = 1;
@@ -374,20 +361,19 @@ Quaternion::Quaternion(Matrix3x3& m){
 
 			angle = 0;
 		} else {
-			axis[0] = element[1] / s;
-			axis[1] = element[2] / s;
-			axis[2] = element[3] / s;
+			axis[0] = mqElement[1] / s;
+			axis[1] = mqElement[2] / s;
+			axis[2] = mqElement[3] / s;
 
-			angle = 2 * acos(element[0]);
+			angle = 2 * acos(mqElement[0]);
 		}
 	}
 
 	//! \return The axis of rotation
 	vec3!T getAxis() const {
-		float s = sqrt(
-			(element[1] * element[1]) + 
-			(element[2] * element[2]) + 
-			(element[3] * element[3]));
+		T s = sqrt((mqElement[1] * mqElement[1]) + 
+			(mqElement[2] * mqElement[2]) + 
+			(mqElement[3] * mqElement[3]));
 
 		vec3!T axis;
 			
@@ -396,26 +382,24 @@ Quaternion::Quaternion(Matrix3x3& m){
 			axis[1] = 0;
 			axis[2] = 0;
 		} else {
-			axis[0] = element[1] / s;
-			axis[1] = element[2] / s;
-			axis[2] = element[3] / s;
+			axis[0] = mqElement[1] / s;
+			axis[1] = mqElement[2] / s;
+			axis[2] = mqElement[3] / s;
 		}
 
 		return axis;
 	}
 
 	//! \return The angle of rotation in radian
-	double getAngle() const {
-		double s = sqrt(
-			(element[1] * element[1]) + 
-			(element[2] * element[2]) + 
-			(element[3] * element[3]));
-		double angle;
-
+	float getAngle() const {
+		T s = sqrt((mqElement[1] * mqElement[1]) + 
+			(mqElement[2] * mqElement[2]) + 
+			(mqElement[3] * mqElement[3]));
+		T angle;
 		if(s == 0) {
 			angle = 0;
 		} else {
-			angle = 2 * acos(element[0]);
+			angle = 2 * acos(mqElement[0]);
 		}
 		return angle;
 	}
@@ -424,34 +408,35 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \brief Gibt die einzelnen 4 Komponenten des Quaternions zurck
 	* \return Setzt die Werte in die bergebenen Referenzen
 	*/
-	void getValues(ref float w, ref float x, ref float y, ref float &) const {
-		w = element[0];
-		x = element[1];
-		y = element[2];
-		z = element[3];
+	void getValues(ref T w, ref T x, ref T y, ref T z) const {
+		w = mqElement[0];
+		x = mqElement[1];
+		y = mqElement[2];
+		z = mqElement[3];
 	}
 
 	T w() const {
-		return element[0];
+		return mqElement[0];
 	}
 
 	T x() const {
-		return element[1];
+		return mqElement[1];
 	}
 
 	T y() const {
-		return element[2];
+		return mqElement[2];
 	}
+
 	T z() const {
-		return element[3];
+		return mqElement[3];
 	}
 
 	/**
 	* \brief Gibt den Vektor des Quaternions zurck
 	* \return vec3!T
 	*/
-	vec3!T getVector() const{
-		return vec3!T(element[1], element[2], element[3]);
+	vec3!T getVector () const{
+		return vec3!T(mqElement[1], mqElement[2], mqElement[3]);
 	}
 
 	/**
@@ -471,79 +456,78 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* die Formel cos^2(phi)+sin^2(phi)=1 angewandt.
 	* 
 	*/
-	vec3!T getEulerRotation() const {
-
-		vec3!T rotation;
-
-		Matrix3x3 m;
+	void getEulerRotation(ref vec3!T rotation) const {
+		mat!(T,3,3) m;
 		getRotationMatrix(m);
-		float cosY = sqrt(m[0][0]*m[0][0]+m[1][0]*m[1][0]);
+		T cosY = sqrt(m[0,0]*m[0,0]+m[1,0]*m[1,0]);
 		
-		if (cosY > 16 * FLT_EPSILON) {
-			rotation[0] = atan2(1.0f*m[2][1], m[2][2]);
-			rotation[1] = atan2(-1.0f*m[2][0], cosY);
-			rotation[2] = atan2(1.0f*m[1][0], m[0][0]);
+		if(cosY > 16 * 0.00001) {
+			rotation[0] = atan2(1.0f*m[2,1], m[2,2]);
+			rotation[1] = atan2(-1.0f*m[2,0], cosY);
+			rotation[2] = atan2(1.0f*m[1,0], m[0,0]);
 		} else {
-			rotation[0] = atan2(-1.0f*m[1][2], m[1][1]);
-			rotation[1] = atan2(-1.0f*m[2][0], cosY);
+			rotation[0] = atan2(-1.0f*m[1,2], m[1,1]);
+			rotation[1] = atan2(-1.0f*m[2,0], cosY);
 			rotation[2] = 0.0;
 		}
 		
-		assert(!ISNAN(rotation[0]));
-		assert(!ISNAN(rotation[1]));
-		assert(!ISNAN(rotation[2]));
+		assert(!isNaN(rotation[0]));
+		assert(!isNaN(rotation[1]));
+		assert(!isNaN(rotation[2]));
+	}
 
+	vec3!T getEulerRotation() const {
+		vec3!T rotation;
+		getEulerRotation(rotation);
 		return rotation;
 	}
 
 	/**
-	* \brief Formt das Quaternion in eine Rotationsmatrix um
-	* \param Matrix3x3 (3x3Rotationsmatrix)
+	* \brief Formt das Quaternion in eine Rotationsmat um
+	* \param Matrix3x3 (3x3Rotationsmat)
 	* Konvention: Rz*Ry*Rx !!! (s.o.)
 	*
 	* Die Werte im Quaternion entsprechen Multiplikationen der verschiedenen Cosinus- und Sinuswerte. Daher kann man durch
 	* geschicktes Vorgehen diese Sinus-/Cosinuswerte rckrechnen. Dabei werden die Quaternionenwerte so geschickt zusammen-
-	* gerechnet, das sich aufgrund der Trigonometrischen Gesetzmssigkeiten im Endeffekt die Eintrge der Rotationsmatrix 
+	* gerechnet, das sich aufgrund der Trigonometrischen Gesetzmssigkeiten im Endeffekt die Eintrge der Rotationsmat 
 	* Rz*Ry*Rx ergeben.
 	* 
 	* Diesen Code haben wir nicht bis ins letzte Detail nachvollzogen, ihn allerdings durch ausfhrliche Vergleichstests besttigt.
 	*
 	* Dieser Code wurde aus OpenSG bernommen. OpenSG rechnet anscheinend mit transponierten Matrizen, daher wird die
-	* Ergebnismatrix "zurck"-transponiert.
-	
-	void getRotationMatrix(Matrix3x3 &matrix) const{
+	* Ergebnismat "zurck"-transponiert.
+	*/
+	void getRotationMatrix(ref mat!(T,3,3) mat) const {
+		assert(mat.getSizeM() == 3 && mat.getSizeN() == 3);
 
-		assert(matrix.getSizeM () == 3 && matrix.getSizeN () == 3);
+		mat[0,0] = 1.0f - 2.0f * (mqElement[2] * mqElement[2] +mqElement[3] * mqElement[3]);
+		mat[0,1] = 2.0f * (mqElement[1] * mqElement[2] +mqElement[3] * mqElement[0]);
+		mat[0,2] = 2.0f * (mqElement[3] * mqElement[1] -mqElement[2] * mqElement[0]);
 
-		matrix[0][0] = 1.0f - 2.0f * (element[2] * element[2] +element[3] * element[3]);
-		matrix[0][1] = 2.0f * (element[1] * element[2] +element[3] * element[0]);
-		matrix[0][2] = 2.0f * (element[3] * element[1] -element[2] * element[0]);
+		mat[1,0] = 2.0f * (mqElement[1] * mqElement[2] -mqElement[3] * mqElement[0]);
+		mat[1,1] = 1.0f - 2.0f * (mqElement[3] * mqElement[3] +mqElement[1] * mqElement[1]);
+		mat[1,2] = 2.0f * (mqElement[2] * mqElement[3] +mqElement[1] * mqElement[0]);
 
-		matrix[1][0] = 2.0f * (element[1] * element[2] -element[3] * element[0]);
-		matrix[1][1] = 1.0f - 2.0f * (element[3] * element[3] +element[1] * element[1]);
-		matrix[1][2] = 2.0f * (element[2] * element[3] +element[1] * element[0]);
+		mat[2,0] = 2.0f * (mqElement[3] * mqElement[1] +mqElement[2] * mqElement[0]);
+		mat[2,1] = 2.0f * (mqElement[2] * mqElement[3] -mqElement[1] * mqElement[0]);
+		mat[2,2] = 1.0f - 2.0f * (mqElement[2] * mqElement[2] +mqElement[1] * mqElement[1]);
 
-		matrix[2][0] = 2.0f * (element[3] * element[1] +element[2] * element[0]);
-		matrix[2][1] = 2.0f * (element[2] * element[3] -element[1] * element[0]);
-		matrix[2][2] = 1.0f - 2.0f * (element[2] * element[2] +element[1] * element[1]);
-
-		matrix = matrix.T();
+		mat = mat.tran();
 
 	}
 
 	//! \see getRotationMatrix(Matrix3x3)
-	Matrix3x3 Quaternion::getRotationMatrix() const{
-		
-		Matrix3x3 matrix;
-		getRotationMatrix(matrix);
-		return matrix;
-	}*/
+	mat!(T,3,3) getRotationMatrix() const{
+		mat!(T,3,3) mat;
+		getRotationMatrix(mat);
+		return mat;
+	}
 
 	/**
 	* \brief Gibt die Werte des Quaternions aus
 	*/
-	void Quaternion::print() {
-		//cout << "Quaternion: " << element[0] << " (" << element[1] << " " << element[2] << " " << element[3] << ") "<< endl;
+	void print() {
+		hurt.util.slog.log("%f %f %f %f", mqElement[0],mqElement[1],mqElement[2],mqElement[3]);
 	}
 
 
@@ -553,9 +537,8 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \brief Multiplikation zweier Quaternionen
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary("*")(const Quaternion rhs) const {
-
-		return Quaternion(this[0] * rhs[0] - this[1] * rhs[1] - this[2] * rhs[2] - this[3] * rhs[3],
+	Quaternion opBinary(string op)(const ref Quaternion rhs) if(op == "*") {
+		return Quaternion (	this[0] * rhs[0] - this[1] * rhs[1] - this[2] * rhs[2] - this[3] * rhs[3],
 							this[1] * rhs[0] + this[0] * rhs[1] + this[2] * rhs[3] - this[3] * rhs[2],
 							this[2] * rhs[0] + this[0] * rhs[2] + this[3] * rhs[1] - this[1] * rhs[3],
 							this[3] * rhs[0] + this[0] * rhs[3] + this[1] * rhs[2] - this[2] * rhs[1]);
@@ -566,7 +549,7 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \brief Addition zweier Quaternionen
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary("+")(const Quaternion rhs) const {
+	Quaternion opBinary(string op)(const ref Quaternion rhs) if(op == "+") {
 		return Quaternion(
 			this[0] + rhs[0],
 			this[1] + rhs[1],
@@ -579,7 +562,7 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \brief Multiplikation von Skalar und Quaternion
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary("*")(const float f, const Quaternion& q){
+	Quaternion opBinary(string op)(const T f) if(op == "*") {
 		return Quaternion(
 			f * q[0],
 			f * q[1],
@@ -588,27 +571,12 @@ Quaternion::Quaternion(Matrix3x3& m){
 	}
 
 	/**
-	* \brief Multiplikation von Quaternion und Skalar
-	* \return neues Quaterion
-	*/
-	Quaternion opBinary("*")(const T f) const {
-		return Quaternion(
-			f * this[0],
-			f * this[1],
-			f * this[2],
-			f * this[3]);
-	}
-
-	/**
 	* \brief POunktprodukt von Quaternionen
 	* \return neues float
 	*/
 
-	T dot(const Quaternion rhs) const {
-		return this[0] * rhs[0] +
-			this[1] * rhs[1] +
-			this[2] * rhs[2] +
-			this[3] * rhs[3];
+	float dot(const ref Quaternion lhs, const ref Quaternion rhs){
+		return lhs[0] * rhs[0] +lhs[1] * rhs[1] +lhs[2] * rhs[2] +lhs[3] * rhs[3];
 	}
 
 
@@ -618,27 +586,12 @@ Quaternion::Quaternion(Matrix3x3& m){
 	* \param quat das Orientierungs-Quaternion, um welches gedreht wird 
 	* \return um Quaternion rotierter Vektor
 	*/
-	vec3!T qRotate(const vec3!T vector, const Quaternion qRot) {
+	const vec3!T qRotate(const ref vec3!T vector, const ref Quaternion qRot) {
 		Quaternion qInvRot = qRot;
 		qInvRot.invert();
-		Quaternion qVector(vector);
+		Quaternion qVector = Quaternion(vector);
 		qVector = qRot * qVector * qInvRot;
 		
 		return vec3!T(qVector[1], qVector[2], qVector[3]);
 	} 
-
-/*std::ostream& operator <<(std::ostream& os, const Quaternion& quaternion) {
-	//Werte des QUaternions pur ausgeben
-	os << "W: " << quaternion[0] << ", ";
-	os << "X: " << quaternion[1] << ", ";
-	os << "Y: " << quaternion[2] << ", ";
-	os << "Z: " << quaternion[3] << "    oder:    ";
-
-	vec3!T vec;
-	float ang;
-	quaternion.getAxisAngle(vec, ang);
-
-	os << "Winkel: " << ang << " Achse: " << vec;
-	
-	return os;
-}*/
+}

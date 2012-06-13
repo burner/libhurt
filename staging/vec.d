@@ -1,8 +1,9 @@
+module hurt.math.vec;
+
 import std.math;
 import hurt.conv.conv;
 import hurt.util.slog;
 
-pure @safe:
 struct vec3(T) {
 	T values[3];
 	
@@ -28,6 +29,10 @@ struct vec3(T) {
 
 	T opIndex(size_t idx) const {
 		return values[idx];
+	}
+
+	void opIndexAssign(T value, size_t idx) {
+		values[idx] = value;
 	}
 
 	T opBinary(string op)(vec3!T rhs) if(op == "*") {

@@ -1,3 +1,4 @@
+module hurt.math.matrix;
 /**
  * Simon is the legal property of its developers, whose names are too
  * numerous to list here.  Please refer to the COPYRIGHT file
@@ -56,7 +57,8 @@
  */
 //------------------------------------------------------------------------------
 
-import vec;
+import hurt.math.vec;
+import hurt.math.quaternion;
 import std.conv;
 import hurt.io.stdio;
 import hurt.util.slog;
@@ -200,7 +202,7 @@ public:
 				hurt.io.stdio.println();
 			}
 			static if(is(T == float)) {
-				hurt.io.stdio.printf("%e", it);
+				hurt.io.stdio.printf("%.1f", it);
 			} else {
 				hurt.io.stdio.printf("%d", it);
 			}
@@ -210,7 +212,7 @@ public:
 	}
 
 	//mixin(genOpBinary!(3,3)());
-	mixin(genOpBinaryFromTo!(Rows,Rows*2,Columns,Columns*2)());
+	mixin(genOpBinaryFromTo!(1,Rows*2,Columns,Columns*2)());
 
 	/*!
 	  \brief multiply two matrixes (operator *)
@@ -637,4 +639,6 @@ void main() {
 	auto oo = h * k;
 	println();
 	oo.print();
+
+	auto qa = Quaternion!(real)(1.0, 2.0, 3.0);
 }
