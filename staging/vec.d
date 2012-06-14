@@ -10,9 +10,9 @@ struct vec3(T) {
 	T values[3];
 	
 	this(T a, T b, T c) {
-		values[0] = a;
-		values[1] = b;
-		values[2] = c;
+		this.values[0] = a;
+		this.values[1] = b;
+		this.values[2] = c;
 	}
 
 	this(vec3!T old) {
@@ -24,13 +24,13 @@ struct vec3(T) {
 	}
 
 	void normalize() {
-		double len = sqrt(conv!(T,real)((values[0] * values[0]) + 
-			(values[1] * values[1]) +
-			(values[2] * values[2])));
+		double len = sqrt(conv!(T,real)((this.values[0] * this.values[0]) + 
+			(this.values[1] * this.values[1]) +
+			(this.values[2] * this.values[2])));
 
-		values[0] = conv!(double,T)(values[0] / len);
-		values[1] = conv!(double,T)(values[1] / len);
-		values[2] = conv!(double,T)(values[2] / len);
+		this.values[0] = conv!(double,T)(this.values[0] / len);
+		this.values[1] = conv!(double,T)(this.values[1] / len);
+		this.values[2] = conv!(double,T)(this.values[2] / len);
 	}
 
 	@property T x(T value) {
@@ -58,62 +58,62 @@ struct vec3(T) {
 	}
 
 	T opIndex(size_t idx) {
-		return values[idx];
+		return this.values[idx];
 	}
 
 	T opIndex(size_t idx) const {
-		return values[idx];
+		return this.values[idx];
 	}
 
 	void opIndexAssign(T value, size_t idx) {
-		values[idx] = value;
+		this.values[idx] = value;
 	}
 
 	vec3!T opAssign(vec3!T value) {
-		values[0] = value.x;
-		values[1] = value.y;
-		values[2] = value.z;
+		this.values[0] = value.x;
+		this.values[1] = value.y;
+		this.values[2] = value.z;
 		return this;
 	}
 
 	vec3!T opUnary(string op)() const {
 		static if(op == "-") {
-			return vec3!T(-values[0], -values[1], -values[2]);
+			return vec3!T(-this.values[0], -this.values[1], -this.values[2]);
 		}
 		assert(false);
 	}
 
 	vec3!T opBinary(string op)(vec3!T rhs) const if(op == "+") {
-		return vec3!T(values[0]*rhs.x, values[1]+rhs.y, values[2]+rhs.z);
+		return vec3!T(this.values[0]*rhs.x, this.values[1]+rhs.y, this.values[2]+rhs.z);
 	}
 
 	T opBinary(string op)(vec3!T rhs) const if(op == "*") {
-		return values[0]*rhs.x + values[1]*rhs.y + values[2]*rhs.z;	
+		return this.values[0]*rhs.x + this.values[1]*rhs.y + this.values[2]*rhs.z;	
 		assert(false);
 	}
 
 	vec3!T opBinary(string op)(const T value) const {
 		static if(op == "*") {
-			return vec3!T(values[0] * value, 
-				values[1] * value, 
-				values[2] * value);
+			return vec3!T(this.values[0] * value, 
+				this.values[1] * value, 
+				this.values[2] * value);
 		} else static if(op == "/") {
-			return vec3!T(values[0] / value, 
-				values[1] / value, 
-				values[2] / value);
+			return vec3!T(this.values[0] / value, 
+				this.values[1] / value, 
+				this.values[2] / value);
 		}
 		assert(false);
 	}
 
 	string toString() const {
-		return format("%f:%f:%f", values[0], values[1], values[2]);
+		return format("%f:%f:%f", this.values[0], this.values[1], this.values[2]);
 	}
 
 	T length() const {
 		return conv!(float,T)(sqrt(
-			conv!(T,real)(values[0] * values[0]) + 
-			conv!(T,real)(values[1] * values[1]) + 
-			conv!(T,real)(values[2] * values[2])));
+			conv!(T,real)(this.values[0] * this.values[0]) + 
+			conv!(T,real)(this.values[1] * this.values[1]) + 
+			conv!(T,real)(this.values[2] * this.values[2])));
 	}
 }
 
