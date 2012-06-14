@@ -74,11 +74,11 @@ double radToDeg(double rad) {
 struct Quaternion(T) {
 	private T mqElement[4];
 
-	this(this) {
+		this(this) {
 		mqElement[0] = 0.0;
 		mqElement[1] = 0.0;
-		mqElement[2] = 1.0;
-		mqElement[3] = 0.0;
+		mqElement[2] = 0.0;
+		mqElement[3] = 1.0;
 	}
 
 /**
@@ -236,7 +236,7 @@ struct Quaternion(T) {
 	* \param Quaternion
 	* \return Quaternion
 	*/
-	Quaternion opOpAssign(string op)(const ref Quaternion rhs) {
+	Quaternion!T opOpAssign(string op)(const ref Quaternion!T rhs) {
 		mixin("mqElement[0]"~ op ~ "rhs.mqElement[0]");
 		mixin("mqElement[1]"~ op ~ "rhs.mqElement[1]");
 		mixin("mqElement[2]"~ op ~ "rhs.mqElement[2]");
@@ -245,7 +245,15 @@ struct Quaternion(T) {
 	   return this;
 	}
 
-	Quaternion opAssign(const ref Quaternion rhs) {
+	Quaternion!T opAssign(Quaternion!T rhs) {
+		mqElement[0] = rhs.mqElement[0];
+		mqElement[1] = rhs.mqElement[1];
+		mqElement[2] = rhs.mqElement[2];
+		mqElement[3] = rhs.mqElement[3];
+		return this;
+	}
+
+	Quaternion!T opAssign(const ref Quaternion!T rhs) {
 		mqElement[0] = rhs.mqElement[0];
 		mqElement[1] = rhs.mqElement[1];
 		mqElement[2] = rhs.mqElement[2];
@@ -257,8 +265,8 @@ struct Quaternion(T) {
 	* \brief Gibt das inverse Quaternion zurck
 	* \return Invertiertes Quaternion
 	*/
-	Quaternion inverse() {
-		return Quaternion(mqElement[0], -mqElement[1], -mqElement[2], -mqElement[3]);
+	Quaternion!T inverse() {
+		return Quaternion!T(mqElement[0], -mqElement[1], -mqElement[2], -mqElement[3]);
 	}
 
 	/**
@@ -537,8 +545,9 @@ struct Quaternion(T) {
 	* \brief Multiplikation zweier Quaternionen
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary(string op)(const ref Quaternion rhs) if(op == "*") {
-		return Quaternion (	this[0] * rhs[0] - this[1] * rhs[1] - this[2] * rhs[2] - this[3] * rhs[3],
+	Quaternion!T opBinary(string op)(const ref Quaternion rhs) const 
+			if(op == "*") {
+		return Quaternion!T (	this[0] * rhs[0] - this[1] * rhs[1] - this[2] * rhs[2] - this[3] * rhs[3],
 							this[1] * rhs[0] + this[0] * rhs[1] + this[2] * rhs[3] - this[3] * rhs[2],
 							this[2] * rhs[0] + this[0] * rhs[2] + this[3] * rhs[1] - this[1] * rhs[3],
 							this[3] * rhs[0] + this[0] * rhs[3] + this[1] * rhs[2] - this[2] * rhs[1]);
@@ -549,8 +558,9 @@ struct Quaternion(T) {
 	* \brief Addition zweier Quaternionen
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary(string op)(const ref Quaternion rhs) if(op == "+") {
-		return Quaternion(
+	Quaternion!T opBinary(string op)(const ref Quaternion!T rhs) const
+			if(op == "+") {
+		return Quaternion!T(
 			this[0] + rhs[0],
 			this[1] + rhs[1],
 			this[2] + rhs[2],
@@ -562,8 +572,8 @@ struct Quaternion(T) {
 	* \brief Multiplikation von Skalar und Quaternion
 	* \return neues Quaterion
 	*/
-	Quaternion opBinary(string op)(const T f) if(op == "*") {
-		return Quaternion(
+	Quaternion!T opBinary(string op)(const T f) if(op == "*") {
+		return Quaternion!T(
 			f * q[0],
 			f * q[1],
 			f * q[2],
@@ -575,23 +585,24 @@ struct Quaternion(T) {
 	* \return neues float
 	*/
 
-	float dot(const ref Quaternion lhs, const ref Quaternion rhs){
+	float dot(const ref Quaternion!T lhs, const ref Quaternion!T rhs){
 		return lhs[0] * rhs[0] +lhs[1] * rhs[1] +lhs[2] * rhs[2] +lhs[3] * rhs[3];
 	}
-
-
-	/**
-	* \brief Rotation von Vektor um Orientierungs-Quaternion 
-	* \param vector ein Vektor
-	* \param quat das Orientierungs-Quaternion, um welches gedreht wird 
-	* \return um Quaternion rotierter Vektor
-	*/
-	const vec3!T qRotate(const ref vec3!T vector, const ref Quaternion qRot) {
-		Quaternion qInvRot = qRot;
-		qInvRot.invert();
-		Quaternion qVector = Quaternion(vector);
-		qVector = qRot * qVector * qInvRot;
-		
-		return vec3!T(qVector[1], qVector[2], qVector[3]);
-	} 
 }
+
+
+/**
+* \brief Rotation von Vektor um Orientierungs-Quaternion 
+* \param vector ein Vektor
+* \param quat das Orientierungs-Quaternion, um welches gedreht wird 
+* \return um Quaternion rotierter Vektor
+*/
+static vec3!T qRotate(T)(const ref vec3!T vector, 
+		const ref Quaternion!T qRot) {
+	Quaternion!T qInvRot = qRot;
+	qInvRot.invert();
+	Quaternion!T qVector = Quaternion!T(vector);
+	qVector = qRot * qVector * qInvRot;
+	
+	return vec3!T(qVector[1], qVector[2], qVector[3]);
+} 

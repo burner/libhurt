@@ -58,11 +58,12 @@ module hurt.math.matrix;
 //------------------------------------------------------------------------------
 
 import hurt.math.vec;
-import hurt.math.quaternion;
+import hurt.math.quat;
 import std.conv;
 import hurt.io.stdio;
 import hurt.util.slog;
 import hurt.string.formatter;
+import std.stdio;
 
 private string genOpBinaryFromTo(int rowLow, int rowHigh, 
 		int colLow, int colHigh)() {
@@ -165,6 +166,12 @@ public:
 
 	//! Assignment of a matrix
 	void opAssign(const ref mat!(T,Rows,Columns) mat) {
+		foreach(idx, it; mat.matrix) {
+			this.matrix[idx] = it;
+		}
+	}
+
+	void opAssign(mat!(T,Rows,Columns) mat) {
 		foreach(idx, it; mat.matrix) {
 			this.matrix[idx] = it;
 		}
@@ -610,35 +617,39 @@ void main() {
 	mat!(int,3,3) n = mat!(int,3,3)([ [1,2,3], [4,5,6], [7,8,9]]);
 	mat!(int,3,4) o = mat!(int,3,4)([ [1,2,3,12], [4,5,6,11], [7,8,9,10]]);
 	auto i = mat!(int,3,5)([ [1,2,3,12,13], [4,5,6,11,14], [7,8,9,10,15]]);
-	m.print();
-	println();
-	n.print();
-	println();
 	o.print();
 	println();
 	auto z = m * n;
-	z.print();
+	//z.print();
 	auto y = m * o;
-	println();
-	y.print();
+	//println();
+	//y.print();
 	auto w = n * i;
-	println();
-	w.print();
+	//println();
+	//w.print();
 	//log("%s", genOpBinaryFromTo!(3,3,1,10)());
 	auto h = mat!(float,4,4)([[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0],
 		[9.0, 10.0, 11.0, 12.0], [13.0, 14.0, 15.0, 16.0]]);
 
 	auto k = createDiagonal!(float,4,4)(1.0);
 	auto p = h * h;
-	println();
-	k.print();
-	println();
+	//println();
+	//k.print();
+	//println();
 	h.print();
 	println();
 	p.print();
 	auto oo = h * k;
 	println();
-	oo.print();
+	//oo.print();
 
-	auto qa = Quaternion!(real)(1.0, 2.0, 3.0);
+	quat!real q1 = quat!real(90.0,0.0,0.0);
+	log("%s", q1.eulerAngles().toString());
+	auto v1 = vec3!real(1.0,0.0,1.0);
+	log("%s", v1.toString());
+	auto v2 = q1.rotate(v1);
+	quat!real q2 = quat!real(-90.0,0.0,0.0);
+	auto v3 = q2.rotate(v1);
+	log("%s", v2.toString());
+	log("%s", v3.toString());
 }

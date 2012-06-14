@@ -12,6 +12,7 @@ import hurt.exception.illegalargumentexception;
 import core.vararg;
 
 import std.stdio;
+import std.math;
 import hurt.string.utf;
 
 private static StringBuffer!(char) buf;
@@ -726,16 +727,28 @@ public @trusted immutable(S)[] formatString(T = char,S = char,
 						immutable(T)[] tmp;
 						if(isTypeOf!(float)(arguments[argPtr])) {
 							float value = va_arg!(float)(arg);
-							tmp = floatToString!(T,float)(value, precision, 
-								alwaysSign);
+							if(isNaN(value)) {
+								tmp = "NaN";
+							} else {
+								tmp = floatToString!(T,float)(value, 
+									precision, alwaysSign);
+							}
 						} else if(isTypeOf!(double)(arguments[argPtr])) {
 							double value = va_arg!(double)(arg);
-							tmp = floatToString!(T,double)(value, precision, 
-								alwaysSign);
+							if(isNaN(value)) {
+								tmp = "NaN";
+							} else {
+								tmp = floatToString!(T,double)(value, 
+									precision, alwaysSign);
+							}
 						} else if(isTypeOf!(real)(arguments[argPtr])) {
 							real value = va_arg!(real)(arg);
-							tmp = floatToString!(T,real)(value, precision, 
-								alwaysSign);
+							if(isNaN(value)) {
+								tmp = "NaN";
+							} else {
+								tmp = floatToString!(T,real)(value, 
+									precision, alwaysSign);
+							}
 						} else {
 							throw new FormatError(
 								"an float was expected but value was a " 
