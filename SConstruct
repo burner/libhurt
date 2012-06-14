@@ -1,5 +1,6 @@
 src = Split('''
 hurt/container/binvec.d
+hurt/container/multiset.d
 hurt/container/bitmap.d
 hurt/container/bst.d
 hurt/container/crs.d
