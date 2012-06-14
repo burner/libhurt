@@ -48,7 +48,7 @@ class Item(T) {
 		} else static if(is(T : Object)) {
 			return cast(size_t)value.toHash();
 		} else {
-			assert(0);
+			return value.toHash();
 		}
 	}
 

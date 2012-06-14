@@ -1,4 +1,4 @@
-SRC=multiset.d
+SRC=store.d
 
 #SRC=arraytree.d arraybst.d
 #SRC=test.d `find hurt -name \*.d`
