@@ -11,9 +11,9 @@ import hurt.io.stdio;
 import hurt.util.slog;
 
 class Item(T) {
-	T value;
-	Item!(T) next;
-	size_t childs;
+	package T value;
+	package Item!(T) next;
+	package size_t childs;
 
 	this() {
 		this.childs = 0;
@@ -28,6 +28,10 @@ class Item(T) {
 			this.childs = this.next.childs+1;
 			//log("%d %d", this.childs, this.next.childs);
 		}
+	}
+
+	T getValue() {
+		return this.value;
 	}
 
 	override hash_t toHash() const {
@@ -158,6 +162,10 @@ class MultiSet(T) {
 		return this.tree.getSize();
 	}
 
+	bool isEmpty() const {
+		return this.tree.getSize() == 0;
+	}
+
 	override bool opEquals(Object o) {
 		auto i = cast(MultiSet!(T))o;
 		if(this.getSize() != i.getSize()) {
@@ -217,10 +225,12 @@ unittest {
 	foreach(idx, it; data) {
 		assert(!set.contains(it));
 	}
+	assert(set.isEmpty());
 	
 }
 
+version(staging) {
 void main() {
-
+}
 }
 
