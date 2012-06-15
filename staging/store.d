@@ -6,6 +6,7 @@ import hurt.container.set;
 import hurt.container.isr;
 import hurt.string.stringbuffer;
 import hurt.util.slog;
+import hurt.time.stopwatch;
 
 struct strPtr(T) {
 	Store!T store;
@@ -208,7 +209,6 @@ class Store(T) {
 			auto jt = it.dup();
 			assert(jt.isValid());
 			jt++;
-			log("%b", jt.isValid());
 			if(jt.isValid() && // they line up
 					(*it).getBase() + (*it).getSize() == (*jt).getBase()) {
 				auto itPtr = *it;	
@@ -248,28 +248,41 @@ class Store(T) {
 
 		return ret.getString();
 	}
+
+	public size_t getLow() const {
+		return this.low;
+	}
+
+	public size_t getFragments() {
+		return this.storePointer.getSize();
+	}
 		
 }
 
 unittest {
-	Store!byte store = new Store!byte(16);
+	StopWatch sw;
+	sw.start();
+	Store!byte store = new Store!byte(1024*1024);
 
 	auto s1 = store.alloc(8);
 	assert(s1.isValid());
 	assert(s1.getBase() == 0 && s1.getSize() == 8);
-	log("%s", store.toString());
+	//log("%s", store.toString());
 	//store.free(s1);
-	log("%s", store.toString());
+	//log("%s", store.toString());
 	auto s2 = store.alloc(4);
-	log("%s", store.toString());
+	assert(s2.isValid());
+	//log("%s", store.toString());
 	auto s3 = store.alloc(2);
-	log("%s", store.toString());
+	assert(s3.isValid());
+	//log("%s", store.toString());
 	store.free(s2);
-	log("%s", store.toString());
+	//log("%s", store.toString());
 	store.free(s1);
-	log("%s", store.toString());
+	//log("%s", store.toString());
 	store.free(s3);
-	log("%s", store.toString());
+	//log("%s", store.toString());
+	log("all that took %f", sw.stop());
 }
 
 version(staging) {
