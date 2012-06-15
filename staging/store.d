@@ -4,6 +4,8 @@ import hurt.container.multiset;
 import hurt.container.mapset;
 import hurt.container.set;
 import hurt.container.isr;
+import hurt.string.stringbuffer;
+import hurt.util.slog;
 
 struct strPtr(T) {
 	Store!T store;
@@ -176,14 +178,12 @@ class Store(T) {
 	}
 
 	void free(strPtr!T ptr) {
-		if(ptr.getBase() + ptr.getSize() == this.low) {
-			this.low = this.low - ptr.getSize();
-			return;
-		}
-		
 		// check if there is a ptr below that would line up
 		// if so merge and make it the ptr variable
+		this.storePointer.insert(ptr);
+		this.storeObjOfSize.insert(ptr.getSize(), ptr);
 		ISRIterator!(strPtr!T) it = this.storePointer.find(ptr);
+		bool before, after;
 		if(it.isValid()) {
 			auto jt = it.dup();
 			assert(jt.isValid());
@@ -193,20 +193,62 @@ class Store(T) {
 				auto jtPtr = *jt;	
 				this.storePointer.remove(jt);
 				this.storePointer.remove(it);
-				this.storeObjOfSize.remove(jt.getSize(), jt);
-				this.storeObjOfSize.remove(it.getSize(), it);
-				strPtr!T newPtr = strPtr!T(jt.getBase(), 
-					jt.getSize() + it.getSize());
-				this.storeObjOfSize(newPtr.getSize(), newPtr);
-				this.storePointer(newPtr);
-				return;
+				this.storeObjOfSize.remove((*jt).getSize(), (*jt));
+				this.storeObjOfSize.remove((*it).getSize(), (*it));
+
+				ptr = strPtr!T(this, jtPtr.getBase(), 
+					jtPtr.getSize() + ptr.getSize());
+				this.storeObjOfSize.insert(ptr.getSize(), ptr);
+				this.storePointer.insert(ptr);
+				before = true;
+			}
+		}
+		it = this.storePointer.find(ptr);
+		if(it.isValid()) {
+			auto jt = it.dup();
+			assert(jt.isValid());
+			jt++;
+			log("%b", jt.isValid());
+			if(jt.isValid() && // they line up
+					(*it).getBase() + (*it).getSize() == (*jt).getBase()) {
+				auto itPtr = *it;	
+				auto newSize = (*it).getSize() + (*jt).getSize();
+				this.storePointer.remove(jt);
+				this.storePointer.remove(it);
+				this.storeObjOfSize.remove((*jt).getSize(), (*jt));
+				this.storeObjOfSize.remove((*it).getSize(), (*it));
+
+				ptr = strPtr!T(this,itPtr.getBase(), newSize);
+				this.storeObjOfSize.insert(ptr.getSize(), ptr);
+				this.storePointer.insert(ptr);
+				after = true;
 			}
 		}
 
+		/*if(!before && !after) {
+			this.storePointer.insert(ptr);
+		}*/
 
-		// check the possibly merge ptr against the ptr 
-		// ahead
+		if(ptr.getBase() + ptr.getSize() == this.low) {
+			this.low = this.low - ptr.getSize();
+			this.storePointer.remove(ptr);
+			this.storeObjOfSize.remove(ptr.getSize(), ptr);
+		}
+		assert(this.low >= 0);
 	}
+
+	public override string toString() {
+		auto ret = new StringBuffer!(char)(1024);
+		ret.pushBack("store size %d: low idx %d\n", this.store.length,
+			this.low);
+
+		foreach(ptr; this.storePointer) {
+			ret.pushBack("ptr base %d size %d\n", ptr.getBase(), ptr.getSize());
+		}
+
+		return ret.getString();
+	}
+		
 }
 
 unittest {
@@ -215,6 +257,19 @@ unittest {
 	auto s1 = store.alloc(8);
 	assert(s1.isValid());
 	assert(s1.getBase() == 0 && s1.getSize() == 8);
+	log("%s", store.toString());
+	//store.free(s1);
+	log("%s", store.toString());
+	auto s2 = store.alloc(4);
+	log("%s", store.toString());
+	auto s3 = store.alloc(2);
+	log("%s", store.toString());
+	store.free(s2);
+	log("%s", store.toString());
+	store.free(s1);
+	log("%s", store.toString());
+	store.free(s3);
+	log("%s", store.toString());
 }
 
 version(staging) {

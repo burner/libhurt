@@ -66,6 +66,10 @@ class Set(T) {
 		return this.map.searchIt(key);
 	}
 
+	public bool remove(ISRIterator!(T) it) {
+		return this.remove(*it);
+	}
+
 	public bool remove(T data) {
 		if(this.map is null) {
 			return false;
