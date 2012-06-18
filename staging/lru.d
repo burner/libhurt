@@ -12,11 +12,18 @@ class LRU(T,S) {
 	FDoubleLinkedList!(Pair!(T,S)) queue;
 	Map!(T, Iterator!(Pair!(T,S))) map;
 	const size_t size;
+	size_t function(S sizeFrom) sizeFunc;
 
 	this(size_t size) {
 		this.size = size;
 		this.queue = new FDoubleLinkedList!(Pair!(T,S))();
 		this.map = new Map!(T, Iterator!(Pair!(T,S)))(ISRType.HashTable);
+		this.sizeFunc = null;
+	}
+
+	this(size_t size, size_t function(S sizeFrom) sizeFunc) {
+		this(size);
+		this.sizeFunc = sizeFunc;
 	}
 
 	public bool contains(T key) {
@@ -38,9 +45,22 @@ class LRU(T,S) {
 
 	public void insert(T key, S data) {
 		if(this.queue.getSize() >= size) {
-			Pair!(T,S) p = this.queue.popBack();
-			this.map.remove(p.first);
+			if(this.sizeFunc !is null) {
+				auto it = this.queue.end();
+				for(; it.isValid(); it--) {
+					if(this.sizeFunc((*it).second) >= this.sizeFunc(data)) {
+						auto tmp = this.queue.remove(it);
+						this.map.remove(tmp.first);
+						goto done;
+					}
+				}
+				assert(false, "could not find something of right size");
+			} else {
+				Pair!(T,S) p = this.queue.popBack();
+				this.map.remove(p.first);
+			}
 		}
+		done:
 		this.queue.pushFront(Pair!(T,S)(key, data));
 		this.map.insert(key, this.queue.begin());
 	}	
@@ -91,6 +111,31 @@ unittest {
 	assert(lru.getSize() == 8);
 	lru.remove(5);
 	assert(lru.getSize() == 7);
+}
+
+unittest {
+	LRU!(int,string) lru = new LRU!(int,string)(8, function(string str) {
+		return str.length;});
+	lru.insert(1, "one");
+	assert(lru.get(1) == "one");
+	lru.insert(2, "zwei");
+	assert(lru.get(2) == "zwei");
+	lru.insert(3, "drei");
+	assert(lru.get(3) == "drei");
+	lru.insert(4, "vier");
+	assert(lru.get(4) == "vier");
+	lru.insert(5, "fuenf");
+	assert(lru.get(5) == "fuenf");
+	lru.insert(6, "sechs");
+	assert(lru.get(6) == "sechs");
+	lru.insert(7, "sieben");
+	assert(lru.get(7) == "sieben");
+	lru.insert(8, "acht");
+	assert(lru.get(8) == "acht");
+	lru.insert(9, "neun");
+	assert(lru.get(9) == "neun");
+	assert(lru.contains(1));
+	assert(!lru.contains(2));
 }
 
 version(staging) {
