@@ -21,6 +21,8 @@ hurt/container/stack.d
 hurt/container/tree.d
 hurt/container/trie.d
 hurt/container/vector.d
+hurt/container/lru.d
+hurt/container/store.d
 ''')
 
 src += Split('''

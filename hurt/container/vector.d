@@ -34,10 +34,11 @@ class Vector(T) : Iterable!(T) {
 		this.index = old.getSize()-1;
 	}
 
-	public this(DLinkedList!(T) ll) {
+	public this(Iterable!(T) ll) {
 		this(ll.getSize());
-		foreach(it; ll) 
+		foreach(it; ll) {
 			this.append(it);
+		}
 	}
 
 	public Vector!(T) append(T toAdd) {

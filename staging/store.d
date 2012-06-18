@@ -4,6 +4,7 @@ import hurt.container.multiset;
 import hurt.container.mapset;
 import hurt.container.set;
 import hurt.container.isr;
+import hurt.exception.exception;
 import hurt.string.stringbuffer;
 import hurt.string.formatter;
 import hurt.util.slog;
@@ -63,8 +64,13 @@ struct strPtr(T) {
 		this.size = 0;
 	}
 
+	T[] getArray() {
+		T* ptr = cast(T*)(this.store.getBase()+this.base);
+		return ptr[0 .. (T.sizeof * this.size)];
+	}
+
 	T* getPointer() {
-		return this.store.getBase() + (T.sizeof * this.base);
+		return cast(T*)(this.store.getBase()+this.base);
 	}
 }
 
@@ -91,7 +97,7 @@ class Store(T) {
 	}
 
 	T* getBase() {
-		return store.ptr;
+		return this.store.ptr;
 	}
 
 	/*
@@ -297,17 +303,36 @@ class Store(T) {
 }
 
 unittest {
+	//string fillPointerWithString(hurt.container.store.strPtr!byte ptr, string str) {
+		//char[] p = cast(char[])ptr.getPointer();
+		/*foreach(idx,it; str) {
+			p[idx] = it;
+		}
+
+		return exceptUnique(p);*/
+	//}
+	string doStuff(T)(strPtr!T ptr, string str) {
+		char[] p = cast(char[])ptr.getArray();
+		foreach(idx,it; str) {
+			p[idx] = it;
+		}
+
+		return assumeUnique(p);
+	}
+
 	StopWatch sw;
 	sw.start();
 	Store!byte store = new Store!byte(16);
 
-	auto s1 = store.alloc(8);
+	strPtr!byte s1 = store.alloc(8);
 	assert(s1.isValid());
 	assert(s1.getBase() == 0 && s1.getSize() == 8);
 	//log("%s", store.toString());
 	//store.free(s1);
 	//log("%s", store.toString());
 	auto s2 = store.alloc(4);
+	auto ss = doStuff(s2, "Halo");
+	assert(ss == "Halo");
 	assert(s2.isValid());
 	assert(s2.getBase() == 8 && s2.getSize() == 4);
 	//log("%s", store.toString());
@@ -317,7 +342,7 @@ unittest {
 	auto s4 = store.alloc(2);
 	assert(s4.isValid());
 	assert(s4.getBase() == 14 && s4.getSize() == 2);
-	assert(s3.getPointer() + 2 == s4.getPointer());
+	//assert(s3.getPointer() + 2 == s4.getPointer());
 	//log("%s", store.toString());
 	//log("%s", store.toString());
 	store.free(s2);
@@ -343,15 +368,24 @@ unittest {
 	//log("%s", store.toString());
 	//log("all that took %f", sw.stop());
 	warn(sw.stop > 0.5, "took longer than expected");
-	int[] a;
-	log("print the size of an array ref %d", a.sizeof);
-	log("%d:%d", *(cast(size_t*)(&a)), cast(size_t)(&a)+(size_t.sizeof));
 }
 
 unittest {
 	struct ThreeInt {
 		int a,b,c;
 	}
+
+	Store!byte store = new Store!byte(128,false);
+	strPtr!byte s1 = store.alloc(ThreeInt.sizeof);
+	assert(s1.isValid());
+
+	ThreeInt *ti = cast(ThreeInt*)s1.getPointer();
+	ti.a = 22;
+	ti.b = 33;
+	ti.c = 44;
+	assert(ti.a == 22);
+	assert(ti.b == 33);
+	assert(ti.c == 44);
 }
 
 version(staging) {
