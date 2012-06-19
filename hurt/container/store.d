@@ -7,6 +7,7 @@ import hurt.container.isr;
 import hurt.exception.exception;
 import hurt.string.stringbuffer;
 import hurt.string.formatter;
+import hurt.io.stdio;
 import hurt.util.slog;
 import hurt.time.stopwatch;
 
@@ -302,6 +303,15 @@ class Store(T) {
 
 	public size_t getFragments() {
 		return this.storePointer.getSize();
+	}
+
+	public void printAll() const {
+		static if(is(T == byte)) {
+			foreach(it; this.store) {
+				printf("%d ", it);
+			}
+			println();
+		}
 	}
 		
 }

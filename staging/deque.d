@@ -12,6 +12,7 @@ import hurt.string.formatter;
 import hurt.string.stringbuffer;
 
 import hurt.util.slog;
+import std.stdio;
 
 struct ConstIterator(T) {
 	private size_t pos;
@@ -742,8 +743,8 @@ public class Deque(T) : Iterable!(T) {
 	package void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
-			printf("%d ", it);
-		println();
+			hurt.io.stdio.printf("%d ", it);
+		hurt.io.stdio.println();
 	}
 
 	public override string toString() const {
@@ -1555,24 +1556,41 @@ unittest {
 
 public strPtr!byte toStore(T)(Store!byte store, 
 		Deque!T deque) {
-	strPtr!byte ht = store.alloc(size_t.sizeof*2 + size_t.sizeof*2);
+
+	size_t toAlloc = size_t.sizeof * 2 + T.sizeof * deque.getCapacity();
+	strPtr!byte ht = store.alloc(toAlloc);
+	log("%d %d %d %d", toAlloc, cast(int)ht.getPointer(), 
+		cast(int)(ht.getPointer() + ht.getSize()), deque.getCapacity());
 	log("%x", cast(int)(ht.getPointer()));
 
 	size_t* headPtr = cast(size_t*)ht.getPointer();
 	*headPtr = deque.getHeadPos();
 	assert(*headPtr == deque.getHeadPos());
 
-	*(headPtr+size_t.sizeof) = deque.getTailPos();
-	assert(*(headPtr+size_t.sizeof) == deque.getTailPos());
-	log("%x", cast(int)(ht.getPointer()+8));
+	size_t* tailPtr = headPtr+1;
+	*tailPtr = deque.getTailPos();
 
-	auto tmp = cast(int*)headPtr+size_t.sizeof*2;
+	assert(*tailPtr == deque.getTailPos());
+	log("%x", cast(int)(ht.getPointer()+8));
+	assert(tailPtr - headPtr == 8, format("%x", tailPtr-headPtr));
+
+	T* tmp = cast(T*)(tailPtr+size_t.sizeof);
+	size_t highAdr = cast(size_t)(ht.getPointer() + ht.getSize());
+	assert(cast(size_t*)tmp == headPtr+(size_t.sizeof*2));
+
+	assert(T.sizeof == 4);
 
 	T* ptr = tmp;
 	foreach(it;deque.getArray()) {
-		log("%X", cast(int)ptr);
+		writefln("ptr adr %x", cast(int)ptr);
+		assert(cast(size_t)ptr <= highAdr, 
+			format("%x %x", cast(size_t)ptr, highAdr));
+		
+		auto oPtr = ptr;
 		*ptr = it;
-		ptr += T.sizeof;
+		assert(ptr == oPtr);
+		ptr = ptr++;
+		assert(oPtr + T.sizeof == ptr);
 	}
 
 	return ht;
@@ -1582,8 +1600,13 @@ version(staging) {
 void main() {
 	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
 	auto store = new Store!byte(128);
+	store.printAll();
 
 	auto tmp = toStore!int(store,d1);
+	assert(tmp.getSize() == store.getLow());
+	assert(store.getLow() == 16 + (6*int.sizeof*2), format("%d %d %d",
+		store.getLow(), 16 + (6*int.sizeof*2), tmp.getSize()));
+	store.printAll();
 
 	Deque!(int) d2 = new Deque!(int)(tmp);
 	assert(d1.getHeadPos() == d2.getHeadPos());
