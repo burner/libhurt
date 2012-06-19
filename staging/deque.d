@@ -10,9 +10,8 @@ import hurt.math.mathutil;
 import hurt.util.pair;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
-
 import hurt.util.slog;
-import std.stdio;
+import hurt.time.stopwatch;
 
 struct ConstIterator(T) {
 	private size_t pos;
@@ -162,17 +161,21 @@ public class Deque(T) : Iterable!(T) {
 	}
 
 	public this(strPtr!byte ptr) {
-		auto tmp = cast(size_t*)ptr.getPointer();
+		size_t* tmp = cast(size_t*)ptr.getPointer();
 		this.head = *tmp;
-		
 		tmp++;
-		this.tail = *tmp;
 
-		auto dataPtr = cast(T*)tmp+size_t.sizeof;
-		size_t byteSize = ptr.getSize() - size_t.sizeof * 2;
-		size_t numValues = byteSize / T.sizeof; 
-		this.data = dataPtr[0 .. numValues];
-		log("%d %d", this.head, this.tail);
+		this.tail = *tmp;
+		tmp++;
+
+		byte* dataPtr = cast(byte*)tmp;
+		byte* end = cast(byte*)(ptr.getPointer()+ptr.getSize());
+		ptrdiff_t diff = end-dataPtr;
+		//log("%d", diff);
+
+		size_t numElements = diff / T.sizeof;
+		T* realDataPtr = cast(T*)dataPtr;
+		this.data = realDataPtr[0 .. numElements];
 	}
 
 	public this(const size_t size) {
@@ -1559,38 +1562,42 @@ public strPtr!byte toStore(T)(Store!byte store,
 
 	size_t toAlloc = size_t.sizeof * 2 + T.sizeof * deque.getCapacity();
 	strPtr!byte ht = store.alloc(toAlloc);
-	log("%d %d %d %d", toAlloc, cast(int)ht.getPointer(), 
+	/*log("%d %d %d %d", toAlloc, cast(int)ht.getPointer(), 
 		cast(int)(ht.getPointer() + ht.getSize()), deque.getCapacity());
 	log("%x", cast(int)(ht.getPointer()));
+	*/
 
 	size_t* headPtr = cast(size_t*)ht.getPointer();
 	*headPtr = deque.getHeadPos();
-	assert(*headPtr == deque.getHeadPos());
+	//assert(*headPtr == deque.getHeadPos());
 
 	size_t* tailPtr = headPtr+1;
 	*tailPtr = deque.getTailPos();
 
-	assert(*tailPtr == deque.getTailPos());
-	log("%x", cast(int)(ht.getPointer()+8));
-	assert(tailPtr - headPtr == 8, format("%x", tailPtr-headPtr));
+	//assert(*tailPtr == deque.getTailPos());
+	//log("%x", cast(int)(ht.getPointer()+8));
+	//assert(tailPtr - headPtr == 1, format("%x", tailPtr-headPtr));
 
-	T* tmp = cast(T*)(tailPtr+size_t.sizeof);
+	T* tmp = cast(T*)(tailPtr+1);
 	size_t highAdr = cast(size_t)(ht.getPointer() + ht.getSize());
-	assert(cast(size_t*)tmp == headPtr+(size_t.sizeof*2));
+	//assert(cast(size_t*)tmp == headPtr+2);
 
-	assert(T.sizeof == 4);
+	//assert(T.sizeof == 4);
 
 	T* ptr = tmp;
 	foreach(it;deque.getArray()) {
-		writefln("ptr adr %x", cast(int)ptr);
+		/*log("ptr adr %x", cast(int)ptr);
 		assert(cast(size_t)ptr <= highAdr, 
 			format("%x %x", cast(size_t)ptr, highAdr));
+		*/
 		
-		auto oPtr = ptr;
+		T* oPtr = ptr;
 		*ptr = it;
-		assert(ptr == oPtr);
-		ptr = ptr++;
-		assert(oPtr + T.sizeof == ptr);
+		//assert(ptr == oPtr);
+		ptr++;
+		/*assert((oPtr + 1) == ptr, format("%x %x", 
+			cast(size_t)(oPtr+1), cast(size_t)ptr));
+		*/
 	}
 
 	return ht;
@@ -1599,21 +1606,26 @@ public strPtr!byte toStore(T)(Store!byte store,
 version(staging) {
 void main() {
 	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
+
 	auto store = new Store!byte(128);
-	store.printAll();
+	StopWatch sw;
+	sw.start();
+	//store.printAll();
 
 	auto tmp = toStore!int(store,d1);
-	assert(tmp.getSize() == store.getLow());
-	assert(store.getLow() == 16 + (6*int.sizeof*2), format("%d %d %d",
-		store.getLow(), 16 + (6*int.sizeof*2), tmp.getSize()));
-	store.printAll();
+	log("%f", sw.stop());
+	StopWatch sw2;
+	sw2.start();
+	//assert(tmp.getSize() == store.getLow());
+	//assert(store.getLow() == 16 + (6*int.sizeof*2), format("%d %d %d",
+	//	store.getLow(), 16 + (6*int.sizeof*2), tmp.getSize()));
+	//store.printAll();
 
 	Deque!(int) d2 = new Deque!(int)(tmp);
+	log("%f", sw2.stop());
 	assert(d1.getHeadPos() == d2.getHeadPos());
 	assert(d1.getTailPos() == d2.getTailPos());
-	foreach(it; d2) {
-		log("%d", it);
-	}
+	assert(d1 == d2);
 }
 }
 
