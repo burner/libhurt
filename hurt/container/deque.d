@@ -1,15 +1,17 @@
 module hurt.container.deque;
 
 import hurt.container.iterator;
+import hurt.container.store;
 import hurt.conv.conv;
 import hurt.exception.outofrangeexception;
 import hurt.container.iterator;
 import hurt.io.stdio;
 import hurt.math.mathutil;
+import hurt.util.pair;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
-
 import hurt.util.slog;
+import hurt.time.stopwatch;
 
 struct ConstIterator(T) {
 	private size_t pos;
@@ -158,6 +160,23 @@ public class Deque(T) : Iterable!(T) {
 		this(16);	
 	}
 
+	public this(strPtr!byte ptr) {
+		size_t* tmp = cast(size_t*)ptr.getPointer();
+		this.head = *tmp;
+		tmp++;
+
+		this.tail = *tmp;
+		tmp++;
+
+		byte* dataPtr = cast(byte*)tmp;
+		byte* end = cast(byte*)(ptr.getPointer()+ptr.getSize());
+		ptrdiff_t diff = end-dataPtr;
+
+		size_t numElements = diff / T.sizeof;
+		T* realDataPtr = cast(T*)dataPtr;
+		this.data = realDataPtr[0 .. numElements];
+	}
+
 	public this(const size_t size) {
 		this.data = new T[size];
 		this.head = 0;
@@ -180,6 +199,10 @@ public class Deque(T) : Iterable!(T) {
 		foreach(it; arr) {
 			this.pushBack(it);
 		}
+	}
+
+	package T[] getArray() {
+		return this.data;
 	}
 
 	package size_t getHeadPos() const {
@@ -428,11 +451,12 @@ public class Deque(T) : Iterable!(T) {
 				format(" Deque size of %u not big enough to pop %u",
 				this.getSize(), cnt));
 		}
-		T last;
-		for(size_t i = 0; i < cnt; i++) {
-			last = this.popBack();
+		//T last;
+		for(size_t i = 0; i < (cnt-1); i++) {
+			//last = this.popBack();
+			this.popBack();
 		}
-		return last;
+		return this.popBack();
 	}
 
 	public T popBack() {
@@ -722,8 +746,8 @@ public class Deque(T) : Iterable!(T) {
 	package void print() const {
 		hurt.io.stdio.print(this.head, this.tail, this.data.length, ":");
 		foreach(it; this.data)
-			printf("%d ", it);
-		println();
+			hurt.io.stdio.printf("%d ", it);
+		hurt.io.stdio.println();
 	}
 
 	public override string toString() const {
@@ -1533,9 +1557,96 @@ unittest {
 	assert(rslt == rsltTst);
 }
 
+public strPtr!byte toStore(T)(Store!byte store, 
+		Deque!T deque) {
+
+	size_t toAlloc = size_t.sizeof * 2 + T.sizeof * deque.getCapacity();
+	strPtr!byte ht = store.alloc(toAlloc);
+
+	size_t* headPtr = cast(size_t*)ht.getPointer();
+	*headPtr = deque.getHeadPos();
+
+	size_t* tailPtr = headPtr+1;
+	*tailPtr = deque.getTailPos();
+
+	T* tmp = cast(T*)(tailPtr+1);
+	size_t highAdr = cast(size_t)(ht.getPointer() + ht.getSize());
+
+	T* ptr = tmp;
+	foreach(it;deque.getArray()) {
+		T* oPtr = ptr;
+		*ptr = it;
+		ptr++;
+	}
+
+	return ht;
+}
+
+unittest {
+	struct S {
+		int a, b, c;
+
+		this(int a, int b, int c) {
+			this.a = a;
+			this.b = b;
+			this.c = c;
+		}
+
+		bool opEquals(const(S) s) const {
+			return this.a == s.a && this.b == s.b && this.c == s.c;
+		}
+	}
+
+	auto d1 = new Deque!(S)();
+	auto s = S(1,2,3);
+	d1.pushBack(s);
+	s = S(4,5,6);
+	d1.pushBack(s);
+	s = S(7,8,9);
+	d1.pushBack(s);
+	s = S(10,11,12);
+	d1.pushFront(s);
+
+	auto store = new Store!byte(256);
+
+	auto tmp = toStore!S(store, d1);
+
+	auto d2 = new Deque!(S)(tmp);
+
+	assert(d1.getHeadPos() == d2.getHeadPos());
+	assert(d1.getTailPos() == d2.getTailPos());
+	assert(d1 == d2);
+}
+
+unittest {
+	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
+	d1.pushFront(-1);
+
+	auto store = new Store!byte(128);
+
+	auto tmp = toStore!int(store,d1);
+
+	Deque!(int) d2 = new Deque!(int)(tmp);
+	assert(d1.getHeadPos() == d2.getHeadPos());
+	assert(d1.getTailPos() == d2.getTailPos());
+	assert(d1 == d2);
+}
+
+unittest {
+	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
+
+	auto store = new Store!byte(128);
+
+	auto tmp = toStore!int(store,d1);
+
+	Deque!(int) d2 = new Deque!(int)(tmp);
+	assert(d1.getHeadPos() == d2.getHeadPos());
+	assert(d1.getTailPos() == d2.getTailPos());
+	assert(d1 == d2);
+}
+
 version(staging) {
 void main() {
-	Deque!(int) d1 = new Deque!(int)();
 }
 }
 
