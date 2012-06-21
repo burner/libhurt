@@ -1,15 +1,13 @@
 module hurt.container.binvec;
 
-import hurt.algo.binaryrangesearch;
 import hurt.algo.sorting;
 import hurt.container.isr;
-//import hurt.container.set;
+import hurt.container.set;
 import hurt.container.vector;
 import hurt.io.stdio;
 import hurt.string.formatter;
 import hurt.time.stopwatch;
 import hurt.util.slog;
-import hurt.util.array;
 
 public class Node(T) :ISRNode!(T) {
 	T data;
@@ -25,13 +23,11 @@ public class Node(T) :ISRNode!(T) {
 
 public class Iterator(T) : ISRIterator!(T) {
 	private size_t idx;
-	private T[] data;
-	private size_t high;
+	private Vector!(T) data;
 
-	this(size_t idx, T[] data, size_t high) {
+	this(size_t idx, Vector!(T) data) {
 		this.idx = idx;
 		this.data = data;
-		this.high = high;
 	}
 
 	public override T getData() {
@@ -43,7 +39,7 @@ public class Iterator(T) : ISRIterator!(T) {
 	}
 
 	public override bool isValid() const {
-		return this.idx < this.high;
+		return this.idx < this.data.getSize();
 	}
 
 	public size_t getIdx() const {
@@ -51,7 +47,7 @@ public class Iterator(T) : ISRIterator!(T) {
 	}
 
 	public override ISRIterator!(T) dup() {
-		return new Iterator!(T)(this.idx, this.data, this.high);
+		return new Iterator!(T)(this.idx, this.data);
 	}
 
 	public override void increment() {
@@ -63,55 +59,89 @@ public class Iterator(T) : ISRIterator!(T) {
 	}
 }
 
+bool binarySearch(T)(T[] r, T key, size_t high, ref size_t idx) {
+	size_t l = 0;	
+	if(r is null || high == 0) {
+		return false;
+	} else if(high == 0) {
+		return r[0] == key;
+	}
+	//size_t h = (high == size_t.max ? r.length-1 : high);
+	size_t h = high-1;
+	if(h == size_t.max) {
+		return false;
+	}
+	size_t m;
+	size_t cnt = 0;
+	while(h >= l && h != size_t.max) {
+		m = l + ((h - l) / 2);
+		//printfln("%u %d %d %d", cnt++, l, m, h);
+		if(h < l) {
+			return false;
+		}
+
+		if(r[m] == key) {
+			idx = m;
+			return true;
+		}
+
+		if(r[m] > key) {
+			h = m-1;
+		} else {
+			l = m+1;
+		}
+	}
+	return false;
+}
+
 public class BinVec(T) : ISR!(T) {
-	private T[] data;
-	private size_t high;
+	private Vector!(T) data;
 
 	this(size_t size = 64) {
-		this.data = new T[size];
+		this.data = new Vector!(T)(size);
 	}
 
 	this(BinVec!(T) toCopy) {
-		this.data = toCopy.getData().dup;
+		this.data = toCopy.getData().clone();
 	}
 
 	public override size_t getSize() const { 
-		return this.high; 
+		return this.data.getSize(); 
 	}
 
 	public override bool isEmpty() const { 
-		return this.high == 0; 
+		return this.data.empty(); 
 	}
 
 	public size_t getCapacity() const {
-		return this.data.length;
+		return this.data.capacity();
 	}
 
-	public T[] getData() {
+	public Vector!(T) getData() {
 		return this.data;
 	}
 
 	public ISRIterator!(T) begin() {
-		return new Iterator!(T)(0, this.data, this.high);
+		return new Iterator!(T)(0, this.data);
 	}
 
 	public ISRIterator!(T) end() {
-		return new Iterator!(T)(this.data.length-1, this.data, this.high);
+		return new Iterator!(T)(this.data.getSize()-1, this.data);
 	}
 
 	public override ISRIterator!(T) searchIt(T key) {
 		bool found = false;
 		size_t idx;
 		static if(is(T : Object)) {
-			binarySearch!(T)(this.data, key, null, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 		} else {
-			binarySearch!(T)(this.data, key, T.init, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 		}
 
 		if(found) {
-			return new Iterator!(T)(idx, this.data, this.high);
+			return new Iterator!(T)(idx, this.data);
 		} else {
-			return new Iterator!(T)(this.high, this.data, this.high);
+			return new Iterator!(T)(this.data.getSize(), this.data);
 		}
 	}
 
@@ -119,9 +149,9 @@ public class BinVec(T) : ISR!(T) {
 		bool found = false;
 		size_t idx;
 		static if(is(T : Object)) {
-			binarySearch!(T)(this.data, key, null, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 		} else {
-			binarySearch!(T)(this.data, key, T.init, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 		}
 
 		if(found) {
@@ -135,11 +165,10 @@ public class BinVec(T) : ISR!(T) {
 		bool found = false;
 		size_t idx;
 		static if(is(T : Object)) {
-			binarySearch!(T)(this.data, key, null, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 			return found;
 		} else {
-			T defau;
-			binarySearch!(T)(this.data, key, defau, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 			return found;
 		}
 	}
@@ -147,35 +176,26 @@ public class BinVec(T) : ISR!(T) {
 	bool contains(T key, ref size_t idx) {
 		bool found = false;
 		static if(is(T : Object)) {
-			binarySearch!(T)(this.data, key, null, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 			return found;
 		} else {
-			T defau;
-			binarySearch!(T)(this.data, key, defau, this.high, found, idx);
+			found = binarySearch!(T)(this.data.values(), key, this.data.getSize(), idx);
 			return found;
 		}
-	}
-
-	void pushBack(T data) {
-		if(this.high == this.data.length) {
-			this.data.length = this.data.length * 2;
-		}
-
-		this.data[this.high++] = data;
 	}
 
 	bool insert(T data) {
 		if(this.contains(data)) {
 			return false;
-		} else if(this.high == 0) {
-			this.pushBack(data);
+		} else if(this.data.getSize() == 0) {
+			this.data.pushBack(data);
 			return true;
-		} else if(this.data[this.high-1] < data) {
-			this.pushBack(data);
+		} else if(this.data.peekBack() < data) {
+			this.data.pushBack(data);
 			return true;
 		} else {
-			this.pushBack(data);
-			sort!(T)(this.data[0 .. this.high], function(in T a, in T b) {
+			this.data.pushBack(data);
+			sortVectorUnsafe!(T)(this.data, function(T a, T b) {
 				return a < b;});
 			return true;
 		}
@@ -197,8 +217,6 @@ public class BinVec(T) : ISR!(T) {
 	public override bool remove(T key) {
 		size_t idx;
 		if(this.contains(key, idx)) {
-			hurt.util.array.remove!(T)(this.data, idx);
-			this.high--;
 			this.data.remove(idx);	
 			return true;
 		}
@@ -207,7 +225,7 @@ public class BinVec(T) : ISR!(T) {
 
 	int opApply(int delegate(ref size_t,ref T) dg) {
 		int result;
-		size_t up = this.high;
+		size_t up = this.data.getSize();
 		for(size_t i = 0; i < up && result is 0; i++) {
 			T value = this.data[i];
 			result = dg(i,value);
@@ -232,8 +250,7 @@ public class BinVec(T) : ISR!(T) {
 	}
 }
 
-//void test() {
-	unittest {
+unittest {
 	StopWatch watch;
 	watch.start();
 	BinVec!(int) fset = new BinVec!(int)();
@@ -1027,6 +1044,5 @@ unittest {
 
 version(staging) {
 void main() {
-	test();
 }
 }

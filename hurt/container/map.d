@@ -1,7 +1,7 @@
 module hurt.container.map;
 
 import hurt.algo.sorting;
-import hurt.container.binvec;
+//import hurt.container.binvec;
 import hurt.container.bst;
 import hurt.container.hashtable;
 import hurt.container.isr;
@@ -97,9 +97,9 @@ class Map(T,S) {
 			this.map = new BinarySearchTree!(MapItem!(T,S))();
 		} else if(this.type == ISRType.HashTable) {
 			this.map = new HashTable!(MapItem!(T,S))();
-		} else if(this.type == ISRType.BinVec) {
+		}/* else if(this.type == ISRType.BinVec) {
 			this.map = new BinVec!(MapItem!(T,S))();
-		}
+		}*/
 	}
 
 	public size_t getSize() const { return this.map.getSize(); }
@@ -258,16 +258,17 @@ unittest {
 	assert(ttt.find(-1).getData() == 2);
 
 
-	int g = 4;
+	//int g = 4;
+	int g = 3;
 	Map!(string,int)[] sa = new Map!(string,int)[g];
 	sa[0] = new Map!(string,int)(ISRType.RBTree);
 	sa[1] = new Map!(string,int)(ISRType.BinarySearchTree);
 	sa[2] = new Map!(string,int)(ISRType.HashTable);
-	sa[3] = new Map!(string,int)(ISRType.BinVec);
+	//sa[3] = new Map!(string,int)(ISRType.BinVec);
 	sa[0].insert("foo", 1337);
 	sa[1].insert("foo", 1337);
 	sa[2].insert("foo", 1337);
-	sa[3].insert("foo", 1337);
+	//sa[3].insert("foo", 1337);
 	assert(sa[0].contains("foo"));
 	assert(sa[1].contains("foo"));
 	assert(sa[1].contains("foo"));
@@ -294,7 +295,7 @@ unittest {
 	assert(ct.contains(new Compare(44)));
 	assert((*ct.begin()).key == new Compare(44));
 	assert((*ct.begin()).data == "44");
-	sa[0].clear(); sa[1].clear(); sa[2].clear(); sa[3].clear();
+	sa[0].clear(); sa[1].clear(); sa[2].clear();// sa[3].clear();
 	for(int j = 0; j < 5; j++) {
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
@@ -332,10 +333,10 @@ unittest {
 							assert(sa[0] == sa[1] && sa[0] == sa[2] && 
 								sa[1] == sa[2]);
 							break;
-						case 3:
+						/*case 3:
 							assert(sa[0] == sa[1] && sa[0] == sa[2] && 
 								sa[1] == sa[2] && sa[0] == sa[3]);
-							break;
+							break;*/
 						default:
 							assert(0);
 					}
@@ -362,7 +363,7 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				sa[0].clear(); sa[1].clear(); sa[2].clear(); sa[3].clear();
+				sa[0].clear(); sa[1].clear(); sa[2].clear(); //sa[3].clear();
 				break;
 			case 1:
 				for(int i = 0; i < g; i++) {
@@ -415,9 +416,9 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2] &&
+			/*assert(sa[0] == sa[1] && sa[0] == sa[2] && sa[0] == sa[2] &&
 				sa[0] == sa[3], format("%d %u %u %u %u", j, sa[0].getSize(),
-				sa[1].getSize(), sa[2].getSize(), sa[3].getSize()));
+				sa[1].getSize(), sa[2].getSize(), sa[3].getSize()));*/
 			assert(sa[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(sa[0].getSize()));
 		}
@@ -426,7 +427,7 @@ unittest {
 		sai[0] = new Map!(int,int)(ISRType.RBTree);
 		sai[1] = new Map!(int,int)(ISRType.BinarySearchTree);
 		sai[2] = new Map!(int,int)(ISRType.HashTable);
-		sai[3] = new Map!(int,int)(ISRType.BinVec);
+		//sai[3] = new Map!(int,int)(ISRType.BinVec);
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
 				for(int i = 0; i < g; i++) {
@@ -490,7 +491,7 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				sai[0].clear(); sai[1].clear(); sai[2].clear(); sai[3].clear();
+				sai[0].clear(); sai[1].clear(); sai[2].clear(); //sai[3].clear();
 				break;
 			case 1:
 				for(int i = 0; i < g; i++) {
@@ -535,8 +536,9 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2] &&
+			/*assert(sai[0] == sai[1] && sai[0] == sai[2] && sai[0] == sai[2] &&
 				sai[0] == sai[3]);
+			*/
 			assert(sai[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(sai[0].getSize()));
 		}
@@ -545,7 +547,7 @@ unittest {
 		saj[0] = new Map!(Compare,int)(ISRType.RBTree);
 		saj[1] = new Map!(Compare,int)(ISRType.BinarySearchTree);
 		saj[2] = new Map!(Compare,int)(ISRType.HashTable);
-		saj[3] = new Map!(Compare,int)(ISRType.BinVec);
+		//saj[3] = new Map!(Compare,int)(ISRType.BinVec);
 		foreach(it;lot) {
 			foreach(idx,jt;it) {
 				for(int i = 0; i < g; i++) {
@@ -609,7 +611,7 @@ unittest {
 			}
 			switch(j) {
 			case 0:
-				saj[0].clear(); saj[1].clear(); saj[2].clear(); saj[3].clear();
+				saj[0].clear(); saj[1].clear(); saj[2].clear(); //saj[3].clear();
 				break;
 			case 1:
 				for(int i = 0; i < g; i++) {
@@ -654,8 +656,8 @@ unittest {
 			default:
 				assert(0);
 			}
-			assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2] &&
-				saj[0] == saj[3]);
+			/*assert(saj[0] == saj[1] && saj[0] == saj[2] && saj[0] == saj[2] &&
+				saj[0] == saj[3]);*/
 			assert(saj[0].getSize() == 0, conv!(int,string)(j) ~ " " ~
 				conv!(size_t,string)(saj[0].getSize()));
 		}

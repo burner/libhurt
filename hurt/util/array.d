@@ -177,6 +177,7 @@ unittest {
 	assert(compare(a,e));
 }
 
+/*
 pure T[] remove(T)(T[] arr, in size_t idx) {
 	if(idx >= arr.length) {
 		throw new OutOfRangeException("idx = " ~ conv!(size_t,string)(idx) 
@@ -193,6 +194,30 @@ pure T[] remove(T)(T[] arr, in size_t idx) {
 		}
 	}
 	return ret;
+}*/
+
+pure void remove(T)(ref T[] arr, size_t idx) {
+	if(arr is null || idx >= arr.length) {
+		throw new OutOfRangeException("idx = " ~ conv!(size_t,string)(idx) 
+			~ " this not in range for array with length " 
+			~ conv!(size_t,string)(arr.length));
+	}
+
+	for(size_t i = idx; i < arr.length-1; i++) {
+		arr[i] = arr[i+1];
+	}
+
+	arr = arr[0 .. $-1];
+}
+
+unittest {
+	int[] arr = [1,2,3,4,5,6,7,8,9];
+	remove(arr, 8);
+	assert(arr == [1,2,3,4,5,6,7,8]);
+	remove(arr, 0);
+	assert(arr == [2,3,4,5,6,7,8]);
+	remove(arr, 2);
+	assert(arr == [2,3,5,6,7,8]);
 }
 
 version(staging) {

@@ -157,7 +157,7 @@ class Vector(T) : Iterable!(T), RandomAccess!(T) {
 		return ret;
 	}
 
-	public typeof(this.index) indexOf(in T value, size_t offset = 0) {
+	public typeof(this.index) indexOf(T value, size_t offset = 0) {
 		while(offset <= this.index) {
 			if(value == this.data[offset]) {
 				return offset;

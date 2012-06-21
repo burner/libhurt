@@ -97,7 +97,56 @@ unittest {
 	test2(k);
 }
 
-void sortVector(T)(Vector!(T) a, bool function(in T a, in T b) cmp, 
+void sortVector(T)(Vector!(T) a, bool function(T a, T b) cmp, 
+		size_t leftb = 0, size_t rightb= 0) {
+	debug assert(rightb <= a.getSize()-1, "right index out of bound");
+	debug assert(leftb <= rightb, "left index to big");
+
+	//swap function
+	void swap(size_t m, size_t n) {
+		T tmp = a[m];
+		a.set(m, a[n]);
+		a.set(n, tmp);
+	}
+
+	//partition function
+	long partition(size_t left, size_t right) {
+		size_t idx = (left+right+1)/2;
+		const T pivot = a[idx];
+		swap(idx, right);
+		for(ulong i = idx = left; i < right; i++) {
+			if(cmp(a[i], pivot)) {
+				swap(idx++, i);
+			}
+		}
+		swap(idx, right);
+		return idx;
+	}
+
+	//the actual quicksort begins here
+	long[128] stack;
+	long stackTop = 0;
+	stack[stackTop++] = leftb;
+	if(rightb != 0) {
+		stack[stackTop++] = rightb;
+	} else {
+		stack[stackTop++] = a.getSize()-1;
+	}
+	while(stackTop > 0) {
+		long right = stack[--stackTop];
+		long left = stack[--stackTop];
+		while(right > left) {
+			long i = partition(left, right);
+			if(i-1 > left) {
+				stack[stackTop++] = left;
+				stack[stackTop++] = i-1;
+			}
+			left = i+1;
+		}
+	}
+}
+
+void sortVectorUnsafe(T)(Vector!(T) a, bool function(in T a, in T b) cmp, 
 		size_t leftb = 0, size_t rightb= 0) {
 	debug assert(rightb <= a.getSize()-1, "right index out of bound");
 	debug assert(leftb <= rightb, "left index to big");

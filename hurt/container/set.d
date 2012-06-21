@@ -1,13 +1,15 @@
 module hurt.container.set;
 
+version(None) {
 import hurt.container.binvec;
+}
 import hurt.container.bst;
 import hurt.container.hashtable;
 import hurt.container.isr;
 import hurt.container.rbtree;
 import hurt.container.tree;
 import hurt.container.iterator;
-
+import hurt.string.formatter;
 import hurt.conv.conv;
 
 import std.stdio;
@@ -33,9 +35,11 @@ class Set(T) {
 		}
 	}
 	
+	version(None) {
 	this(BinVec!(T) bv) {
 		this.type = ISRType.BinVec;
 		this.map = new BinVec!(T)(bv);
+	}
 	}
 
 	private void makeMap(size_t size = 16) {
@@ -45,9 +49,9 @@ class Set(T) {
 			this.map = new BinarySearchTree!(T)();
 		} else if(this.type == ISRType.HashTable) {
 			this.map = new HashTable!(T)();
-		} else if(this.type == ISRType.BinVec) {
+		} /*else if(this.type == ISRType.BinVec) {
 			this.map = new BinVec!(T)();
-		}
+		}*/
 	}
 
 	public size_t getSize() const { return this.map.getSize(); }
@@ -93,10 +97,10 @@ class Set(T) {
 		Set!(T) ret;
 		if(this.type == ISRType.HashTable) {
 			ret = new Set!(T)(this.getSize());
-		} else if(this.type == ISRType.BinVec) {
+		} /*else if(this.type == ISRType.BinVec) {
 			ret = new Set!(T)(cast(BinVec!(T))this.map);			
 			return ret;
-		} else {
+		}*/ else {
 			ret = new Set!(T)(this.type);
 		}
 		ISRIterator!(T) it = this.begin();
@@ -219,12 +223,12 @@ unittest {
 	[10,9,8,7,6,5,4,3,2,1,0],[10,9,8,7,6,5,4,3,2,1,0,11],
 	[0,1,2,3,4,5,6,7,8,9,10,-1],[11,1,2,3,4,5,6,7,8,0]];
 
-	int g = 4;
+	int g = 3;
 	Set!(int)[] sa = new Set!(int)[g];
 	sa[0] = new Set!(int)(ISRType.RBTree);
 	sa[1] = new Set!(int)(ISRType.BinarySearchTree);
 	sa[2] = new Set!(int)(ISRType.HashTable);
-	sa[3] = new Set!(int)(ISRType.BinVec);
+	//sa[3] = new Set!(int)(ISRType.BinVec);
 	foreach(it;lot) {
 		foreach(idx,jt;it) {
 			for(int i = 0; i < g; i++) {
@@ -259,19 +263,22 @@ unittest {
 					sit--;
 					cnt++;
 				}
-				assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
-					" " ~ conv!(size_t,string)(sa[i].getSize()));
+				assert(cnt == sa[i].getSize(), 
+					format("cnt %d != sa[%d].getSize(%d)", cnt, i,
+					sa[i].getSize()));
+				//assert(cnt == sa[i].getSize(), conv!(size_t,string)(cnt) ~
+				//	" " ~ conv!(size_t,string)(sa[i].getSize()));
 			}
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
-			assert(sa[1] == sa[3]);
-			assert(sa[2] == sa[3]);
+			//assert(sa[1] == sa[3]);
+			//assert(sa[2] == sa[3]);
 		}
 		sa[0].clear();
 		sa[1].clear();
 		sa[2].clear();
-		sa[3].clear();
+		//sa[3].clear();
 	}
 	foreach(it;lot) {
 		foreach(idx,jt;it) {
@@ -302,8 +309,8 @@ unittest {
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
-			assert(sa[1] == sa[3]);
-			assert(sa[2] == sa[3]);
+			//assert(sa[1] == sa[3]);
+			//assert(sa[2] == sa[3]);
 		}
 		foreach(idx,jt;it) {
 			for(int i = 0; i < g; i++) {
@@ -312,8 +319,8 @@ unittest {
 			assert(sa[0] == sa[1]);
 			assert(sa[0] == sa[2]);
 			assert(sa[1] == sa[2]);
-			assert(sa[1] == sa[3]);
-			assert(sa[2] == sa[3]);
+			//assert(sa[1] == sa[3]);
+			//assert(sa[2] == sa[3]);
 		}
 	}
 }

@@ -41,6 +41,10 @@ struct strptr(T) {
 	public string opCast(string)() const {
 		return this.toString();
 	}
+
+	public bool opEquals(const ref strptr!T sp) const {
+		return this.toString() == sp.toString();
+	}
 }
 
 class StringStore(T) {

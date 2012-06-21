@@ -7,16 +7,17 @@ import hurt.container.isr;
 import hurt.exception.exception;
 import hurt.string.stringbuffer;
 import hurt.string.formatter;
+import hurt.io.stdio;
 import hurt.util.slog;
 import hurt.time.stopwatch;
 
-struct strPtr(T) {
-	Store!T store;
+struct strPtr {
+	Store store;
 
 	public size_t base;
 	public size_t size;
 
-	this(Store!T store, size_t base, size_t size) {
+	this(Store store, size_t base, size_t size) {
 		this.store = store;
 		this.base = base;
 		this.size = size;
@@ -38,7 +39,7 @@ struct strPtr(T) {
 		return this.base;
 	}
 
-	int opCmp(const strPtr!T i) const {
+	int opCmp(const ref strPtr i) const {
 		if(this.toHash() > i.toHash())
 			return 1;
 		else if(this.toHash() < i.toHash())
@@ -47,7 +48,7 @@ struct strPtr(T) {
 			return 0;
 	}
 
-	bool opEquals(const strPtr!T i) const {
+	bool opEquals(const ref strPtr i) const {
 		return i.toHash() == this.toHash();
 	}
 
@@ -64,30 +65,48 @@ struct strPtr(T) {
 		this.size = 0;
 	}
 
-	T[] getArray() {
-		T* ptr = cast(T*)(this.store.getBase()+this.base);
-		return ptr[0 .. (T.sizeof * this.size)];
+	byte[] getArray() {
+		byte* ptr = cast(byte*)(this.store.getBase()+this.base);
+		return ptr[0 .. (byte.sizeof * this.size)];
 	}
 
-	T* getPointer() {
-		return cast(T*)(this.store.getBase()+this.base);
+	byte* getPointer() {
+		return cast(byte*)(this.store.getBase()+this.base);
+	}
+
+	string toString() {
+		return format("%d:%d", this.base, this.size);
+	}
+
+	string toString() const {
+		return format("%d:%d", this.base, this.size);
 	}
 }
 
-class Store(T) {
-	private T[] store;
+class Store {
+	private byte[] store;
 	private size_t low;
 	private bool growable;
 
-	MapSet!(size_t,strPtr!T) storeObjOfSize;
-	Set!(strPtr!(T)) storePointer;
+	MapSet!(size_t,strPtr) storeObjOfSize;
+	Set!(strPtr) storePointer;
 
-	this(size_t initSize, bool growable = true) {
-		this.store = new T[initSize];
-		this.storeObjOfSize = new MapSet!(size_t,strPtr!T)();
+	this() {
+		this.store = new byte[512];
+		this.storeObjOfSize = new MapSet!(size_t,strPtr)();
 		// this must be a RBTree must must must, this is needed to search the
 		// set for the first strPtr thats has a suitable size for alloc
-		this.storePointer = new Set!(strPtr!(T))(ISRType.RBTree);
+		this.storePointer = new Set!(strPtr)(ISRType.RBTree);
+		this.low = 0;
+		this.growable = true;
+	}
+
+	this(size_t initSize, bool growable = true) {
+		this.store = new byte[initSize];
+		this.storeObjOfSize = new MapSet!(size_t,strPtr)();
+		// this must be a RBTree must must must, this is needed to search the
+		// set for the first strPtr thats has a suitable size for alloc
+		this.storePointer = new Set!(strPtr)(ISRType.RBTree);
 		this.low = 0;
 		this.growable = growable;
 	}
@@ -96,7 +115,7 @@ class Store(T) {
 		this.store.length = this.store.length * 2;
 	}
 
-	T* getBase() {
+	byte* getBase() {
 		return this.store.ptr;
 	}
 
@@ -108,19 +127,19 @@ class Store(T) {
 		is placed in the multiset grouped by their size.
 	*/
 
-	private void storeStrPtr(strPtr!T ptr) {
+	private void storeStrPtr(strPtr ptr) {
 		assert(!this.storePointer.contains(ptr));
 		this.storePointer.insert(ptr);
 		this.storeObjOfSize.insert(ptr.getSize(), ptr);
 	}
 
-	strPtr!T alloc(const size_t size) {
+	strPtr alloc(const size_t size) {
 		if(this.storeObjOfSize.containsMapping(size)) {
 			// remove from both and than return the pointer
 			auto set = this.storeObjOfSize.getSet(size);
 			auto begin = set.begin();
 			assert(begin.isValid());
-			strPtr!T item = *begin;
+			strPtr item = *begin;
 			set.remove(item);
 
 			this.storePointer.remove(item);
@@ -136,7 +155,7 @@ class Store(T) {
 		}
 
 		if(it.isValid()) {
-			strPtr!T tmp = *it;
+			strPtr tmp = *it;
 			if(tmp.getSize() == size) {
 				this.storePointer.remove(tmp);
 				this.storeObjOfSize.remove(tmp.getSize, tmp);
@@ -147,7 +166,7 @@ class Store(T) {
 				size_t newBase = tmp.getBase+size;
 				size_t newSize = tmp.getSize()-size;
 				tmp.setSize(size);
-				auto toInsert = strPtr!T(this,newBase,newSize);
+				auto toInsert = strPtr(this,newBase,newSize);
 				this.storeStrPtr(toInsert);
 				return tmp;
 			}
@@ -155,7 +174,7 @@ class Store(T) {
 
 		if(this.low + size > this.store.length) {
 			if(!this.growable) {
-				return strPtr!T(this,0,0);
+				return strPtr(this,0,0);
 			} else {
 				this.grow();
 			}
@@ -164,15 +183,15 @@ class Store(T) {
 		assert(this.low + size <= this.store.length);
 		size_t tmpLow = this.low;
 		this.low += size;
-		return strPtr!T(this, tmpLow, size);
+		return strPtr(this, tmpLow, size);
 	}
 
-	void free(strPtr!T ptr) {
+	void free(strPtr ptr) {
 		// check if there is a ptr below that would line up
 		// if so merge and make it the ptr variable
 		this.storePointer.insert(ptr);
 		this.storeObjOfSize.insert(ptr.getSize(), ptr);
-		ISRIterator!(strPtr!T) it = this.storePointer.find(ptr);
+		ISRIterator!(strPtr) it = this.storePointer.find(ptr);
 		bool before, after;
 		if(it.isValid()) {
 			auto jt = it.dup();
@@ -186,7 +205,7 @@ class Store(T) {
 				this.storeObjOfSize.remove((*jt).getSize(), (*jt));
 				this.storeObjOfSize.remove((*it).getSize(), (*it));
 
-				ptr = strPtr!T(this, jtPtr.getBase(), 
+				ptr = strPtr(this, jtPtr.getBase(), 
 					jtPtr.getSize() + ptr.getSize());
 				this.storeObjOfSize.insert(ptr.getSize(), ptr);
 				this.storePointer.insert(ptr);
@@ -207,7 +226,7 @@ class Store(T) {
 				this.storeObjOfSize.remove((*jt).getSize(), (*jt));
 				this.storeObjOfSize.remove((*it).getSize(), (*it));
 
-				ptr = strPtr!T(this,itPtr.getBase(), newSize);
+				ptr = strPtr(this,itPtr.getBase(), newSize);
 				this.storeObjOfSize.insert(ptr.getSize(), ptr);
 				this.storePointer.insert(ptr);
 				after = true;
@@ -229,19 +248,19 @@ class Store(T) {
 		assert(this.low >= 0);
 	}
 
-	strPtr!T realloc(strPtr!T old, size_t newSize) {
+	strPtr realloc(strPtr old, size_t newSize) {
 		assert(newSize > 0);
 		if(old.getSize() == newSize) {
 			return old;
 		} else if(old.getSize() > newSize) {
-			auto tmp = strPtr!T(this, old.getBase()+newSize, 
+			auto tmp = strPtr(this, old.getBase()+newSize, 
 				old.getSize()-newSize);
-			auto ret = strPtr!T(this, old.getBase(), newSize);
+			auto ret = strPtr(this, old.getBase(), newSize);
 			this.storePointer.insert(tmp);
 			this.storeObjOfSize.insert(newSize, tmp);
 			return ret;
 		} else if(old.getSize() < newSize) {
-			auto toSearch = strPtr!T(this,old.getBase()+old.getSize(), newSize);
+			auto toSearch = strPtr(this,old.getBase()+old.getSize(), newSize);
 			auto found = this.storePointer.find(toSearch);
 			assert(found.isValid());
 			// inplace realloc can be done
@@ -251,17 +270,17 @@ class Store(T) {
 				this.storePointer.remove(foundPtr);
 				this.storeObjOfSize.remove(foundPtr.getSize(), foundPtr);
 
-				auto ret = strPtr!T(this, old.getBase(), newSize);
+				auto ret = strPtr(this, old.getBase(), newSize);
 				auto nBase = ret.back();
 				auto nSize = foundPtr.back()-ret.back();
-				auto tmp = strPtr!T(this, nBase, nSize);
+				auto tmp = strPtr(this, nBase, nSize);
 				this.storePointer.insert(tmp);
 				this.storeObjOfSize.insert(newSize, tmp);
 				return ret;
 			} else { // real realloc
 				this.storePointer.remove(old);
 				this.storeObjOfSize.remove(old.getSize(), old);
-				strPtr!T ret = this.alloc(newSize);
+				strPtr ret = this.alloc(newSize);
 
 				// new blit the memory
 				for(size_t idx = 0; idx < old.getSize(); idx++) {
@@ -271,7 +290,7 @@ class Store(T) {
 
 				// make the rest 0
 				for(size_t idx = old.back(); idx < ret.back(); idx++) {
-					this.store[0] = T.init;
+					this.store[0] = 0;
 				}
 
 				return ret;
@@ -299,19 +318,20 @@ class Store(T) {
 	public size_t getFragments() {
 		return this.storePointer.getSize();
 	}
+
+	public void printAll() const {
+		static if(is(T == byte)) {
+			foreach(it; this.store) {
+				printf("%d ", it);
+			}
+			println();
+		}
+	}
 		
 }
 
 unittest {
-	//string fillPointerWithString(hurt.container.store.strPtr!byte ptr, string str) {
-		//char[] p = cast(char[])ptr.getPointer();
-		/*foreach(idx,it; str) {
-			p[idx] = it;
-		}
-
-		return exceptUnique(p);*/
-	//}
-	string doStuff(T)(strPtr!T ptr, string str) {
+	string doStuff(strPtr ptr, string str) {
 		char[] p = cast(char[])ptr.getArray();
 		foreach(idx,it; str) {
 			p[idx] = it;
@@ -322,9 +342,9 @@ unittest {
 
 	StopWatch sw;
 	sw.start();
-	Store!byte store = new Store!byte(16);
+	Store store = new Store(16);
 
-	strPtr!byte s1 = store.alloc(8);
+	strPtr s1 = store.alloc(8);
 	assert(s1.isValid());
 	assert(s1.getBase() == 0 && s1.getSize() == 8);
 	//log("%s", store.toString());
@@ -375,8 +395,8 @@ unittest {
 		int a,b,c;
 	}
 
-	Store!byte store = new Store!byte(128,false);
-	strPtr!byte s1 = store.alloc(ThreeInt.sizeof);
+	Store store = new Store(128,false);
+	strPtr s1 = store.alloc(ThreeInt.sizeof);
 	assert(s1.isValid());
 
 	ThreeInt *ti = cast(ThreeInt*)s1.getPointer();

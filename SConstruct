@@ -1,6 +1,5 @@
 src = Split('''
 hurt/container/binvec.d
-hurt/container/multiset.d
 hurt/container/bitmap.d
 hurt/container/bst.d
 hurt/container/crs.d
@@ -11,19 +10,20 @@ hurt/container/hashtable.d
 hurt/container/isr.d
 hurt/container/iterator.d
 hurt/container/list.d
+hurt/container/lru.d
 hurt/container/map.d
 hurt/container/mapset.d
 hurt/container/multimap.d
+hurt/container/multiset.d
 hurt/container/pairlist.d
 hurt/container/randomaccess.d
 hurt/container/rbtree.d
 hurt/container/set.d
 hurt/container/stack.d
+hurt/container/store.d
 hurt/container/tree.d
 hurt/container/trie.d
 hurt/container/vector.d
-hurt/container/lru.d
-hurt/container/store.d
 ''')
 
 src += Split('''

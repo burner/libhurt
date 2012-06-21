@@ -160,7 +160,7 @@ public class Deque(T) : Iterable!(T) {
 		this(16);	
 	}
 
-	public this(strPtr!byte ptr) {
+	public this(strPtr ptr) {
 		size_t* tmp = cast(size_t*)ptr.getPointer();
 		this.head = *tmp;
 		tmp++;
@@ -1557,11 +1557,10 @@ unittest {
 	assert(rslt == rsltTst);
 }
 
-public strPtr!byte toStore(T)(Store!byte store, 
-		Deque!T deque) {
+public strPtr toStore(T)(Store store, Deque!T deque) {
 
 	size_t toAlloc = size_t.sizeof * 2 + T.sizeof * deque.getCapacity();
-	strPtr!byte ht = store.alloc(toAlloc);
+	strPtr ht = store.alloc(toAlloc);
 
 	size_t* headPtr = cast(size_t*)ht.getPointer();
 	*headPtr = deque.getHeadPos();
@@ -1607,9 +1606,9 @@ unittest {
 	s = S(10,11,12);
 	d1.pushFront(s);
 
-	auto store = new Store!byte(256);
+	auto store = new Store(256);
 
-	auto tmp = toStore!S(store, d1);
+	auto tmp = toStore(store, d1);
 
 	auto d2 = new Deque!(S)(tmp);
 
@@ -1622,9 +1621,9 @@ unittest {
 	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
 	d1.pushFront(-1);
 
-	auto store = new Store!byte(128);
+	auto store = new Store(128);
 
-	auto tmp = toStore!int(store,d1);
+	auto tmp = toStore(store,d1);
 
 	Deque!(int) d2 = new Deque!(int)(tmp);
 	assert(d1.getHeadPos() == d2.getHeadPos());
@@ -1635,9 +1634,9 @@ unittest {
 unittest {
 	Deque!(int) d1 = new Deque!(int)([1,2,3,4,5,6]);
 
-	auto store = new Store!byte(128);
+	auto store = new Store(128);
 
-	auto tmp = toStore!int(store,d1);
+	auto tmp = toStore(store,d1);
 
 	Deque!(int) d2 = new Deque!(int)(tmp);
 	assert(d1.getHeadPos() == d2.getHeadPos());
