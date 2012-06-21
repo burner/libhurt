@@ -35,8 +35,48 @@ struct strPtr(T) {
 		this.size = size;
 	}
 
+	hash_t toHash() nothrow @safe {
+		return this.base;
+	}
+
 	hash_t toHash() const nothrow @safe {
 		return this.base;
+	}
+
+	int opCmp(strPtr!T i) {
+		if(this.toHash() > i.toHash())
+			return 1;
+		else if(this.toHash() < i.toHash())
+			return -1;
+		else
+			return 0;
+	}
+
+	int opCmp(ref strPtr!T i) {
+		if(this.toHash() > i.toHash())
+			return 1;
+		else if(this.toHash() < i.toHash())
+			return -1;
+		else
+			return 0;
+	}
+
+	int opCmp(const ref strPtr!T i) {
+		if(this.toHash() > i.toHash())
+			return 1;
+		else if(this.toHash() < i.toHash())
+			return -1;
+		else
+			return 0;
+	}
+
+	int opCmp(const ref strPtr!T i) const {
+		if(this.toHash() > i.toHash())
+			return 1;
+		else if(this.toHash() < i.toHash())
+			return -1;
+		else
+			return 0;
 	}
 
 	int opCmp(const strPtr!T i) const {
@@ -48,8 +88,20 @@ struct strPtr(T) {
 			return 0;
 	}
 
+	int opEquals(ref const strPtr!T i) {
+		return i.toHash() == this.toHash();
+	}
+
+	bool opEquals(strPtr!T i) {
+		return i.toHash() == this.toHash();
+	}
+
 	bool opEquals(const strPtr!T i) const {
 		return i.toHash() == this.toHash();
+	}
+
+	bool isValid() {
+		return this.size > 0;
 	}
 
 	bool isValid() const {
@@ -72,6 +124,10 @@ struct strPtr(T) {
 
 	T* getPointer() {
 		return cast(T*)(this.store.getBase()+this.base);
+	}
+
+	string toString() {
+		return format("%d:%d", this.base, this.size);
 	}
 
 	string toString() const {

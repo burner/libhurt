@@ -3,11 +3,12 @@ module hurt.container.vector;
 import hurt.conv.conv;
 import hurt.container.dlst;
 import hurt.container.iterator;
+import hurt.container.randomaccess;
 import hurt.io.stdio;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
 
-class Vector(T) : Iterable!(T) {
+class Vector(T) : Iterable!(T), RandomAccess!(T) {
 	private T[] data;
 	version(X86_64) {
 		private long index;
@@ -72,6 +73,13 @@ class Vector(T) : Iterable!(T) {
 		return this.data[this.index];
 	}
 
+	public const(T) get(size_t idx) const {
+		assert(idx <= this.index, "given index is out of bound " ~ 
+			conv!(size_t,string)(idx) ~ " " ~ 
+			conv!(typeof(this.index),string)(this.index));
+		return this.data[idx];
+	}
+
 	public T get(size_t idx) {
 		assert(idx <= this.index, "given index is out of bound " ~ 
 			conv!(size_t,string)(idx) ~ " " ~ 
@@ -116,6 +124,10 @@ class Vector(T) : Iterable!(T) {
 	}
 
 	public T opIndex(size_t idx) {
+		return this.get(idx);
+	}
+
+	public const(T) opIndex(size_t idx) const {
 		return this.get(idx);
 	}
 
@@ -214,6 +226,10 @@ class Vector(T) : Iterable!(T) {
 			return null;
 		}
 		return this.data[0..this.index+1].dup;
+	}
+
+	public T[] values() {
+		return this.data;
 	}
 
 	public T[] getData() {

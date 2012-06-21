@@ -15,6 +15,7 @@ hurt/container/map.d
 hurt/container/mapset.d
 hurt/container/multimap.d
 hurt/container/pairlist.d
+hurt/container/randomaccess.d
 hurt/container/rbtree.d
 hurt/container/set.d
 hurt/container/stack.d

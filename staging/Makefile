@@ -1,4 +1,4 @@
-SRC=deque.d
+SRC=binvec.d
 
 #SRC=arraytree.d arraybst.d
 #SRC=test.d `find hurt -name \*.d`
