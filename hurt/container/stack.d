@@ -19,6 +19,12 @@ final class Stack(T) {
 		this.stptr = -1;
 	}
 
+	this(Stack!(T) toCopy) {
+		this.stack = toCopy.stack.dup;
+		this.stptr = toCopy.stptr;
+		this.growthrate = toCopy.growthrate;
+	}
+
 	Stack!(T) push(T elem) {
 		if(this.stptr+1 == stack.length) {
 			this.stack.length = this.stack.length*this.growthrate;
@@ -77,6 +83,21 @@ final class Stack(T) {
 		}
 	}
 
+	public override bool opEquals(Object o) {
+		Stack!(T) s = cast(Stack!(T))o;
+		if(this.stptr != s.stptr) {
+			return false;
+		}
+
+		foreach(idx, it; this.stack[0 .. this.stptr+1]) {
+			if(it != s.stack[idx]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	void clear() {
 		this.stptr = -1;	
 	}
@@ -110,4 +131,16 @@ unittest {
 	assert(j.getSize() == 4);
 	j.setCapazity(33);
 	assert(j.getCapazity() == 992);
+
+	auto k = new Stack!(int)(i);
+	assert(k == i);
+
+	k.push(66);
+	assert(k != i);
+
+	i.push(55);
+	auto n = new Stack!int(i);
+	assert(n == i);
+	n.push(77);
+	assert(n != i);
 }

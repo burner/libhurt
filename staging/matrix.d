@@ -58,7 +58,6 @@ module hurt.math.matrix;
 //------------------------------------------------------------------------------
 
 import hurt.math.vec;
-import hurt.math.quat;
 import std.conv;
 import hurt.io.stdio;
 import hurt.util.slog;
@@ -612,6 +611,7 @@ typedef mat<float,2,2> mat2x2;
 typedef mat<float,2,1> mat2x1;
 */
 
+/*
 void main() {
 	mat!(int,3,3) m = mat!(int,3,3)([ [1,2,3], [4,5,6], [7,8,9]]);
 	mat!(int,3,3) n = mat!(int,3,3)([ [1,2,3], [4,5,6], [7,8,9]]);
@@ -643,13 +643,4 @@ void main() {
 	println();
 	//oo.print();
 
-	quat!real q1 = quat!real(90.0,0.0,0.0);
-	log("%s", q1.eulerAngles().toString());
-	auto v1 = vec3!real(1.0,0.0,1.0);
-	log("%s", v1.toString());
-	auto v2 = q1.rotate(v1);
-	quat!real q2 = quat!real(-90.0,0.0,0.0);
-	auto v3 = q2.rotate(v1);
-	log("%s", v2.toString());
-	log("%s", v3.toString());
-}
+}*/
