@@ -82,8 +82,11 @@ hurt/io/stream.d
 
 src += Split('''
 hurt/math/bigintbase10.d
-hurt/math/mathutil.d
 hurt/math/bracket.d
+hurt/math/mathutil.d
+hurt/math/matrix.d
+hurt/math/quat.d
+hurt/math/vec.d
 ''')
 
 src += Split('''
