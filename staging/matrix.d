@@ -62,6 +62,7 @@ import std.conv;
 import hurt.io.stdio;
 import hurt.util.slog;
 import hurt.string.formatter;
+import hurt.string.stringbuffer;
 import std.stdio;
 
 private string genOpBinaryFromTo(int rowLow, int rowHigh, 
@@ -92,6 +93,7 @@ mat!(T,Rows,"~to!string(column)~") opBinary(string op)(mat!(T,"
 	return prod;}";
 }
 
+pure @safe:
 struct mat(T,size_t Rows, size_t Columns) {
 private:
 
@@ -201,7 +203,6 @@ public:
 	//! Returns width/number of columns
 	size_t getSizeColumns() const {return Columns;} 
 
-
 	void print() const {
 		foreach(idx, it; matrix) {
 			if(idx > 0 && idx % Columns == 0) {
@@ -215,6 +216,23 @@ public:
 			hurt.io.stdio.print(" ");
 		}
 		hurt.io.stdio.println();
+	}
+
+	string toString() const {
+		auto sb = new StringBuffer!(char)(128);
+		foreach(idx, it; matrix) {
+			if(idx > 0 && idx % Columns == 0) {
+				sb.pushBack('\n');
+			}
+			static if(is(T == float) || is(T == double) || is(T == real)) {
+				sb.pushBack("%.1f", it);
+			} else {
+				sb.pushBack("%d", it);
+			}
+			sb.pushBack(' ');
+		}
+		sb.pushBack('\n');
+		return sb.getString();
 	}
 
 	//mixin(genOpBinary!(3,3)());

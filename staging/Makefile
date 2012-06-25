@@ -1,6 +1,6 @@
 #SRC=binvec.d
 
-SRC=qu.d vec.d matrix.d
+SRC=quat.d vec.d matrix.d
 #SRC=arraytree.d arraybst.d
 #SRC=test.d `find hurt -name \*.d`
 

@@ -163,7 +163,7 @@ struct quat(T : float) {
 }
 
 unittest {
-	quat!(double) q = quat!(double)(90.0, 0.0, 0.0);
+	quat!(double) q = quat!(double)(45.0, 45.0, 0.0);
 	log("%s", q.toString());
 	vec3!double v = vec3!double(1.0, 0.0, 0.0);
 
@@ -176,9 +176,10 @@ unittest {
 	log("%s", v3.toString());
 
 	auto m = q2.getMatrix();
-	log("%s", m.toString());
+	log("\n%s", m.toString());
 }
 
+version(staging) {
 void main() {
-
+}
 }
