@@ -3,6 +3,8 @@ module hurt.math.mathutil;
 import hurt.conv.conv;
 import hurt.string.formatter;
 
+extern(C) double sqrt(double);
+
 public pure bool isNumeric(T)() {
 	static if(isInteger!T() || isFloat!T()) {
 		return true;
