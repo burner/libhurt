@@ -114,7 +114,7 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 	}
 
 	public void insert(size_t idx, T item, bool before = false) {
-		this.checkIdx!(__FILE__,__LINE__)(idx);
+		debug this.checkIdx!(__FILE__,__LINE__)(idx);
 		idx = this.getIdx(idx);
 
 		if(this.getSize() == 0 || (this.frontIt == idx && before)) {
@@ -288,13 +288,29 @@ public class FDoubleLinkedList(T) : Iterable!(T) {
 
 	public size_t getIdx(size_t cnt) const {
 		this.checkIdx!(__FILE__,__LINE__)(cnt);
-		long it = this.frontIt;
+		/*long it = this.frontIt;
 		size_t i;
 		for(i = 0; i < cnt; i++) {
 			it = this.items[it].next;
 		}
-		
-		return it;
+		return it;*/
+
+		if(cnt > this.getSize()/2) {
+			long it = this.backIt;
+			size_t i;
+			long many = this.getSize()-1-cnt;
+			for(i = 0; i < many; i++) {
+				it = this.items[it].prev;
+			}
+			return it;
+		} else {
+			long it = this.frontIt;
+			size_t i;
+			for(i = 0; i < cnt; i++) {
+				it = this.items[it].next;
+			}
+			return it;
+		}
 	}
 
 	public T opIndex(const size_t idx) {
