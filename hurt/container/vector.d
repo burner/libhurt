@@ -7,6 +7,7 @@ import hurt.container.randomaccess;
 import hurt.io.stdio;
 import hurt.string.formatter;
 import hurt.string.stringbuffer;
+import hurt.util.slog;
 
 class Vector(T) : Iterable!(T), RandomAccess!(T) {
 	private T[] data;
@@ -43,10 +44,16 @@ class Vector(T) : Iterable!(T), RandomAccess!(T) {
 	}
 
 	public Vector!(T) append(T toAdd) {
-		if(this.index+1 >= cast(typeof(this.index))this.data.length) {
+		/*if(this.data is null) {
+			this.data = new T[32];
+		}*/
+		if((this.index+1) >= (cast(typeof(this.index))this.data.length)) {
 			this.data.length = this.data.length * 2;
 		}
-		this.data[++this.index] = toAdd;
+		this.index = this.index + 1;
+		//assert(this.index >= 0, format("%d", this.index));
+
+		this.data[this.index] = toAdd;
 		return this;
 	}
 

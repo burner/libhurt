@@ -6,6 +6,7 @@ import hurt.container.iterator;
 import hurt.exception.nullexception;
 import hurt.exception.invaliditeratorexception;
 import hurt.io.stdio;
+import hurt.util.slog;
 
 public class Iterator(T) : hurt.container.iterator.Iterator!(T) {
 	private DLinkedList!(T).Elem!(T) elem;
@@ -311,6 +312,10 @@ public class DLinkedList(T) : Iterable!(T) {
 		}
 	}
 
+	public T opIndex(ulong idx) {
+		return this.get(idx);
+	}
+
 	public T get(ulong idx) {
 		if(idx > this.size) {
 			assert(0, "index out of bound");
@@ -332,6 +337,44 @@ public class DLinkedList(T) : Iterable!(T) {
 				it--;
 			}
 			return tmp.getStore();
+		}
+	}
+
+	public void insert(size_t idx, T elem) {
+		assert(idx <= this.getSize());
+		if(this.getSize() == 0 || idx == 0) {
+			this.pushFront(elem);
+		} else if(idx+1 == this.getSize()) {
+			this.pushBack(elem);
+		} else {
+			Elem!(T) tmp;
+			if(this.size - idx < idx) {
+				tmp = this.tail;
+				ulong it = this.size - 1u;
+				while(it > idx) {
+					assert(tmp !is null);
+					tmp = tmp.getPrev();
+					it--;
+				}
+			} else {
+				tmp = this.head;
+				ulong it = 0u;
+				while(it < idx) {
+					assert(tmp !is null);
+					tmp = tmp.getNext();
+					it--;
+				}
+			}
+			assert(tmp !is null);
+			Elem!(T) next = tmp.getNext();
+			Elem!(T) tIn = new Elem!(T)(elem);
+			assert(tIn !is null);
+			assert(next !is null);
+			next.setPrev(tIn);
+			tIn.setNext(next);
+			tIn.setPrev(tmp);
+			tmp.setNext(tIn);
+			this.size++;
 		}
 	}
 
@@ -367,7 +410,8 @@ public class DLinkedList(T) : Iterable!(T) {
 				return new Iterator!(T)(tIn);
 			}
 		} else {
-			throw new InvalidIteratorException(__FILE__ ~ conv!(int,string)(__LINE__) ~ ": Iterator not valid");
+			throw new InvalidIteratorException(__FILE__ ~ 
+				conv!(int,string)(__LINE__) ~ ": Iterator not valid");
 		}
 	}
 
@@ -383,10 +427,13 @@ public class DLinkedList(T) : Iterable!(T) {
 		while(tmp !is null) {
 			Elem!(T) tmpNext = tmp.getNext();
 			if(tmpNext !is null) {
-				assert(tmpNext.getPrev() is tmp, "prev pointer is wrong for index " ~ conv!(size_t,string)(itIdx+1));	
+				assert(tmpNext.getPrev() is tmp, 
+					"prev pointer is wrong for index " ~ 
+					conv!(size_t,string)(itIdx+1));	
 			}
 			if(tmpNext is null) {
-				assert(tmp is this.tail, "the tail pointer is not set correctly"); 
+				assert(tmp is this.tail, 
+					"the tail pointer is not set correctly"); 
 			}
 			itIdx++;
 			tmp = tmpNext;

@@ -1,5 +1,7 @@
 module hurt.container.list;
 
+import hurt.util.slog;
+
 class List(T) {
 	private class Item(T) {
 		T value;
@@ -54,6 +56,59 @@ class List(T) {
 		return this;	
 	}
 
+	T popBack() {
+		assert(this.root !is null);
+
+		if(this.size == 1) {
+			auto tmp = this.root;
+			this.root = null;
+			this.size--;
+			return tmp.value;
+		}
+
+		auto it = this.root;
+		while(it.next.next !is null) {
+			it = it.next;
+		}
+
+		auto ret = it.next.value;
+		it.next = null;
+		this.size--;
+
+		return ret;
+	}
+
+	T popFront() {
+		assert(this.root !is null);
+
+		auto tmp = this.root;
+
+		this.root = this.root.next;
+		this.size--;
+		return tmp.value;
+	}
+
+	List!(T) pushFront(T t) {
+		return this.insert(t);
+	}
+
+	List!(T) pushBack(T t) {
+		Item!(T) it = this.root;
+		if(it is null) {
+			this.root = new Item!(T)(t);
+			this.size++;
+			return this;
+		}
+
+		while(it.next !is null) {
+			it = it.next;
+		}
+		this.size++;
+		it.next = new Item!(T)(t);
+		
+		return this;
+	}
+
 	List!(T) insert(T toIn) {
 		if(root is null) {
 			this.root = new Item!(T)(toIn);
@@ -67,8 +122,37 @@ class List(T) {
 		return this;
 	}
 
+	List!(T) insert(size_t idx, T elem) {
+		if(this.getSize() == 0 || idx == 0) {
+			return this.pushFront(elem);
+		} else if(idx == this.getSize()) {
+			return this.pushBack(elem);
+		} else {
+			auto it = this.root;
+			for(; idx; it = it.next, --idx) {}
+			auto tmp = it.next;
+			it.next = new Item!(T)(elem);
+			it.next.next = tmp;
+			this.size++;
+			return this;
+		}
+	}
+
+	T opIndex(size_t idx) {
+		assert(idx < this.size);
+
+		auto it = this.root;
+		for(; idx; it = it.next, --idx) {}
+
+		return it.value;
+	}
+
 	public uint getSize() const {
 		return this.size;
+	}
+
+	public bool isEmpty() const {
+		return this.size == 0;
 	}
 
 	int opApply(int delegate(ref Item!(T)) dg) {
@@ -123,4 +207,29 @@ unittest {
 			assert(l1.find(jt));
 		}
 	}
+
+	auto ll = new List!(int)();
+	ll.pushBack(11);
+	assert(ll.popBack() == 11);
+	assert(ll.isEmpty());
+	ll.pushFront(11);
+	assert(ll.popFront() == 11);
+	assert(ll.isEmpty());
+	ll.pushFront(11);
+	assert(ll.popBack() == 11);
+	assert(ll.isEmpty());
+	ll.pushBack(11);
+	assert(ll.popFront() == 11);
+	assert(ll.isEmpty());
+
+	ll.pushBack(11);
+	ll.pushBack(12);
+	ll.pushBack(13);
+	ll.pushBack(14);
+	ll.pushBack(15);
+	assert(ll.popBack() == 15);
+	assert(ll.popFront() == 11);
+	assert(ll[0] == 12);
+	assert(ll[1] == 13);
+	assert(ll[2] == 14);
 }
