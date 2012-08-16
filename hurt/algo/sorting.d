@@ -146,7 +146,7 @@ void sortVector(T)(Vector!(T) a, bool function(in T a, in T b) cmp,
 	}
 }
 
-void sortVectorUnsafe(T)(Vector!(T) a, bool function(in T a, in T b) cmp, 
+void sortVectorUnsafe(T)(Vector!(T) a, bool function(T a, T b) cmp, 
 		size_t leftb = 0, size_t rightb= 0) {
 	debug assert(rightb <= a.getSize()-1, "right index out of bound");
 	debug assert(leftb <= rightb, "left index to big");
@@ -161,7 +161,7 @@ void sortVectorUnsafe(T)(Vector!(T) a, bool function(in T a, in T b) cmp,
 	//partition function
 	long partition(size_t left, size_t right) {
 		size_t idx = (left+right+1)/2;
-		const T pivot = a[idx];
+		T pivot = a[idx];
 		swap(idx, right);
 		for(ulong i = idx = left; i < right; i++) {
 			if(cmp(a[i], pivot)) {
