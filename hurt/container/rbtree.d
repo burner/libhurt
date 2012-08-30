@@ -35,7 +35,7 @@ class RBTree(T) : Tree!(T) {
 		return singleRotate(node, dir);
 	}
 
-	private static int validate(const Node!(T) node, const Node!(T) parent) {
+	private static int validate(Node!(T) node, Node!(T) parent) {
 		if(node is null) {
 			return 1;
 		} else {
@@ -54,8 +54,8 @@ class RBTree(T) : Tree!(T) {
 
 				}
 
-			const Node!(T) ln = node.link[0];
-			const Node!(T) rn = node.link[1];
+			Node!(T) ln = node.link[0];
+			Node!(T) rn = node.link[1];
 
 			if(isRed(node)) {
 				if(isRed(ln) || isRed(rn)) {
@@ -92,7 +92,7 @@ class RBTree(T) : Tree!(T) {
 		return search(this.root, data);
 	}
 
-	private Node!(T) search(Node!(T) node ,const T data) {
+	private Node!(T) search(Node!(T) node ,T data) {
 		if(node is null)
 			return null;
 		else if(node.data == data)

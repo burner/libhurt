@@ -9,7 +9,7 @@ import hurt.io.stdio;
 //import std.stdio;
  
 class BinarySearchTree(T) : Tree!(T) { 
-	private bool search(const T item, ref Node!(T) curr, ref Node!(T) prev , 
+	private bool search(T item, ref Node!(T) curr, ref Node!(T) prev , 
 			ref bool lr) const {
 	    while (curr !is null) {
 	        if(item == curr.data)
