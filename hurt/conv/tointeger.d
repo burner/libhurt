@@ -192,12 +192,21 @@ public pure uint ulongToUint(ulong from) {
 	}
 }
 
+private S getMin(S)() {
+	static if(isFloat!(S)) {
+		return S.min_normal;
+	} else {
+		return S.min;
+	}
+}
+
 public pure S tToS(T,S)(T t, string file = __FILE__, int line = __LINE__) 
 		if(isNumeric!(T) && isNumeric!(S)) {
-	if(smaller!(T,S)(t,S.min)) {
+	if(smaller!(T,S)(t,getMin!(S))) {
 		throw new ValueRangeException(file ~ ":" 
 			~ conv!(int,string)(line) ~ " " ~ conv!(T,string)(t) ~ 
-			" doesn't fit, value is to small for " ~ conv!(S,string)(S.min));
+			" doesn't fit, value is to small for " ~
+			conv!(S,string)(getMin!(S)));
 	} else if(bigger!(T,S)(t,S.max)) {
 		throw new ValueRangeException(file ~ ":" 
 			~ conv!(int,string)(line) ~ " " ~ conv!(T,string)(t) ~ 

@@ -31,7 +31,7 @@ struct CRS(T) {
 			conv!(size_t,float)(this.rowPtr.length * val.length);
 	}
 
-	public this(Vector!(Vector!(T)) input, 
+	public @safe this(Vector!(Vector!(T)) input, 
 			T nullvalue) {
 		assert(input.getSize() > 0);
 		T[] val = new T[input.getSize() * input[0].getSize()];
@@ -61,7 +61,7 @@ struct CRS(T) {
 			conv!(size_t,float)(input.getSize() * input[0].getSize());
 	}
 
-	public pure nothrow @safe this(const T[][] input, 
+	public pure @safe this(const T[][] input, 
 			T nullvalue) {
 		assert(input.length > 0);
 		T[] val = new T[input.length * input[0].length];
@@ -168,13 +168,13 @@ struct CRS(T) {
 
 
 unittest {
-	auto a = [[10, 0, 0, 12, 0],
+	int[][] a = [[10, 0, 0, 12, 0],
 			  [0, 0, 11, 0, 13],
 			  [0, 16, 0, 0, 0],
 			  [0, 0, 0, 0, 0],
 			  [0, 0, 11, 0, 13]];
 
-	auto r = CRS!(int)(a, 0);
+	CRS!(int) r = CRS!(int)(a, 0);
 	foreach(idx, it; a) {
 		foreach(jdx, jt; it) {
 			assert(jt == r.get(idx, jdx, 0), format(

@@ -9,6 +9,8 @@ import hurt.string.formatter;
 import hurt.string.stringbuffer;
 import hurt.util.slog;
 
+@trusted {
+
 class Vector(T) : Iterable!(T), RandomAccess!(T) {
 	private T[] data;
 	version(X86_64) {
@@ -200,7 +202,7 @@ class Vector(T) : Iterable!(T), RandomAccess!(T) {
 		return result;
 	}
 
-	public size_t getSize() const {
+	public size_t getSize() const nothrow {
 		return this.index+1;
 	}
 
@@ -272,6 +274,7 @@ class Vector(T) : Iterable!(T), RandomAccess!(T) {
 		return ret.getString();
 	}
 }
+} // @trusted
 
 unittest {
 	DLinkedList!(int) ll = new DLinkedList!(int)();

@@ -9,8 +9,7 @@ Deque!(size_t) childs;
 int maxDeep = 0;
 
 struct snode {
-	int a,b,c,d;
-	size_t id;
+	byte[60] payload;
 
 	size_t childstart;
 	size_t numchilds;
@@ -52,8 +51,7 @@ size_t makesnodes(size_t deep) {
 }
 
 class cnode {
-	int a,b,c,d;
-	size_t id;
+	byte[60] payload;
 
 	cnode l, r;
 	size_t deep;
@@ -69,8 +67,8 @@ class cnode {
 }
 
 void main() {
-	immutable runs = 17;
-	immutable steps = 128;
+	immutable runs = 18;
+	immutable steps = 1024;
 	float[steps][runs] a;
 	float[steps][runs] b;
 	for(int i = 1; i <= runs; i++) {
